@@ -1,0 +1,294 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>GhostAuthTool - Server Status</title>
+
+<style>
+@keyframes glow {
+    0% { text-shadow: 0 0 5px #0ea5e9; }
+    50% { text-shadow: 0 0 20px #38bdf8; }
+    100% { text-shadow: 0 0 5px #0ea5e9; }
+}
+@keyframes fadeUp {
+    from { opacity:0; transform: translateY(20px); }
+    to { opacity:1; transform: translateY(0); }
+}
+body {
+    background: radial-gradient(circle at top, #0b1220, #05070c);
+    color: #d1d5db;
+    font-family: 'Segoe UI', monospace;
+    margin: 0;
+}
+.header {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(180deg, #020617, #020617cc);
+    border-bottom: 1px solid #1e293b;
+}
+.header h1 {
+    font-size: 28px;
+    color: #38bdf8;
+    animation: glow 3s infinite;
+}
+.header p {
+    color: #94a3b8;
+    font-size: 14px;
+}
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+.card {
+    background: linear-gradient(145deg, #0b1220, #020617);
+    border: 1px solid #1e293b;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 0 20px rgba(56,189,248,.15);
+    animation: fadeUp .6s ease forwards;
+    transition: .3s;
+}
+.card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 0 30px rgba(56,189,248,.4);
+}
+.card h3 {
+    font-size: 15px;
+    color: #7dd3fc;
+    margin-bottom: 14px;
+}
+.status {
+    font-weight: bold;
+    font-size: 14px;
+}
+.online {
+    color: #22c55e;
+    text-shadow: 0 0 8px rgba(34,197,94,.6);
+}
+.offline {
+    color: #ef4444;
+    text-shadow: 0 0 8px rgba(239,68,68,.6);
+}
+.price {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px dashed #334155;
+    font-size: 14px;
+}
+.price span {
+    color: #60a5fa;
+}
+.footer {
+    margin-top: 50px;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #1e293b;
+    background: #020617;
+    color: #64748b;
+    font-size: 13px;
+}
+/* LED ANIMATION */
+@keyframes ledPulseGreen {
+    0% { box-shadow: 0 0 5px #22c55e; }
+    50% { box-shadow: 0 0 15px #22c55e, 0 0 30px #22c55e; }
+    100% { box-shadow: 0 0 5px #22c55e; }
+}
+@keyframes ledPulseRed {
+    0% { box-shadow: 0 0 5px #ef4444; }
+    50% { box-shadow: 0 0 15px #ef4444, 0 0 30px #ef4444; }
+    100% { box-shadow: 0 0 5px #ef4444; }
+}
+
+/* STATUS ROW */
+.status-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+}
+.led {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+.led.online {
+    background: #22c55e;
+    animation: ledPulseGreen 1.5s infinite;
+}
+.led.offline {
+    background: #ef4444;
+    animation: ledPulseRed 1.5s infinite;
+}
+
+/* TEXT */
+.status-text.online { color: #22c55e; }
+.status-text.offline { color: #ef4444; }
+
+/* CARD "ALIVE" EFFECT */
+.card {
+    position: relative;
+    overflow: hidden;
+}
+.card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(56,189,248,0.15),
+        transparent
+    );
+    transform: translateX(-100%);
+    transition: 0.6s;
+}
+.card:hover::before {
+    transform: translateX(100%);
+}
+.card:hover {
+    animation: breathe 1.6s infinite;
+}
+
+/* BREATHING EFFECT */
+@keyframes breathe {
+    0% { box-shadow: 0 0 15px rgba(56,189,248,.25); }
+    50% { box-shadow: 0 0 35px rgba(56,189,248,.6); }
+    100% { box-shadow: 0 0 15px rgba(56,189,248,.25); }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>GhostAuthTool</h1>
+    <p>Server Price & Server Status Monitoring</p>
+</div>
+
+<div class="container">
+    <div class="card" style="animation-delay:0s">
+        <h3>Qualcomm Auth Global device</h3>
+        <div class="status-row">
+            <span class="led online"></span>
+            <span class="status-text online">
+                ONLINE            </span>
+        </div>
+
+        <div class="price">
+    Price :
+    <span>
+        8.0 Credits
+    </span>
+</div>
+
+    </div>
+    <div class="card" style="animation-delay:0.08s">
+        <h3>MediaTek V5 Auth Global device</h3>
+        <div class="status-row">
+            <span class="led online"></span>
+            <span class="status-text online">
+                ONLINE            </span>
+        </div>
+
+        <div class="price">
+    Price :
+    <span>
+        5.0 Credits
+    </span>
+</div>
+
+    </div>
+    <div class="card" style="animation-delay:0.16s">
+        <h3>MediaTek V6 Auth SPFT</h3>
+        <div class="status-row">
+            <span class="led online"></span>
+            <span class="status-text online">
+                ONLINE            </span>
+        </div>
+
+        <div class="price">
+    Price :
+    <span>
+        1.0 Credits
+    </span>
+</div>
+
+    </div>
+    <div class="card" style="animation-delay:0.24s">
+        <h3>MediaTek V6 Auth New Security</h3>
+        <div class="status-row">
+            <span class="led online"></span>
+            <span class="status-text online">
+                ONLINE            </span>
+        </div>
+
+        <div class="price">
+    Price :
+    <span>
+        4.0 Credits
+    </span>
+</div>
+
+    </div>
+    <div class="card" style="animation-delay:0.32s">
+        <h3>Reset FRP Mi Assistant Mode</h3>
+        <div class="status-row">
+            <span class="led online"></span>
+            <span class="status-text online">
+                ONLINE            </span>
+        </div>
+
+        <div class="price">
+    Price :
+    <span>
+        4.0 Credits
+    </span>
+</div>
+
+    </div>
+    <div class="card" style="animation-delay:0.4s">
+        <h3>Reboot Fastboot To EDL</h3>
+        <div class="status-row">
+            <span class="led online"></span>
+            <span class="status-text online">
+                ONLINE            </span>
+        </div>
+
+        <div class="price">
+    Price :
+    <span>
+        0.5 Credits
+    </span>
+</div>
+
+    </div>
+    <div class="card" style="animation-delay:0.48s">
+        <h3>Unlock Bootloader India Device Only</h3>
+        <div class="status-row">
+            <span class="led online"></span>
+            <span class="status-text online">
+                ONLINE            </span>
+        </div>
+
+        <div class="price">
+    Price :
+    <span>
+        5.0 Credits
+    </span>
+</div>
+
+    </div>
+</div>
+
+<div class="footer">
+    © 2026 GhostAuthTool — All Rights Reserved
+</div>
+
+</body>
+</html>
