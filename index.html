@@ -3,77 +3,355 @@
 <head>
 <meta charset="UTF-8">
 <title>Ferdinan Flasher</title>
+
 <style>
-/* CSS Anda (tetap sama) */
-.payment-section { text-align: center; padding: 25px; background: linear-gradient(145deg, #0b1220, #020617); border: 1px solid #1e293b; border-radius: 12px; max-width: 550px; margin: 30px auto; box-shadow: 0 0 20px rgba(56,189,248,.15); font-family: sans-serif; }
-.payment-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-.btn-pay { display: flex; align-items: center; justify-content: center; background-color: #1e293b; color: #fff; border: 2px solid #334155; padding: 12px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; }
-.btn-pay:hover { background-color: #0f172a; border-color: #38bdf8; transform: translateY(-2px); }
-.pay-logo { height: 24px; max-width: 80px; object-fit: contain; margin-right: 10px; }
-.payment-details { margin-top: 25px; padding: 20px; border: 1px dashed #334155; background: #020617; border-radius: 8px; }
-.btn-wa { display: inline-block; background-color: #25d366; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold; }
-body { background: radial-gradient(circle at top, #0b1220, #05070c); color: #d1d5db; font-family: 'Segoe UI', monospace; margin: 0; }
-.header { text-align: center; padding: 40px 20px; background: linear-gradient(180deg, #020617, #020617cc); border-bottom: 1px solid #1e293b; }
-.header h1 { font-size: 28px; color: #38bdf8; }
-.container { max-width: 1200px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 15px; }
-.card { background: linear-gradient(145deg, #0b1220, #020617); border: 1px solid #1e293b; border-radius: 12px; padding: 15px; box-shadow: 0 0 20px rgba(56,189,248,.15); transition: .3s; }
-.card h3 { font-size: 14px; color: #7dd3fc; margin-bottom: 10px; }
-.price { margin-top: 12px; padding-top: 8px; border-top: 1px dashed #334155; font-size: 13px; }
-.footer { margin-top: 50px; padding: 20px; text-align: center; border-top: 1px solid #1e293b; background: #020617; color: #64748b; font-size: 13px; }
-.status-row { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
-.led { width: 10px; height: 10px; border-radius: 50%; background: #22c55e; }
-.online { color: #22c55e; }
+/* CSS UNTUK SECTION PEMBAYARAN (MENYESUAIKAN TEMA GELAP ASLI) */
+.payment-section {
+  text-align: center;
+  padding: 25px;
+  background: linear-gradient(145deg, #0b1220, #020617);
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  max-width: 550px;
+  margin: 30px auto;
+  box-shadow: 0 0 20px rgba(56,189,248,.15);
+  font-family: sans-serif;
+}
+
+.payment-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-pay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1e293b;
+  color: #fff;
+  border: 2px solid #334155;
+  padding: 12px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn-pay:hover {
+  background-color: #0f172a;
+  border-color: #38bdf8;
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px rgba(56,189,248,.4);
+}
+
+.pay-logo {
+  height: 24px;
+  max-width: 80px;
+  object-fit: contain;
+  margin-right: 10px;
+}
+
+.payment-details {
+  margin-top: 25px;
+  padding: 20px;
+  border: 1px dashed #334155;
+  background: #020617;
+  border-radius: 8px;
+}
+
+.btn-wa {
+  display: inline-block;
+  background-color: #25d366;
+  color: white;
+  padding: 12px 25px;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+}
+
+.btn-wa:hover {
+  background-color: #20ba5a;
+}
+
+/* CSS ASLI WEBSITE ANDA (DIPERTAHANKAN) */
+@keyframes glow {
+    0% { text-shadow: 0 0 5px #0ea5e9; }
+    50% { text-shadow: 0 0 20px #38bdf8; }
+    100% { text-shadow: 0 0 5px #0ea5e9; }
+}
+@keyframes fadeUp {
+    from { opacity:0; transform: translateY(25px); }
+    to { opacity:1; transform: translateY(0); }
+}
+body {
+    background: radial-gradient(circle at top, #0b1220, #05070c);
+    color: #d1d5db;
+    font-family: 'Segoe UI', monospace;
+    margin: 0;
+}
+.header {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(180deg, #020617, #020617cc);
+    border-bottom: 1px solid #1e293b;
+}
+.header h1 {
+    font-size: 28px;
+    color: #38bdf8;
+    animation: glow 3s infinite;
+}
+.header p {
+    color: #94a3b8;
+    font-size: 14px;
+}
+.header a {
+    color: #60a5fa;
+    text-decoration: none;
+}
+
+/* MODIFIKASI: UKURAN KOLOM DIPERKECIL (Rapat) */
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); /* Ukuran minimal diperkecil agar rapat */
+    gap: 15px; /* Jarak antar kartu dikurangi */
+}
+.card {
+    background: linear-gradient(145deg, #0b1220, #020617);
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    padding: 15px; /* Padding dalam dikurangi */
+    box-shadow: 0 0 20px rgba(56,189,248,.15);
+    animation: fadeUp .6s ease forwards;
+    transition: .3s;
+    position: relative;
+    overflow: hidden;
+}
+.card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 0 30px rgba(56,189,248,.4);
+    animation: breathe 1.6s infinite;
+}
+.card h3 {
+    font-size: 14px; /* Ukuran font judul sedikit diperkecil */
+    color: #7dd3fc;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+.price {
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px dashed #334155;
+    font-size: 13px;
+}
+.price span {
+    color: #60a5fa;
+}
+
+/* ANIMASI LED & STATUS (ASLI) */
+@keyframes ledPulseGreen {
+    0% { box-shadow: 0 0 5px #22c55e; }
+    50% { box-shadow: 0 0 15px #22c55e, 0 0 30px #22c55e; }
+    100% { box-shadow: 0 0 5px #22c55e; }
+}
+@keyframes ledPulseRed {
+    0% { box-shadow: 0 0 5px #ef4444; }
+    50% { box-shadow: 0 0 15px #ef4444, 0 0 30px #ef4444; }
+    100% { box-shadow: 0 0 5px #ef4444; }
+}
+.status-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+}
+.led {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.led.online {
+    background: #22c55e;
+    animation: ledPulseGreen 1.5s infinite;
+}
+.status-text.online { color: #22c55e; font-size: 13px; }
+
+/* EFFECT CARD ASLI */
+.card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent, rgba(56,189,248,0.15), transparent);
+    transform: translateX(-100%);
+    transition: 0.6s;
+}
+.card:hover::before {
+    transform: translateX(100%);
+}
+@keyframes breathe {
+    0% { box-shadow: 0 0 15px rgba(56,189,248,.25); }
+    50% { box-shadow: 0 0 35px rgba(56,189,248,.6); }
+    100% { box-shadow: 0 0 15px rgba(56,189,248,.25); }
+}
+
+/* FOOTER ASLI */
+.footer {
+    margin-top: 50px;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #1e293b;
+    background: #020617;
+    color: #64748b;
+    font-size: 13px;
+}
 </style>
 </head>
+
 <body>
 
+<!-- HEADER ASLI ANDA -->
 <div class="header">
     <h1>Ferdinan Flasher Batam</h1>
+    <p>Server Price & Server Status Monitoring</p>
+    <p>Contact me on :</p>
+    <p>Facebook : <a href="https://fb.me/FS.TPP" target="_blank">Click here</a></p>
+    <p>Whatsapp : <a href="https://wa.me/+6287846414300" target="_blank">+6287846414300</a></p>
+    <a href="https://wa.me/+6287846414300" target="_blank">
+        <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWU4ajhjNzJ3ZTUwMXQ1ZGpicXI4NWhmcGw2NDlpZXA4bmI4ZnlrdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/f7BCWwgz5KaiY0tgpz/giphy.gif" alt="order now" width="200" style="opacity: 0.5;">
+    </a>
 </div>
 
-<!-- CONTAINER DAFTAR LAYANAN -->
+<!-- CONTAINER DAFTAR LAYANAN (DIPERKECIL) -->
 <div class="container">
-    <!-- List Kartu Anda -->
-    <div class="card"><h3>Xiaomi QC Auth Global</h3><div class="status-row"><span class="led"></span><span class="online">ONLINE</span></div><div class="price">Price : 10$</div></div>
-    <div class="card"><h3>Xiaomi MTK V5 Auth</h3><div class="status-row"><span class="led"></span><span class="online">ONLINE</span></div><div class="price">Price : 7$</div></div>
-    <div class="card"><h3>Xiaomi MTK V6 Auth</h3><div class="status-row"><span class="led"></span><span class="online">ONLINE</span></div><div class="price">Price : 3$</div></div>
-    <div class="card"><h3>Reset FRP Mi</h3><div class="status-row"><span class="led"></span><span class="online">ONLINE</span></div><div class="price">Price : 7$</div></div>
-    <div class="card"><h3>Fastboot To EDL</h3><div class="status-row"><span class="led"></span><span class="online">ONLINE</span></div><div class="price">Price : 1$</div></div>
-    <div class="card"><h3>Realme FRP</h3><div class="status-row"><span class="led"></span><span class="online">ONLINE</span></div><div class="price">Price : 7$</div></div>
-    <div class="card"><h3>Apple A12+ Wifi</h3><div class="status-row"><span class="led"></span><span class="online">ONLINE</span></div><div class="price">Price : 20$</div></div>
-    <div class="card"><h3>Vivo FRP/Flash</h3><div class="status-row"><span class="led"></span><span class="online">ONLINE</span></div><div class="price">Price : 30$</div></div>
-    <div class="card"><h3>Samsung FRP</h3><div class="status-row"><span class="led"></span><span class="online">ONLINE</span></div><div class="price">Price : By model</div></div>
-</div> 
-<!-- Penutup container sudah dipastikan di sini -->
+    <div class="card" style="animation-delay:0s">
+        <h3>Xiaomi QC Auth Global</h3>
+        <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
+        <div class="price">Price : 10$</div>
+    </div>
+    <div class="card" style="animation-delay:0.08s">
+        <h3>Xiaomi MediaTek V5 Auth Global</h3>
+        <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
+        <div class="price">Price : 7$</div>
+    </div>
+    <div class="card" style="animation-delay:0.16s">
+        <h3>Xiaomi MediaTek V6 Auth SPFT</h3>
+        <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
+        <div class="price">Price : 3$</div>
+    </div>
+    <div class="card" style="animation-delay:0.24s">
+        <h3>Xiaomi MediaTek V6 Auth New Security</h3>
+        <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
+        <div class="price">Price : 6$</div>
+    </div>
+    <div class="card" style="animation-delay:0.32s">
+        <h3>Reset FRP Mi Assistant Mode</h3>
+        <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
+        <div class="price">Price : <span>7$</span></div>
+    </div>
+    <div class="card" style="animation-delay:0.4s">
+        <h3>Xiaomi - Fastboot To EDL</h3>
+        <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
+        <div class="price">Price : 1$</div>
+    </div>
+    <div class="card" style="animation-delay:0.48s">
+        <h3>Xiaomi UBL India Device Only</h3>
+        <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
+        <div class="price">Price : 7$</div>
+    </div>
+    <div class="card" style="animation-delay:0.56s">
+        <h3>Xiaomi UBL Global Device</h3>
+        <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
+        <div class="price">Price : 25$</div>
+    </div>
+    <div class="card" style="animation-delay:0.64s">
+        <h3>Indonesia Mi account Clean</h3>
+        <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
+        <div class="price">Price : 8$</div>
+    </div>
+    <div class="card" style="animation-delay:0.72s">
+        <h3>Realme FRP</h3>
+        <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
+        <div class="price">Price : 7$</div>
+    </div>
+    <div class="card" style="animation-delay:0.8s">
+        <h3>Apple A12+ Wifi only</h3>
+        <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
+        <div class="price">Price : 20$</div>
+    </div>
+    <div class="card" style="animation-delay:0.88s">
+        <h3>Vivo QC/MTK/SPD Demo/FRP</h3>
+        <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
+        <div class="price">Price : 30$</div>
+    </div>
+    <div class="card" style="animation-delay:0.96s">
+        <h3>Samsung FRP by imei</h3>
+        <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
+        <div class="price">Price : By model</div>
+    </div>
+</div> <!-- PENUTUP CONTAINER ASLI -->
 
-<!-- SECTION PEMBAYARAN -->
+
+<!-- SECTION PEMBAYARAN (MENYESUAIKAN TEMA GELAP ASLI) -->
 <div class="payment-section">
-  <h2>Metode Pembayaran</h2>
+  <h2 style="color: #38bdf8; font-size: 24px;">Metode Pembayaran</h2>
+  <p>Silakan pilih metode di bawah ini untuk melihat detail pembayaran:</p>
+  
   <div class="payment-buttons">
-    <button class="btn-pay" onclick="showPayment('qris')"><span>QRIS</span></button>
-    <button class="btn-pay" onclick="showPayment('dana')"><span>DANA</span></button>
-    <button class="btn-pay" onclick="showPayment('bank')"><span>Transfer Bank</span></button>
-    <button class="btn-pay" onclick="showPayment('binance')"><span>Binance Pay</span></button>
+    <button class="btn-pay" onclick="showPayment('qris')">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS" class="pay-logo">
+      <span>QRIS</span>
+    </button>
+    <button class="btn-pay" onclick="showPayment('dana')">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg" alt="DANA" class="pay-logo">
+      <span>DANA</span>
+    </button>
+    <button class="btn-pay" onclick="showPayment('bank')">
+      <img src="https://img.icons8.com/fluency/48/bank.png" alt="Bank" class="pay-logo">
+      <span>Seabank</span>
+    </button>
+    <!-- Logo Binance yang stabil -->
+    <button class="btn-pay" onclick="showPayment('binance')">
+      <img src="https://unpkg.com/simple-icons@v13/icons/binance.svg" alt="Binance" class="pay-logo" style="filter: invert(80%) sepia(30%) saturate(2000%) hue-rotate(5deg);">
+      <span>Binance Pay</span>
+    </button>
   </div>
+
   <div id="payment-details" class="payment-details" style="display:none;">
     <div id="detail-content"></div>
     <br>
-    <a href="https://wa.me/6287846414300" class="btn-wa">Konfirmasi via WhatsApp</a>
+    <a id="whatsapp-confirm" href="https://wa.me/6287846414300?text=Halo%20saya%20sudah%20melakukan%20pembayaran" target="_blank" class="btn-wa">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA" style="width:20px; vertical-align:middle; margin-right:8px;">
+      Konfirmasi via WhatsApp
+    </a>
   </div>
 </div>
 
-<div class="footer">© 2026 Ferdinan Flasher Batam</div>
+<!-- FOOTER ASLI ANDA -->
+<div class="footer">
+    © 2026 Ferdinan Flasher Batam — All Rights Reserved
+</div>
 
 <script>
 function showPayment(method) {
   var details = document.getElementById('payment-details');
   var content = document.getElementById('detail-content');
   details.style.display = 'block';
-  if (method === 'qris') content.innerHTML = 'Scan QRIS berikut...';
-  else if (method === 'dana') content.innerHTML = 'No Dana: 087846414300';
-  else if (method === 'bank') content.innerHTML = 'Seabank: 901859515947';
-  else if (method === 'binance') content.innerHTML = 'Binance ID: 1111349163';
+  if (method === 'qris') {
+    content.innerHTML = '<h3>Scan QRIS Berikut:</h3><img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/QRIS.jpg" alt="QRIS" style="max-width:250px; width:100%; border-radius:8px; margin:10px 0;"><p>Bisa di-scan menggunakan GoPay, OVO, Dana, LinkAja, atau Mobile Banking.</p>';
+  } else if (method === 'dana') {
+    content.innerHTML = '<h3>Pembayaran via DANA:</h3><p>Nomor DANA: <strong style="color:#60a5fa;">087846414300</strong><br>Atas Nama : Ferdinan Sitorus</p>';
+  } else if (method === 'bank') {
+    content.innerHTML = '<h3>Transfer Bank:</h3><p><strong>Bank Seabank</strong><br>No. Rekening: <strong style="color:#60a5fa;">901859515947</strong><br>Atas Nama: Ferdinan Sitorus</p>';
+  } else if (method === 'binance') {
+    content.innerHTML = '<h3>Binance Pay:</h3><p>Binance ID: <strong style="color:#60a5fa;">1111349163</strong><br>Atau Pay ID: <strong style="color:#60a5fa;">1111349163</strong></p>';
+  }
 }
 </script>
+
 </body>
 </html>
