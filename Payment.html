@@ -24,12 +24,12 @@
         }
 
         .fire-wrapper {
-            padding: 20px 0;
+            padding: 15px 0;
             display: inline-block;
         }
 
         .running-rgb-fire {
-            font-size: 35px;
+            font-size: 24px; /* UKURAN SUDAH DIPERKECIL (SEBELUMNYA 35px) */
             margin: 0;
             font-weight: 900;
             text-transform: uppercase;
@@ -345,24 +345,19 @@ function showPayment(method) {
 
 // FUNGSI COPY TO CLIPBOARD SCRIPT
 function copyText(textToCopy, buttonElement) {
-    // Membuat elemen text area sementara untuk proses copy
     const tempTextArea = document.createElement('textarea');
     tempTextArea.value = textToCopy;
     document.body.appendChild(tempTextArea);
     tempTextArea.select();
-    tempTextArea.setSelectionRange(0, 99999); /* Untuk perangkat mobile */
+    tempTextArea.setSelectionRange(0, 99999);
     
     try {
-        // Eksekusi penyalinan teks
         document.execCommand('copy');
-        
-        // Ubah teks tombol menjadi indikasi sukses
         const originalText = buttonElement.innerHTML;
         buttonElement.innerHTML = '✅ Copied!';
         buttonElement.style.borderColor = '#22c55e';
         buttonElement.style.color = '#22c55e';
         
-        // Kembalikan ke teks semula setelah 2 detik
         setTimeout(function() {
             buttonElement.innerHTML = originalText;
             buttonElement.style.borderColor = '#38bdf8';
@@ -373,7 +368,6 @@ function copyText(textToCopy, buttonElement) {
         alert('Gagal menyalin teks otomatis.');
     }
     
-    // Hapus elemen text area sementara
     document.body.removeChild(tempTextArea);
 }
 </script>
@@ -384,7 +378,7 @@ function createSnowflake() {
     const snowContainer = document.getElementById('snow');
     if(!snowContainer) return;
     const snowflake = document.createElement('div');
-    snowflake.innerHTML = '•'; /* Menggunakan titik bulat halus agar estetik */
+    snowflake.innerHTML = '•';
     snowflake.classList.add('snowflake');
     snowflake.style.left = Math.random() * 100 + 'vw';
     snowflake.style.fontSize = Math.random() * 8 + 6 + 'px';
@@ -400,10 +394,8 @@ setInterval(createSnowflake, 800);
 
 <!-- SCRIPT 3: SECURITY ANTI VIEW-SOURCE -->
 <script>
-// Mematikan Klik Kanan
 document.addEventListener('contextmenu', event => event.preventDefault());
 
-// Mematikan F12, Ctrl+Shift+I, Ctrl+Shift+C, Ctrl+U
 document.onkeydown = function(e) {
     if (e.keyCode == 123) { return false; }
     if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
