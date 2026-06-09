@@ -245,9 +245,12 @@ body {
 
 <!-- HEADER ASLI ANDA -->
 <!-- HEADER DENGAN LOGO SOSIAL MEDIA -->
-<!-- HEADER DENGAN JUDUL RUNNING RGB LED & LOGO SOSIAL MEDIA -->
+<!-- HEADER DENGAN JUDUL RUNNING RGB LED + EFEK API & LOGO SOSIAL MEDIA -->
 <div class="header">
-    <h1 class="running-rgb">Ferdinan Flasher Batam</h1>
+    <!-- Judul dibungkus container agar pendaran api tidak terpotong -->
+    <div class="fire-wrapper">
+        <h1 class="running-rgb-fire">Ferdinan Flasher Batam</h1>
+    </div>
     <p>Server Price & Server Status Monitoring</p>
     <p>Contact me on :</p>
     
@@ -264,31 +267,65 @@ body {
     </div>
 </div>
 
-<!-- CSS KHUSUS RUNNING RGB LED (Taruh di dalam tag <style> Anda) -->
+<!-- CSS KHUSUS RUNNING RGB LED & KOBARAN API -->
 <style>
-.running-rgb {
-    font-size: 32px;
-    margin-bottom: 10px;
-    font-weight: bold;
+.fire-wrapper {
+    padding: 20px 0;
+    display: inline-block;
+}
+
+.running-rgb-fire {
+    font-size: 35px; /* Sedikit diperbesar agar efek api terlihat jelas */
+    margin: 0;
+    font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    position: relative;
     
-    /* Membuat base warna gradasi pelangi */
+    /* 1. Efek Running RGB LED pada Teks Utama */
     background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff, #ff0000);
     background-size: 200% auto;
-    
-    /* Memotong background agar hanya muncul di dalam teks saja */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-fill-color: transparent;
     
-    /* Menjalankan animasi running LED */
-    animation: runningLED 2s linear infinite;
-    
-    /* Efek glow lampu LED neon di tema gelap */
-    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+    /* 2. Efek Kobaran Api menggunakan kombinasi Animasi */
+    animation: runningLED 4s linear infinite, fireFlicker 1.5s ease-in-out infinite alternate;
 }
+
+/* Animasi 1: Berjalannya Warna RGB LED */
+@keyframes runningLED {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+/* Animasi 2: Kobaran Api Bermain di Belakang/Bawah Teks */
+@keyframes fireFlicker {
+    0% {
+        text-shadow: 
+            0 -2px 4px rgba(255, 80, 0, 0.6), 
+            0 -4px 10px rgba(255, 150, 0, 0.4), 
+            0 -10px 20px rgba(255, 200, 0, 0.2), 
+            0 -16px 35px rgba(255, 0, 0, 0.4);
+    }
+    50% {
+        text-shadow: 
+            0 -3px 5px rgba(255, 80, 0, 0.7), 
+            2px -6px 12px rgba(255, 130, 0, 0.5), 
+            -2px -12px 25px rgba(255, 220, 0, 0.3), 
+            0 -22px 45px rgba(255, 50, 0, 0.5);
+    }
+    100% {
+        text-shadow: 
+            0 -1px 3px rgba(255, 80, 0, 0.6), 
+            -1px -5px 9px rgba(255, 160, 0, 0.4), 
+            1px -8px 18px rgba(255, 180, 0, 0.2), 
+            0 -14px 30px rgba(255, 0, 0, 0.3);
+    }
+}
+</style>
+
 
 @keyframes runningLED {
     0% {
