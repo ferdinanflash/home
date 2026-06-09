@@ -245,8 +245,9 @@ body {
 
 <!-- HEADER ASLI ANDA -->
 <!-- HEADER DENGAN LOGO SOSIAL MEDIA -->
+<!-- HEADER DENGAN JUDUL RUNNING RGB LED & LOGO SOSIAL MEDIA -->
 <div class="header">
-    <h1>Ferdinan Flasher Batam</h1>
+    <h1 class="running-rgb">Ferdinan Flasher Batam</h1>
     <p>Server Price & Server Status Monitoring</p>
     <p>Contact me on :</p>
     
@@ -262,6 +263,43 @@ body {
         </a>
     </div>
 </div>
+
+<!-- CSS KHUSUS RUNNING RGB LED (Taruh di dalam tag <style> Anda) -->
+<style>
+.running-rgb {
+    font-size: 32px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    
+    /* Membuat base warna gradasi pelangi */
+    background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff, #ff0000);
+    background-size: 200% auto;
+    
+    /* Memotong background agar hanya muncul di dalam teks saja */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    
+    /* Menjalankan animasi running LED */
+    animation: runningLED 4s linear infinite;
+    
+    /* Efek glow lampu LED neon di tema gelap */
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+}
+
+@keyframes runningLED {
+    0% {
+        background-position: 0% center;
+    }
+    100% {
+        background-position: 200% center;
+    }
+}
+</style>
+
 
 
 <!-- CONTAINER DAFTAR LAYANAN -->
