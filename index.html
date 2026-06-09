@@ -5,6 +5,50 @@
 <title>Ferdinan Flasher</title>
 
 <style>
+/* Kontainer Utama Salju */
+.snow-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999; /* Memastikan salju di depan background tetapi tidak mengganggu klik */
+    pointer-events: none; /* Penting! Agar tombol/link di web tetap bisa diklik */
+    overflow: hidden;
+}
+
+/* Style untuk setiap butiran salju */
+.snowflake {
+    position: absolute;
+    top: -10px;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    user-select: none;
+    pointer-events: none;
+    /* Efek pendaran salju putih */
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); 
+    animation: fall linear infinite;
+}
+
+/* Animasi Jatuh dan Goyang Menyamping */
+@keyframes fall {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(105vh) translateX(50px);
+        opacity: 0;
+    }
+}
+
+  
 /* CSS UNTUK SECTION PEMBAYARAN (MENYESUAIKAN TEMA GELAP ASLI) */
 .payment-section {
   text-align: center;
@@ -492,6 +536,48 @@ function showPayment(method) {
   }
 }
 </script>
+<!-- Wadah untuk menampung butiran salju -->
+<div class="snow-container" id="snow"></div>
+
+<!-- Script pembuat salju otomatis -->
+<script>
+function createSnowflake() {
+    const snowContainer = document.getElementById('snow');
+    const snowflake = document.createElement('div');
+    
+    // Karakter salju (bisa diganti dengan '.' atau '•' jika ingin lebih kecil)
+    snowflake.innerHTML = '❄'; 
+    snowflake.classList.add('snowflake');
+    
+    // Mengacak Posisi Horisontal (0% - 100% lebar layar)
+    snowflake.style.left = Math.random() * 100 + 'vw';
+    
+    // Mengacak Ukuran Salju (antara 10px sampai 25px)
+    snowflake.style.fontSize = Math.random() * 15 + 10 + 'px';
+    
+    // Mengacak Durasi Jatuh (antara 5 sampai 10 detik)
+    const duration = Math.random() * 5 + 5;
+    snowflake.style.animationDuration = duration + 's';
+    
+    // Mengacak Transparansi Salju
+    snowflake.style.opacity = Math.random() * 0.7 + 0.3;
+    
+    // Masukkan ke dalam container
+    snowContainer.appendChild(snowflake);
+    
+    // Hapus salju setelah selesai jatuh agar RAM tidak penuh
+    setTimeout(() => {
+        snowflake.remove();
+    }, duration * 1000);
+}
+
+// Menjalankan fungsi pembuat salju setiap 300 milidetik (0.3 detik)
+// Ubah angka 300 menjadi lebih kecil (misal: 150) jika ingin saljunya lebih lebat
+setInterval(createSnowflake, 300);
+</script>
+
+
+  
 
 
 </body>
