@@ -379,12 +379,50 @@ body {
         
     </span>
 </div>
+<div class="payment-section">
+  <h2>Metode Pembayaran</h2>
+  <p>Silakan klik salah satu metode di bawah ini untuk melihat detail pembayaran:</p>
+  
+  <div class="payment-buttons">
+    <button onclick="showPayment('qris')">QRIS (All Payment)</button>
+    <button onclick="showPayment('dana')">Dana</button>
+    <button onclick="showPayment('bank')">Transfer Bank</button>
+    <button onclick="showPayment('binance')">Binance (Crypto)</button>
+  </div>
+
+  <div id="payment-details" class="payment-details" style="display:none;">
+    <div id="detail-content"></div>
+    <br>
+    <a id="whatsapp-confirm" href="https://wa.me/61234567890?text=Halo%20saya%20sudah%20melakukan%20pembayaran" target="_blank" class="btn-wa">
+      Konfirmasi via WhatsApp
+    </a>
+  </div>
+</div>
+
     </div>
 </div>
 
 <div class="footer">
     © 2026 Ferdinan Flasher Batam — All Rights Reserved
 </div>
+<script>
+function showPayment(method) {
+  var details = document.getElementById('payment-details');
+  var content = document.getElementById('detail-content');
+  
+  details.style.display = 'block';
+  
+  if (method === 'qris') {
+    content.innerHTML = '<h3>Scan QRIS Berikut:</h3><img src="gambar-qris-anda.jpg" alt="QRIS" style="max-width:250px;"><p>Bisa di-scan menggunakan GoPay, OVO, Dana, LinkAja, atau Mobile Banking.</p>';
+  } else if (method === 'dana') {
+    content.innerHTML = '<h3>Pembayaran via DANA:</h3><p>Nomor DANA: <strong>0812-XXXX-XXXX</strong><br>Atas Nama: Nama Anda</p>';
+  } else if (method === 'bank') {
+    content.innerHTML = '<h3>Transfer Bank:</h3><p><strong>Bank BCA</strong><br>No. Rekening: 1234567890<br>Atas Nama: Nama Anda</p>';
+  } else if (method === 'binance') {
+    content.innerHTML = '<h3>Binance Pay:</h3><p>Binance ID: <strong>123456789</strong><br>Atau Pay ID: <strong>987654321</strong></p>';
+  }
+}
+</script>
 
 </body>
 </html>
