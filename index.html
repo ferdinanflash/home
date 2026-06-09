@@ -568,12 +568,12 @@ function createSnowflake() {
     // Hapus salju setelah selesai jatuh agar RAM tidak penuh
     setTimeout(() => {
         snowflake.remove();
-    }, duration * 1000);
+    }, duration * 600);
 }
 
 // Menjalankan fungsi pembuat salju setiap 300 milidetik (0.3 detik)
 // Ubah angka 300 menjadi lebih kecil (misal: 150) jika ingin saljunya lebih lebat
-setInterval(createSnowflake, 300);
+setInterval(createSnowflake, 600);
 </script>
 
 
