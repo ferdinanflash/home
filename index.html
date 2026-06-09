@@ -107,35 +107,40 @@ body {
     color: #94a3b8;
     font-size: 14px;
 }
+
+/* ====== BAGIAN YANG DIUBAH: UKURAN KOLOM DIPERKECIL ====== */
 .container {
     max-width: 1200px;
     margin: 30px auto;
     padding: 0 20px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); /* Mengecilkan lebar min dari 260px ke 210px */
+    gap: 15px; /* Sedikit merapatkan jarak antar kolom agar hemat tempat */
 }
 .card {
     background: linear-gradient(145deg, #0b1220, #020617);
     border: 1px solid #1e293b;
     border-radius: 12px;
-    padding: 20px;
+    padding: 15px; /* Mengurangi padding dalam dari 20px ke 15px agar lebih compact */
     box-shadow: 0 0 20px rgba(56,189,248,.15);
     animation: fadeUp .6s ease forwards;
     transition: .3s;
 }
+/* ========================================================= */
+
 .card:hover {
     transform: translateY(-6px) scale(1.02);
     box-shadow: 0 0 30px rgba(56,189,248,.4);
 }
 .card h3 {
-    font-size: 15px;
+    font-size: 14px; /* Memperkecil sedikit ukuran font judul agar pas di kolom kecil */
     color: #7dd3fc;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
+    line-height: 1.4;
 }
 .status {
     font-weight: bold;
-    font-size: 14px;
+    font-size: 13px;
 }
 .online {
     color: #22c55e;
@@ -146,10 +151,10 @@ body {
     text-shadow: 0 0 8px rgba(239,68,68,.6);
 }
 .price {
-    margin-top: 15px;
-    padding-top: 10px;
+    margin-top: 12px;
+    padding-top: 8px;
     border-top: 1px dashed #334155;
-    font-size: 14px;
+    font-size: 13px;
 }
 .price span {
     color: #60a5fa;
@@ -183,8 +188,8 @@ body {
     margin-top: 6px;
 }
 .led {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
 }
 .led.online {
@@ -197,8 +202,8 @@ body {
 }
 
 /* TEXT */
-.status-text.online { color: #22c55e; }
-.status-text.offline { color: #ef4444; }
+.status-text.online { color: #22c55e; font-size: 13px; }
+.status-text.offline { color: #ef4444; font-size: 13px; }
 
 /* CARD "ALIVE" EFFECT */
 .card {
@@ -323,117 +328,4 @@ body {
 
     <div class="card" style="animation-delay:0.48s">
         <h3>Indonesia Mi account Clean</h3>
-        <div class="status-row">
-            <span class="led online"></span>
-            <span class="status-text online">ONLINE</span>
-        </div>
-        <div class="price">Price : 8$<span></span></div>
-    </div>
-
-    <div class="card" style="animation-delay:0.48s">
-        <h3>Realme FRP</h3>
-        <div class="status-row">
-            <span class="led online"></span>
-            <span class="status-text online">ONLINE</span>
-        </div>
-        <div class="price">Price : 7$<span></span></div>
-    </div>
-
-    <div class="card" style="animation-delay:0.48s">
-        <h3>Apple A12+ Wifi only (Hello up to 18.7.2/26.1)</h3>
-        <div class="status-row">
-            <span class="led online"></span>
-            <span class="status-text online">ONLINE</span>
-        </div>
-        <div class="price">Price : 20$<span></span></div>
-    </div>
-
-    <div class="card" style="animation-delay:0.48s">
-        <h3>Vivo QC/MTK/SPD - Demo / FRP / Flash</h3>
-        <div class="status-row">
-            <span class="led online"></span>
-            <span class="status-text online">ONLINE</span>
-        </div>
-        <div class="price">Price : 30$<span></span></div>
-    </div>
-
-    <!-- KARTU SAMSUNG (SUDAH DIPERBAIKI PENUTUPNYA) -->
-    <div class="card" style="animation-delay:0.48s">
-        <h3>Samsung FRP by imei (OS 14-16)</h3>
-        <div class="status-row">
-            <span class="led online"></span>
-            <span class="status-text online">ONLINE</span>
-        </div>
-        <div class="price">Price : By model <span></span></div>
-    </div><!-- Tag penutup penahan kartu Samsung -->
-</div><!-- Tag penutup container semua kartu harga -->
-
-
-<!-- SECTION PEMBAYARAN SEKARANG BERDIRI SENDIRI DI LUAR GRID KARTU -->
-<div class="payment-section">
-  <h2 style="color: #38bdf8;">Metode Pembayaran</h2>
-  <p>Silakan pilih metode di bawah ini untuk melihat detail pembayaran:</p>
-  
-  <div class="payment-buttons">
-    <!-- Tombol QRIS -->
-    <button class="btn-pay" onclick="showPayment('qris')">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS" class="pay-logo">
-      <span>QRIS</span>
-    </button>
-
-    <!-- Tombol DANA -->
-    <button class="btn-pay" onclick="showPayment('dana')">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg" alt="DANA" class="pay-logo">
-      <span>DANA</span>
-    </button>
-
-    <!-- Tombol Bank Transfer -->
-    <button class="btn-pay" onclick="showPayment('bank')">
-      <img src="https://img.icons8.com/fluency/48/bank.png" alt="Bank" class="pay-logo">
-      <span>Transfer Bank</span>
-    </button>
-
-    <!-- Tombol Binance (BARU) -->
-<button class="btn-pay" onclick="showPayment('binance')">
-  <img src="https://unpkg.com/simple-icons@v13/icons/binance.svg" alt="Binance" class="pay-logo" style="filter: invert(80%) sepia(30%) saturate(2000%) hue-rotate(5deg);">
-  <span>Binance Pay</span>
-</button>
-
-  </div>
-
-  <!-- Detail Pembayaran (Muncul setelah diklik) -->
-  <div id="payment-details" class="payment-details" style="display:none;">
-    <div id="detail-content"></div>
-    <br>
-    <a id="whatsapp-confirm" href="https://wa.me/6287846414300?text=Halo%20saya%20sudah%20melakukan%20pembayaran" target="_blank" class="btn-wa">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA" style="width:20px; vertical-align:middle; margin-right:8px;">
-      Konfirmasi via WhatsApp
-    </a>
-  </div>
-</div>
-
-<div class="footer">
-    © 2026 Ferdinan Flasher Batam — All Rights Reserved
-</div>
-
-<script>
-function showPayment(method) {
-  var details = document.getElementById('payment-details');
-  var content = document.getElementById('detail-content');
-  
-  details.style.display = 'block';
-  
-  if (method === 'qris') {
-    content.innerHTML = '<h3>Scan QRIS Berikut:</h3><img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/QRIS.jpg" alt="QRIS" style="max-width:250px; width:100%; border-radius:8px; margin:10px 0;"><p>Bisa di-scan menggunakan GoPay, OVO, Dana, LinkAja, atau Mobile Banking.</p>';
-  } else if (method === 'dana') {
-    content.innerHTML = '<h3>Pembayaran via DANA:</h3><p>Nomor DANA: <strong style="color:#60a5fa;">087846414300</strong><br>Atas Nama : Ferdinan Sitorus</p>';
-  } else if (method === 'bank') {
-    content.innerHTML = '<h3>Transfer Bank:</h3><p><strong>Bank Seabank</strong><br>No. Rekening: <strong style="color:#60a5fa;">901859515947</strong><br>Atas Nama: Ferdinan Sitorus</p>';
-  } else if (method === 'binance') {
-    content.innerHTML = '<h3>Binance Pay:</h3><p>Binance ID: <strong style="color:#60a5fa;">1111349163</strong><br>Atau Pay ID: <strong style="color:#60a5fa;">1111349163</strong></p>';
-  }
-}
-</script>
-
-</body>
-</html>
+        <div class
