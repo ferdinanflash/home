@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferdinan Flasher - Metode Pembayaran</title>
+    <style>
+        /* --- STYLE DASAR TEMA GELAP --- */
+        body {
+            background: radial-gradient(circle at top, #0b1220, #05070c);
+            color: #d1d5db;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER & EFFECT RUNNING RGB LED KOBARAN API --- */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(180deg, #020617, #020617cc);
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .fire-wrapper {
+            padding: 20px 0;
+            display: inline-block;
+        }
+
+        .running-rgb-fire {
+            font-size: 35px;
+            margin: 0;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff, #ff0000);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            animation: runningLED 4s linear infinite, fireFlicker 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes runningLED {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes fireFlicker {
+            0% {
+                text-shadow: 
+                    0 -2px 4px rgba(255, 80, 0, 0.6), 
+                    0 -4px 10px rgba(255, 150, 0, 0.4), 
+                    0 -10px 20px rgba(255, 200, 0, 0.2), 
+                    0 -16px 35px rgba(255, 0, 0, 0.4);
+            }
+            50% {
+                text-shadow: 
+                    0 -3px 5px rgba(255, 80, 0, 0.7), 
+                    2px -6px 12px rgba(255, 130, 0, 0.5), 
+                    -2px -12px 25px rgba(255, 220, 0, 0.3), 
+                    0 -22px 45px rgba(255, 50, 0, 0.5);
+            }
+            100% {
+                text-shadow: 
+                    0 -1px 3px rgba(255, 80, 0, 0.6), 
+                    -1px -5px 9px rgba(255, 160, 0, 0.4), 
+                    1px -8px 18px rgba(255, 180, 0, 0.2), 
+                    0 -14px 30px rgba(255, 0, 0, 0.3);
+            }
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* --- SECTION PEMBAYARAN --- */
+        .payment-section {
+            text-align: center;
+            padding: 25px;
+            background: linear-gradient(145deg, #0b1220, #020617);
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            max-width: 650px;
+            margin: 40px auto;
+            box-shadow: 0 0 20px rgba(56,189,248,.15);
+        }
+
+        .payment-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-pay {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #1e293b;
+            color: #fff;
+            border: 2px solid #334155;
+            padding: 15px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            height: 90px;
+        }
+
+        .btn-pay:hover {
+            background-color: #0f172a;
+            border-color: #38bdf8;
+            transform: translateY(-2px);
+            box-shadow: 0 0 10px rgba(56,189,248,.4);
+        }
+
+        .pay-logo {
+            height: 30px;
+            max-width: 100px;
+            object-fit: contain;
+            margin-bottom: 8px;
+        }
+
+        /* Khusus logo Hana agar kontras di tema gelap */
+        .btn-pay img[alt="Hana Bank"] {
+            background-color: white;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        .payment-details {
+            margin-top: 25px;
+            padding: 20px;
+            border: 1px dashed #334155;
+            background: #020617;
+            border-radius: 8px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-wa {
+            display: inline-block;
+            background-color: #25d366;
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 15px;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+            transition: 0.3s;
+        }
+
+        .btn-wa:hover {
+            background-color: #20ba5a;
+        }
+
+        .btn-wa img {
+            width: 20px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        /* --- EFFECT EFREK SALJU JATUH --- */
+        .snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            user-select: none;
+            pointer-events: none;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(105vh) translateX(50px); opacity: 0; }
+        }
+
+        /* --- FOOTER --- */
+        .footer {
+            margin-top: 60px;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #1e293b;
+            background: #020617;
+            color: #64748b;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="snow-container" id="snow"></div>
+
+<div class="header">
+    <div class="fire-wrapper">
+        <h1 class="running-rgb-fire">Ferdinan Flasher Batam</h1>
+    </div>
+    <p>Server Price & Server Status Monitoring</p>
+    
+    <div style="margin-top: 15px; display: flex; justify-content: center; gap: 20px;">
+        <a href="https://fb.me/FS.TPP" target="_blank" title="Facebook Ferdinan Flasher">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/2023_Facebook_icon.svg" alt="Facebook" style="width: 35px; height: 35px;">
+        </a>
+        <a href="https://wa.me/+6287846414300" target="_blank" title="WhatsApp Ferdinan Flasher">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 35px; height: 35px;">
+        </a>
+    </div>
+</div>
+
+<div class="payment-section">
+    <h2 style="color: #38bdf8; font-size: 24px; margin-top: 0;">Metode Pembayaran</h2>
+    <p style="color: #94a3b8; font-size: 14px;">Silakan klik salah satu metode pembayaran di bawah untuk melihat detail instruksi:</p>
+    
+    <div class="payment-buttons">
+        <button class="btn-pay" onclick="showPayment('dana')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg" alt="DANA" class="pay-logo">
+            <span>DANA</span>
+        </button>
+
+        <button class="btn-pay" onclick="showPayment('seabank')">
+            <img src="https://assets.zonalogo.com/finance/seabank.co.id/logo-1772115609130-25.svg" alt="Seabank" class="pay-logo">
+            <span>Seabank</span>
+        </button>
+
+        <button class="btn-pay" onclick="showPayment('hana')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Hana_Bank.png" alt="Hana Bank" class="pay-logo">
+            <span>KEB Hana</span>
+        </button>
+
+        <button class="btn-pay" onclick="showPayment('qris')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS" class="pay-logo">
+            <span>QRIS</span>
+        </button>
+
+        <button class="btn-pay" onclick="showPayment('binance')">
+            <img src="https://unpkg.com/simple-icons@v13/icons/binance.svg" alt="Binance" class="pay-logo" style="filter: invert(80%) sepia(30%) saturate(2000%) hue-rotate(5deg);">
+            <span>Binance Pay</span>
+        </button>
+    </div>
+
+    <div id="payment-details" class="payment-details" style="display:none;">
+        <div id="detail-content"></div>
+        <a href="https://wa.me/6287846414300?text=Halo%20Ferdinan%20Flasher,%20saya%20sudah%20melakukan%20pembayaran" target="_blank" class="btn-wa">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA">
+            Konfirmasi via WhatsApp
+        </a>
+    </div>
+</div>
+
+<div class="footer">
+    © 2026 Ferdinan Flasher Batam — All Rights Reserved
+</div>
+
+<script>
+function showPayment(method) {
+    var details = document.getElementById('payment-details');
+    var content = document.getElementById('detail-content');
+    details.style.display = 'block';
+    
+    if (method === 'qris') {
+        content.innerHTML = '<h3>Scan QRIS Berikut:</h3>' +
+                            '<img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/QRIS.jpg" alt="QRIS" style="max-width:250px; width:100%; border-radius:8px; margin:10px 0;">' +
+                            '<br>' +
+                            '<a href="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/QRIS.jpg" download="QRIS-Ferdinan-Flasher.jpg" target="_blank" style="display:inline-block; background-color:#38bdf8; color:#020617; padding:8px 15px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px; margin-bottom:15px; box-shadow: 0 4px 10px rgba(56,189,248,0.3); transition: 0.2s;">' +
+                            '   📥 Unduh QRIS' +
+                            '</a>' +
+                            '<p style="font-size:13px; color:#94a3b8;">Bisa di-scan menggunakan GoPay, OVO, DANA, LinkAja, atau Mobile Banking Anda.</p>';
+    } else if (method === 'dana') {
+        content.innerHTML = '<h3>Pembayaran via DANA:</h3><p style="font-size:16px;">Nomor DANA: <strong style="color:#60a5fa; font-size:18px;">087846414300</strong><br>Atas Nama: <strong>Ferdinan Sitorus</strong></p>';
+    } else if (method === 'seabank') {
+        content.innerHTML = '<h3>Transfer Bank Seabank:</h3><p style="font-size:16px;">No. Rekening: <strong style="color:#60a5fa; font-size:18px;">901859515947</strong><br>Atas Nama: <strong>Ferdinan Sitorus</strong></p>';
+    } else if (method === 'hana') {
+        content.innerHTML = '<h3>Transfer Bank KEB Hana:</h3><p style="font-size:16px;">No. Rekening: <strong style="color:#60a5fa; font-size:18px;">10811200600</strong><br>Atas Nama: <strong>Ferdinan Sitorus</strong></p>';
+    } else if (method === 'binance') {
+        content.innerHTML = '<h3>Binance Pay ID:</h3><p style="font-size:16px;">Binance ID: <strong style="color:#60a5fa; font-size:18px;">1111349163</strong><br>Atau Pay ID: <strong style="color:#60a5fa; font-size:18px;">1111349163</strong></p>';
+    }
+}
+</script>
+
+<script>
+function createSnowflake() {
+    const snowContainer = document.getElementById('snow');
+    if(!snowContainer) return;
+    const snowflake = document.createElement('div');
+    snowflake.innerHTML = '❄'; 
+    snowflake.classList.add('snowflake');
+    snowflake.style.left = Math.random() * 100 + 'vw';
+    snowflake.style.fontSize = Math.random() * 8 + 6 + 'px'; // Ukuran halus kecil 6px-14px
+    const duration = Math.random() * 5 + 5;
+    snowflake.style.animationDuration = duration + 's';
+    snowflake.style.opacity = Math.random() * 0.7 + 0.3;
+    
+    snowContainer.appendChild(snowflake);
+    setTimeout(() => { snowflake.remove(); }, duration * 1000);
+}
+setInterval(createSnowflake, 800); // Set 800 agar salju sedikit & tidak lebat
+</script>
+
+<script>
+// Mematikan Klik Kanan
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// Mematikan F12, Ctrl+Shift+I, Ctrl+Shift+C, Ctrl+U
+document.onkeydown = function(e) {
+    if (e.keyCode == 123) { return false; }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
+};
+</script>
+
+</body>
+</html>
