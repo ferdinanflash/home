@@ -191,6 +191,25 @@ body {
 }
 .status-text.online { color: #22c55e; font-size: 13px; }
 
+  /* Status LED & Teks Offline */
+.led.offline {
+    background: #ef4444; /* Merah */
+    animation: ledPulseRed 1.5s infinite;
+}
+
+.status-text.offline { 
+    color: #ef4444; 
+    font-size: 13px; 
+}
+
+/* Animasi untuk LED Merah */
+@keyframes ledPulseRed {
+    0% { box-shadow: 0 0 5px #ef4444; }
+    50% { box-shadow: 0 0 15px #ef4444, 0 0 30px #ef4444; }
+    100% { box-shadow: 0 0 5px #ef4444; }
+}
+
+
 /* EFFECT CARD ASLI */
 .card::before {
     content: "";
