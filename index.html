@@ -8,41 +8,73 @@
 <style>
 .payment-section {
   text-align: center;
-  padding: 20px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  max-width: 500px;
+  padding: 25px;
+  background: #ffffff;
+  border-radius: 12px;
+  max-width: 550px;
   margin: 20px auto;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  font-family: sans-serif;
 }
-.payment-buttons button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  margin: 5px;
-  border-radius: 5px;
+
+.payment-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Membagi menjadi 2 kolom agar rapi di HP */
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-pay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  color: #333;
+  border: 2px solid #e9ecef;
+  padding: 12px 15px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
+  transition: all 0.3s ease;
 }
-.payment-buttons button:hover {
-  background-color: #0056b3;
+
+.btn-pay:hover {
+  background-color: #e8f0fe;
+  border-color: #007bff;
+  transform: translateY(-2px);
 }
+
+/* Mengatur ukuran logo di dalam tombol */
+.pay-logo {
+  height: 24px; /* Tinggi logo disamakan agar rapi */
+  max-width: 80px;
+  object-fit: contain;
+  margin-right: 10px;
+}
+
 .payment-details {
-  margin-top: 20px;
-  padding: 15px;
-  border: 1px solid #ddd;
-  background: #fff;
-  border-radius: 5px;
+  margin-top: 25px;
+  padding: 20px;
+  border: 1px solid #dee2e6;
+  background: #fdfdfd;
+  border-radius: 8px;
 }
+
 .btn-wa {
   display: inline-block;
   background-color: #25d366;
   color: white;
-  padding: 10px 20px;
+  padding: 12px 25px;
   text-decoration: none;
-  border-radius: 5px;
+  border-radius: 8px;
   font-weight: bold;
+  box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
 }
+
+.btn-wa:hover {
+  background-color: #20ba5a;
+}
+
 
 @keyframes glow {
     0% { text-shadow: 0 0 5px #0ea5e9; }
@@ -421,23 +453,45 @@ body {
 </div>
 <div class="payment-section">
   <h2>Metode Pembayaran</h2>
-  <p>Silakan klik salah satu metode di bawah ini untuk melihat detail pembayaran:</p>
+  <p>Silakan pilih metode di bawah ini untuk melihat detail pembayaran:</p>
   
   <div class="payment-buttons">
-    <button onclick="showPayment('qris')">QRIS (All Payment)</button>
-    <button onclick="showPayment('dana')">Dana</button>
-    <button onclick="showPayment('bank')">Transfer Bank</button>
-    <button onclick="showPayment('binance')">Binance (Crypto)</button>
+    <!-- Tombol QRIS -->
+    <button class="btn-pay" onclick="showPayment('qris')">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS" class="pay-logo">
+      <span>QRIS</span>
+    </button>
+
+    <!-- Tombol DANA -->
+    <button class="btn-pay" onclick="showPayment('dana')">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg" alt="DANA" class="pay-logo">
+      <span>DANA</span>
+    </button>
+
+    <!-- Tombol Bank Transfer -->
+    <button class="btn-pay" onclick="showPayment('bank')">
+      <img src="https://img.icons8.com/fluency/48/bank.png" alt="Bank" class="pay-logo">
+      <span>Transfer Bank</span>
+    </button>
+
+    <!-- Tombol Binance -->
+    <button class="btn-pay" onclick="showPayment('binance')">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/57/Binance_Logo.svg" alt="Binance" class="pay-logo">
+      <span>Binance Pay</span>
+    </button>
   </div>
 
+  <!-- Detail Pembayaran (Muncul setelah diklik) -->
   <div id="payment-details" class="payment-details" style="display:none;">
     <div id="detail-content"></div>
     <br>
     <a id="whatsapp-confirm" href="https://wa.me/6287846414300?text=Halo%20saya%20sudah%20melakukan%20pembayaran" target="_blank" class="btn-wa">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA" style="width:20px; vertical-align:middle; margin-right:8px;">
       Konfirmasi via WhatsApp
     </a>
   </div>
 </div>
+
 
     </div>
 </div>
