@@ -149,6 +149,27 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* --- STYLE TOMBOL COPY --- */
+        .btn-copy {
+            background-color: #1e293b;
+            color: #38bdf8;
+            border: 1px solid #38bdf8;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 8px;
+            vertical-align: middle;
+            transition: all 0.2s ease;
+        }
+
+        .btn-copy:hover {
+            background-color: #38bdf8;
+            color: #020617;
+            box-shadow: 0 0 8px rgba(56,189,248,0.5);
+        }
+
         .btn-wa {
             display: inline-block;
             background-color: #25d366;
@@ -278,6 +299,7 @@
     © 2026 Ferdinan Flasher Batam — All Rights Reserved
 </div>
 
+<!-- SCRIPT 1: LOGIKA PEMBAYARAN & COPY SYSTEM -->
 <script>
 function showPayment(method) {
     var details = document.getElementById('payment-details');
@@ -293,26 +315,79 @@ function showPayment(method) {
                             '</a>' +
                             '<p style="font-size:13px; color:#94a3b8;">Bisa di-scan menggunakan GoPay, OVO, DANA, LinkAja, atau Mobile Banking Anda.</p>';
     } else if (method === 'dana') {
-        content.innerHTML = '<h3>Pembayaran via DANA:</h3><p style="font-size:16px;">Nomor DANA: <strong style="color:#60a5fa; font-size:18px;">087846414300</strong><br>Atas Nama: <strong>Ferdinan Sitorus</strong></p>';
+        content.innerHTML = '<h3>Pembayaran via DANA:</h3>' +
+                            '<p style="font-size:16px;">Nomor DANA: ' +
+                            '<strong style="color:#60a5fa; font-size:18px;">087846414300</strong>' +
+                            '<button class="btn-copy" onclick="copyText(\'087846414300\', this)">📋 Copy</button>' +
+                            '<br>Atas Nama: <strong>Ferdinan Sitorus</strong></p>';
     } else if (method === 'seabank') {
-        content.innerHTML = '<h3>Transfer Bank Seabank:</h3><p style="font-size:16px;">No. Rekening: <strong style="color:#60a5fa; font-size:18px;">901859515947</strong><br>Atas Nama: <strong>Ferdinan Sitorus</strong></p>';
+        content.innerHTML = '<h3>Transfer Bank Seabank:</h3>' +
+                            '<p style="font-size:16px;">No. Rekening: ' +
+                            '<strong style="color:#60a5fa; font-size:18px;">901859515947</strong>' +
+                            '<button class="btn-copy" onclick="copyText(\'901859515947\', this)">📋 Copy</button>' +
+                            '<br>Atas Nama: <strong>Ferdinan Sitorus</strong></p>';
     } else if (method === 'hana') {
-        content.innerHTML = '<h3>Transfer Bank KEB Hana:</h3><p style="font-size:16px;">No. Rekening: <strong style="color:#60a5fa; font-size:18px;">10811200600</strong><br>Atas Nama: <strong>Ferdinan Sitorus</strong></p>';
+        content.innerHTML = '<h3>Transfer Bank KEB Hana:</h3>' +
+                            '<p style="font-size:16px;">No. Rekening: ' +
+                            '<strong style="color:#60a5fa; font-size:18px;">10811200600</strong>' +
+                            '<button class="btn-copy" onclick="copyText(\'10811200600\', this)">📋 Copy</button>' +
+                            '<br>Atas Nama: <strong>Ferdinan Sitorus</strong></p>';
     } else if (method === 'binance') {
-        content.innerHTML = '<h3>Binance Pay ID:</h3><p style="font-size:16px;">Binance ID: <strong style="color:#60a5fa; font-size:18px;">1111349163</strong><br>Atau Pay ID: <strong style="color:#60a5fa; font-size:18px;">1111349163</strong></p>';
+        content.innerHTML = '<h3>Binance Pay ID:</h3>' +
+                            '<p style="font-size:15px; margin-bottom:8px;">Binance ID: ' +
+                            '<strong style="color:#60a5fa; font-size:17px;">1111349163</strong>' +
+                            '<button class="btn-copy" onclick="copyText(\'1111349163\', this)">📋 Copy</button></p>' +
+                            '<p style="font-size:15px; margin-top:0;">Atau Pay ID: ' +
+                            '<strong style="color:#60a5fa; font-size:17px;">1111349163</strong>' +
+                            '<button class="btn-copy" onclick="copyText(\'1111349163\', this)">📋 Copy</button></p>';
     }
+}
+
+// FUNGSI COPY TO CLIPBOARD SCRIPT
+function copyText(textToCopy, buttonElement) {
+    // Membuat elemen text area sementara untuk proses copy
+    const tempTextArea = document.createElement('textarea');
+    tempTextArea.value = textToCopy;
+    document.body.appendChild(tempTextArea);
+    tempTextArea.select();
+    tempTextArea.setSelectionRange(0, 99999); /* Untuk perangkat mobile */
+    
+    try {
+        // Eksekusi penyalinan teks
+        document.execCommand('copy');
+        
+        // Ubah teks tombol menjadi indikasi sukses
+        const originalText = buttonElement.innerHTML;
+        buttonElement.innerHTML = '✅ Copied!';
+        buttonElement.style.borderColor = '#22c55e';
+        buttonElement.style.color = '#22c55e';
+        
+        // Kembalikan ke teks semula setelah 2 detik
+        setTimeout(function() {
+            buttonElement.innerHTML = originalText;
+            buttonElement.style.borderColor = '#38bdf8';
+            buttonElement.style.color = '#38bdf8';
+        }, 2000);
+        
+    } catch (err) {
+        alert('Gagal menyalin teks otomatis.');
+    }
+    
+    // Hapus elemen text area sementara
+    document.body.removeChild(tempTextArea);
 }
 </script>
 
+<!-- SCRIPT 2: EFEK SALJU SEDIKIT (800ms) -->
 <script>
 function createSnowflake() {
     const snowContainer = document.getElementById('snow');
     if(!snowContainer) return;
     const snowflake = document.createElement('div');
-    snowflake.innerHTML = '❄'; 
+    snowflake.innerHTML = '•'; /* Menggunakan titik bulat halus agar estetik */
     snowflake.classList.add('snowflake');
     snowflake.style.left = Math.random() * 100 + 'vw';
-    snowflake.style.fontSize = Math.random() * 8 + 6 + 'px'; // Ukuran halus kecil 6px-14px
+    snowflake.style.fontSize = Math.random() * 8 + 6 + 'px';
     const duration = Math.random() * 5 + 5;
     snowflake.style.animationDuration = duration + 's';
     snowflake.style.opacity = Math.random() * 0.7 + 0.3;
@@ -320,9 +395,10 @@ function createSnowflake() {
     snowContainer.appendChild(snowflake);
     setTimeout(() => { snowflake.remove(); }, duration * 1000);
 }
-setInterval(createSnowflake, 800); // Set 800 agar salju sedikit & tidak lebat
+setInterval(createSnowflake, 800);
 </script>
 
+<!-- SCRIPT 3: SECURITY ANTI VIEW-SOURCE -->
 <script>
 // Mematikan Klik Kanan
 document.addEventListener('contextmenu', event => event.preventDefault());
