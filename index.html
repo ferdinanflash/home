@@ -392,8 +392,16 @@ function showPayment(method) {
   var details = document.getElementById('payment-details');
   var content = document.getElementById('detail-content');
   details.style.display = 'block';
+  
   if (method === 'qris') {
-    content.innerHTML = '<h3>Scan QRIS Berikut:</h3><img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/QRIS.jpg" alt="QRIS" style="max-width:250px; width:100%; border-radius:8px; margin:10px 0;"><p>Bisa di-scan menggunakan GoPay, OVO, Dana, LinkAja, atau Mobile Banking.</p>';
+    content.innerHTML = '<h3>Scan QRIS Berikut:</h3>' +
+                        '<img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/QRIS.jpg" alt="QRIS" style="max-width:250px; width:100%; border-radius:8px; margin:10px 0;">' +
+                        '<br>' +
+                        '<!-- Tombol Unduh QRIS -->' +
+                        '<a href="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/QRIS.jpg" download="QRIS-Ferdinan-Flasher.jpg" target="_blank" style="display:inline-block; background-color:#38bdf8; color:#020617; padding:8px 15px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px; margin-bottom:15px; box-shadow: 0 4px 10px rgba(56,189,248,0.3); transition: 0.2s;">' +
+                        '   📥 Unduh QRIS' +
+                        '</a>' +
+                        '<p>Bisa di-scan menggunakan GoPay, OVO, Dana, LinkAja, atau Mobile Banking.</p>';
   } else if (method === 'dana') {
     content.innerHTML = '<h3>Pembayaran via DANA:</h3><p>Nomor DANA: <strong style="color:#60a5fa;">087846414300</strong><br>Atas Nama : Ferdinan Sitorus</p>';
   } else if (method === 'bank') {
@@ -405,6 +413,7 @@ function showPayment(method) {
   }
 }
 </script>
+
 
 </body>
 </html>
