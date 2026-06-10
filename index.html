@@ -115,36 +115,6 @@
   border-radius: 8px;
 }
 
-/* CSS TAMBAHAN UNTUK CONTAINER DATA ANGKA & TOMBOL COPY */
-.copy-wrapper {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: #0f172a;
-  padding: 4px 10px;
-  border-radius: 6px;
-  border: 1px solid #1e293b;
-  margin-top: 4px;
-}
-
-.btn-copy {
-  background: #38bdf8;
-  color: #020617;
-  border: none;
-  padding: 3px 8px;
-  font-size: 11px;
-  font-weight: bold;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.btn-copy:hover {
-  background: #7dd3fc;
-  transform: scale(1.05);
-}
-
 .btn-wa {
   display: inline-block;
   background-color: #25d366;
@@ -317,7 +287,7 @@ body {
 
 <body>
 
-<!-- HEADER ASLI ANDA -->
+<!-- HEADER DENGAN JUDUL RUNNING RGB LED + EFEK API & LOGO SOSIAL MEDIA -->
 <div class="header">
     <div class="fire-wrapper">
         <h1 class="running-rgb-fire">Ferdinan Flasher Batam</h1>
@@ -447,6 +417,7 @@ body {
         <div class="price">Price : 6$</div>
     </div>
     
+    <!-- Kartu Apple A12+ -->
     <div class="card" style="animation-delay:0.8s; cursor: pointer;" onclick="alert('Keterangan Apple A12+ Wifi:\n\n✔️ Only Support Hello Screen up to 18.7.2/26.1\n❌ Passcode Tidak Didukung')">
         <h3>Apple A12+ Wifi only</h3>
         <div class="status-row">
@@ -456,17 +427,27 @@ body {
         <div class="price">Price : 20$</div>
     </div>
 
+    <!-- TUGAS: TAMBAHAN KARTU IPAD (WIFI) CLEAN ICLOUD -->
     <div class="card" style="animation-delay:0.88s">
+        <h3>IPAD (Wifi) Clean Icloud</h3>
+        <div class="status-row">
+            <span class="led online"></span>
+            <span class="status-text online">ONLINE</span>
+        </div>
+        <div class="price">Price : Start from $90</div>
+    </div>
+
+    <div class="card" style="animation-delay:0.96s">
         <h3>Vivo QC/MTK/SPD Demo/FRP</h3>
         <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
         <div class="price">Price : 25$</div>
     </div>
-    <div class="card" style="animation-delay:0.96s">
+    <div class="card" style="animation-delay:1.04s">
         <h3>Samsung FRP</h3>
         <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
         <div class="price">Price : By model</div>
     </div>
-</div>
+</div> <!-- PENUTUP CONTAINER -->
 
 
   <div style="text-align: center; margin: 20px 0;">
@@ -475,7 +456,7 @@ body {
     </a>
 </div>
 
-<!-- SECTION PEMBAYARAN -->
+<!-- SECTION PEMBAYARAN (MENYESUAIKAN TEMA GELAP ASLI) -->
 <div class="payment-section">
   <h2 style="color: #38bdf8; font-size: 24px;">Metode Pembayaran</h2>
   <p>Silakan pilih metode di bawah ini untuk melihat detail pembayaran:</p>
@@ -517,39 +498,20 @@ body {
 <div class="footer">
     © 2026 Ferdinan Flasher Batam — All Rights Reserved
 </div>
-
 <script>
 // Mematikan Klik Kanan
 document.addEventListener('contextmenu', event => event.preventDefault());
 
 // Mematikan F12, Ctrl+Shift+I, Ctrl+Shift+C, Ctrl+U
 document.onkeydown = function(e) {
-    if (e.keyCode == 123) { return false; }
+    if (e.keyCode == 123) { return false; } // F12
     if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
     if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
-    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } // Ctrl+U (View Source)
 };
 </script>
 
 <script>
-// Fungsi Khusus untuk Menyalin Angka ke Clipboard Sistem
-function copyToClipboard(text, buttonElement) {
-  navigator.clipboard.writeText(text).then(function() {
-    var originalText = buttonElement.innerText;
-    buttonElement.innerText = "Tersalin! ✓";
-    buttonElement.style.backgroundColor = "#22c55e"; // Berubah warna hijau sebentar
-    buttonElement.style.color = "#fff";
-    
-    setTimeout(function() {
-      buttonElement.innerText = originalText;
-      buttonElement.style.backgroundColor = "#38bdf8"; // Kembali ke warna biru asli
-      buttonElement.style.color = "#020617";
-    }, 1500);
-  }, function(err) {
-    alert('Gagal menyalin teks: ', err);
-  });
-}
-
 function showPayment(method) {
   var details = document.getElementById('payment-details');
   var content = document.getElementById('detail-content');
@@ -559,53 +521,26 @@ function showPayment(method) {
     content.innerHTML = '<h3>Scan QRIS Berikut:</h3>' +
                         '<img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/QRIS.jpg" alt="QRIS" style="max-width:250px; width:100%; border-radius:8px; margin:10px 0;">' +
                         '<br>' +
+                        '<!-- Tombol Unduh QRIS -->' +
                         '<a href="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/QRIS.jpg" download="QRIS-Ferdinan-Flasher.jpg" target="_blank" style="display:inline-block; background-color:#38bdf8; color:#020617; padding:8px 15px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px; margin-bottom:15px; box-shadow: 0 4px 10px rgba(56,189,248,0.3); transition: 0.2s;">' +
                         '   📥 Unduh QRIS' +
                         '</a>' +
                         '<p>Bisa di-scan menggunakan GoPay, OVO, Dana, LinkAja, atau Mobile Banking.</p>';
   } else if (method === 'dana') {
-    content.innerHTML = '<h3>Pembayaran via DANA:</h3>' +
-                        '<p>Nomor DANA:<br>' +
-                        '<div class="copy-wrapper">' +
-                        '  <strong style="color:#60a5fa;">087846414300</strong>' +
-                        '  <button class="btn-copy" onclick="copyToClipboard(\'087846414300\', this)">Salin</button>' +
-                        '</div>' +
-                        '<br><span style="display:inline-block; margin-top:8px;">Atas Nama : Ferdinan Sitorus</span></p>';
+    content.innerHTML = '<h3>Pembayaran via DANA:</h3><p>Nomor DANA: <strong style="color:#60a5fa;">087846414300</strong><br>Atas Nama : Ferdinan Sitorus</p>';
   } else if (method === 'bank') {
-    content.innerHTML = '<h3>Transfer Bank:</h3>' +
-                        '<p><strong>Bank Seabank</strong><br>No. Rekening:<br>' +
-                        '<div class="copy-wrapper">' +
-                        '  <strong style="color:#60a5fa;">901859515947</strong>' +
-                        '  <button class="btn-copy" onclick="copyToClipboard(\'901859515947\', this)">Salin</button>' +
-                        '</div>' +
-                        '<br><span style="display:inline-block; margin-top:8px;">Atas Nama: Ferdinan Sitorus</span></p>';
+    content.innerHTML = '<h3>Transfer Bank:</h3><p><strong>Bank Seabank</strong><br>No. Rekening: <strong style="color:#60a5fa;">901859515947</strong><br>Atas Nama: Ferdinan Sitorus</p>';
   } else if (method === 'hana') {
-    content.innerHTML = '<h3>Transfer Bank:</h3>' +
-                        '<p><strong>Bank KEB Hana</strong><br>No. Rekening:<br>' +
-                        '<div class="copy-wrapper">' +
-                        '  <strong style="color:#60a5fa;">10811200600</strong>' +
-                        '  <button class="btn-copy" onclick="copyToClipboard(\'10811200600\', this)">Salin</button>' +
-                        '</div>' +
-                        '<br><span style="display:inline-block; margin-top:8px;">Atas Nama: Ferdinan Sitorus</span></p>';
+    content.innerHTML = '<h3>Transfer Bank:</h3><p><strong>Bank KEB Hana</strong><br>No. Rekening: <strong style="color:#60a5fa;">10811200600</strong><br>Atas Nama: Ferdinan Sitorus</p>';
   } else if (method === 'binance') {
-    content.innerHTML = '<h3>Binance Pay:</h3>' +
-                        '<p>Binance ID:<br>' +
-                        '<div class="copy-wrapper">' +
-                        '  <strong style="color:#60a5fa;">1111349163</strong>' +
-                        '  <button class="btn-copy" onclick="copyToClipboard(\'1111349163\', this)">Salin</button>' +
-                        '</div>' +
-                        '<br><br>Atau Pay ID:<br>' +
-                        '<div class="copy-wrapper">' +
-                        '  <strong style="color:#60a5fa;">1111349163</strong>' +
-                        '  <button class="btn-copy" onclick="copyToClipboard(\'1111349163\', this)">Salin</button>' +
-                        '</div></p>';
+    content.innerHTML = '<h3>Binance Pay:</h3><p>Binance ID: <strong style="color:#60a5fa;">1111349163</strong><br>Atau Pay ID: <strong style="color:#60a5fa;">1111349163</strong></p>';
   }
 }
 </script>
-
 <!-- Wadah untuk menampung butiran salju -->
 <div class="snow-container" id="snow"></div>
 
+<!-- Script pembuat salju otomatis -->
 <script>
 function createSnowflake() {
     const snowContainer = document.getElementById('snow');
@@ -613,6 +548,7 @@ function createSnowflake() {
     
     snowflake.innerHTML = '❄'; 
     snowflake.classList.add('snowflake');
+    
     snowflake.style.left = Math.random() * 100 + 'vw';
     snowflake.style.fontSize = Math.random() * 15 + 10 + 'px';
     
@@ -624,7 +560,7 @@ function createSnowflake() {
     
     setTimeout(() => {
         snowflake.remove();
-    }, duration * 500);
+    }, duration * 600);
 }
 
 setInterval(createSnowflake, 600);
