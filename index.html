@@ -115,6 +115,36 @@
   border-radius: 8px;
 }
 
+/* CSS TAMBAHAN UNTUK CONTAINER DATA ANGKA & TOMBOL COPY */
+.copy-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #0f172a;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #1e293b;
+  margin-top: 4px;
+}
+
+.btn-copy {
+  background: #38bdf8;
+  color: #020617;
+  border: none;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-copy:hover {
+  background: #7dd3fc;
+  transform: scale(1.05);
+}
+
 .btn-wa {
   display: inline-block;
   background-color: #25d366;
@@ -288,10 +318,7 @@ body {
 <body>
 
 <!-- HEADER ASLI ANDA -->
-<!-- HEADER DENGAN LOGO SOSIAL MEDIA -->
-<!-- HEADER DENGAN JUDUL RUNNING RGB LED + EFEK API & LOGO SOSIAL MEDIA -->
 <div class="header">
-    <!-- Judul dibungkus container agar pendaran api tidak terpotong -->
     <div class="fire-wrapper">
         <h1 class="running-rgb-fire">Ferdinan Flasher Batam</h1>
     </div>
@@ -319,14 +346,13 @@ body {
 }
 
 .running-rgb-fire {
-    font-size: 35px; /* Sedikit diperbesar agar efek api terlihat jelas */
+    font-size: 35px;
     margin: 0;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 2px;
     position: relative;
     
-    /* 1. Efek Running RGB LED pada Teks Utama */
     background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff, #ff0000);
     background-size: 200% auto;
     -webkit-background-clip: text;
@@ -334,17 +360,14 @@ body {
     background-clip: text;
     text-fill-color: transparent;
     
-    /* 2. Efek Kobaran Api menggunakan kombinasi Animasi */
     animation: runningLED 4s linear infinite, fireFlicker 1.5s ease-in-out infinite alternate;
 }
 
-/* Animasi 1: Berjalannya Warna RGB LED */
 @keyframes runningLED {
     0% { background-position: 0% center; }
     100% { background-position: 200% center; }
 }
 
-/* Animasi 2: Kobaran Api Bermain di Belakang/Bawah Teks */
 @keyframes fireFlicker {
     0% {
         text-shadow: 
@@ -424,7 +447,6 @@ body {
         <div class="price">Price : 6$</div>
     </div>
     
-    <!-- Kartu Apple (Sudah diperbaiki posisinya di dalam container) -->
     <div class="card" style="animation-delay:0.8s; cursor: pointer;" onclick="alert('Keterangan Apple A12+ Wifi:\n\n✔️ Only Support Hello Screen up to 18.7.2/26.1\n❌ Passcode Tidak Didukung')">
         <h3>Apple A12+ Wifi only</h3>
         <div class="status-row">
@@ -444,7 +466,7 @@ body {
         <div class="status-row"><span class="led online"></span><span class="status-text online">ONLINE</span></div>
         <div class="price">Price : By model</div>
     </div>
-</div> <!-- PENUTUP CONTAINER YANG BENAR -->
+</div>
 
 
   <div style="text-align: center; margin: 20px 0;">
@@ -453,7 +475,7 @@ body {
     </a>
 </div>
 
-<!-- SECTION PEMBAYARAN (MENYESUAIKAN TEMA GELAP ASLI) -->
+<!-- SECTION PEMBAYARAN -->
 <div class="payment-section">
   <h2 style="color: #38bdf8; font-size: 24px;">Metode Pembayaran</h2>
   <p>Silakan pilih metode di bawah ini untuk melihat detail pembayaran:</p>
@@ -471,12 +493,10 @@ body {
       <img src="https://assets.zonalogo.com/finance/seabank.co.id/logo-1772115609130-25.svg" alt="Bank" class="pay-logo">
       <span>Seabank</span>
     </button>
-    <!-- Tambahan Bank Hana -->
     <button class="btn-pay" onclick="showPayment('hana')">
         <img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Hana_Bank.png" alt="Hana Bank" class="pay-logo">
         <span>KEB Hana</span>
     </button>
-    <!-- Logo Binance yang stabil -->
     <button class="btn-pay" onclick="showPayment('binance')">
       <img src="https://unpkg.com/simple-icons@v13/icons/binance.svg" alt="Binance" class="pay-logo" style="filter: invert(80%) sepia(30%) saturate(2000%) hue-rotate(5deg);">
       <span>Binance Pay</span>
@@ -497,20 +517,39 @@ body {
 <div class="footer">
     © 2026 Ferdinan Flasher Batam — All Rights Reserved
 </div>
+
 <script>
 // Mematikan Klik Kanan
 document.addEventListener('contextmenu', event => event.preventDefault());
 
 // Mematikan F12, Ctrl+Shift+I, Ctrl+Shift+C, Ctrl+U
 document.onkeydown = function(e) {
-    if (e.keyCode == 123) { return false; } // F12
+    if (e.keyCode == 123) { return false; }
     if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
     if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
-    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } // Ctrl+U (View Source)
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
 };
 </script>
 
 <script>
+// Fungsi Khusus untuk Menyalin Angka ke Clipboard Sistem
+function copyToClipboard(text, buttonElement) {
+  navigator.clipboard.writeText(text).then(function() {
+    var originalText = buttonElement.innerText;
+    buttonElement.innerText = "Tersalin! ✓";
+    buttonElement.style.backgroundColor = "#22c55e"; // Berubah warna hijau sebentar
+    buttonElement.style.color = "#fff";
+    
+    setTimeout(function() {
+      buttonElement.innerText = originalText;
+      buttonElement.style.backgroundColor = "#38bdf8"; // Kembali ke warna biru asli
+      buttonElement.style.color = "#020617";
+    }, 1500);
+  }, function(err) {
+    alert('Gagal menyalin teks: ', err);
+  });
+}
+
 function showPayment(method) {
   var details = document.getElementById('payment-details');
   var content = document.getElementById('detail-content');
@@ -520,65 +559,76 @@ function showPayment(method) {
     content.innerHTML = '<h3>Scan QRIS Berikut:</h3>' +
                         '<img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/QRIS.jpg" alt="QRIS" style="max-width:250px; width:100%; border-radius:8px; margin:10px 0;">' +
                         '<br>' +
-                        '<!-- Tombol Unduh QRIS -->' +
                         '<a href="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/QRIS.jpg" download="QRIS-Ferdinan-Flasher.jpg" target="_blank" style="display:inline-block; background-color:#38bdf8; color:#020617; padding:8px 15px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px; margin-bottom:15px; box-shadow: 0 4px 10px rgba(56,189,248,0.3); transition: 0.2s;">' +
                         '   📥 Unduh QRIS' +
                         '</a>' +
                         '<p>Bisa di-scan menggunakan GoPay, OVO, Dana, LinkAja, atau Mobile Banking.</p>';
   } else if (method === 'dana') {
-    content.innerHTML = '<h3>Pembayaran via DANA:</h3><p>Nomor DANA: <strong style="color:#60a5fa;">087846414300</strong><br>Atas Nama : Ferdinan Sitorus</p>';
+    content.innerHTML = '<h3>Pembayaran via DANA:</h3>' +
+                        '<p>Nomor DANA:<br>' +
+                        '<div class="copy-wrapper">' +
+                        '  <strong style="color:#60a5fa;">087846414300</strong>' +
+                        '  <button class="btn-copy" onclick="copyToClipboard(\'087846414300\', this)">Salin</button>' +
+                        '</div>' +
+                        '<br><span style="display:inline-block; margin-top:8px;">Atas Nama : Ferdinan Sitorus</span></p>';
   } else if (method === 'bank') {
-    content.innerHTML = '<h3>Transfer Bank:</h3><p><strong>Bank Seabank</strong><br>No. Rekening: <strong style="color:#60a5fa;">901859515947</strong><br>Atas Nama: Ferdinan Sitorus</p>';
+    content.innerHTML = '<h3>Transfer Bank:</h3>' +
+                        '<p><strong>Bank Seabank</strong><br>No. Rekening:<br>' +
+                        '<div class="copy-wrapper">' +
+                        '  <strong style="color:#60a5fa;">901859515947</strong>' +
+                        '  <button class="btn-copy" onclick="copyToClipboard(\'901859515947\', this)">Salin</button>' +
+                        '</div>' +
+                        '<br><span style="display:inline-block; margin-top:8px;">Atas Nama: Ferdinan Sitorus</span></p>';
   } else if (method === 'hana') {
-    content.innerHTML = '<h3>Transfer Bank:</h3><p><strong>Bank KEB Hana</strong><br>No. Rekening: <strong style="color:#60a5fa;">10811200600</strong><br>Atas Nama: Ferdinan Sitorus</p>';
+    content.innerHTML = '<h3>Transfer Bank:</h3>' +
+                        '<p><strong>Bank KEB Hana</strong><br>No. Rekening:<br>' +
+                        '<div class="copy-wrapper">' +
+                        '  <strong style="color:#60a5fa;">10811200600</strong>' +
+                        '  <button class="btn-copy" onclick="copyToClipboard(\'10811200600\', this)">Salin</button>' +
+                        '</div>' +
+                        '<br><span style="display:inline-block; margin-top:8px;">Atas Nama: Ferdinan Sitorus</span></p>';
   } else if (method === 'binance') {
-    content.innerHTML = '<h3>Binance Pay:</h3><p>Binance ID: <strong style="color:#60a5fa;">1111349163</strong><br>Atau Pay ID: <strong style="color:#60a5fa;">1111349163</strong></p>';
+    content.innerHTML = '<h3>Binance Pay:</h3>' +
+                        '<p>Binance ID:<br>' +
+                        '<div class="copy-wrapper">' +
+                        '  <strong style="color:#60a5fa;">1111349163</strong>' +
+                        '  <button class="btn-copy" onclick="copyToClipboard(\'1111349163\', this)">Salin</button>' +
+                        '</div>' +
+                        '<br><br>Atau Pay ID:<br>' +
+                        '<div class="copy-wrapper">' +
+                        '  <strong style="color:#60a5fa;">1111349163</strong>' +
+                        '  <button class="btn-copy" onclick="copyToClipboard(\'1111349163\', this)">Salin</button>' +
+                        '</div></p>';
   }
 }
 </script>
+
 <!-- Wadah untuk menampung butiran salju -->
 <div class="snow-container" id="snow"></div>
 
-<!-- Script pembuat salju otomatis -->
 <script>
 function createSnowflake() {
     const snowContainer = document.getElementById('snow');
     const snowflake = document.createElement('div');
     
-    // Karakter salju (bisa diganti dengan '.' atau '•' jika ingin lebih kecil)
     snowflake.innerHTML = '❄'; 
     snowflake.classList.add('snowflake');
-    
-    // Mengacak Posisi Horisontal (0% - 100% lebar layar)
     snowflake.style.left = Math.random() * 100 + 'vw';
-    
-    // Mengacak Ukuran Salju (antara 10px sampai 25px)
     snowflake.style.fontSize = Math.random() * 15 + 10 + 'px';
     
-    // Mengacak Durasi Jatuh (antara 5 sampai 10 detik)
     const duration = Math.random() * 5 + 5;
     snowflake.style.animationDuration = duration + 's';
-    
-    // Mengacak Transparansi Salju
     snowflake.style.opacity = Math.random() * 0.7 + 0.3;
     
-    // Masukkan ke dalam container
     snowContainer.appendChild(snowflake);
     
-    // Hapus salju setelah selesai jatuh agar RAM tidak penuh
     setTimeout(() => {
         snowflake.remove();
-    }, duration * 600);
+    }, duration * 500);
 }
 
-// Menjalankan fungsi pembuat salju setiap 300 milidetik (0.3 detik)
-// Ubah angka 300 menjadi lebih kecil (misal: 150) jika ingin saljunya lebih lebat
 setInterval(createSnowflake, 600);
 </script>
-
-
-  
-
 
 </body>
 </html>
