@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ferdinan Flasher - Download Center</title>
     <style>
-        /* --- STYLE DASAR TEMA GELAP --- */
+        /* --- DARK THEME BASE STYLES --- */
         body {
             background: radial-gradient(circle at top, #0b1220, #05070c);
             color: #d1d5db;
@@ -15,7 +15,7 @@
             min-height: 100vh;
         }
 
-        /* --- HEADER & EFFECT RUNNING RGB LED KOBARAN API --- */
+        /* --- HEADER & RUNNING RGB LED EFFECT --- */
         .header {
             text-align: center;
             padding: 40px 20px;
@@ -89,90 +89,96 @@
             transition: transform 0.3s ease;
         }
 
-        .center-logo:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(56, 189, 248, 0.7);
-        }
-
-        /* --- LAYOUT CONTAINER & CARDS --- */
-        .container {
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
+        /* --- DOWNLOAD SECTION & SELECTION CONTAINER --- */
+        .download-section {
+            text-align: center;
+            padding: 30px 20px;
             background: linear-gradient(145deg, #0b1220, #020617);
             border: 1px solid #1e293b;
             border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(56,189,248,.1);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            max-width: 550px;
+            margin: 40px auto;
+            box-shadow: 0 0 20px rgba(56,189,248,.15);
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: #38bdf8;
-            box-shadow: 0 0 25px rgba(56,189,248,.35);
+        .download-section h2 {
+            color: #38bdf8;
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 10px;
         }
 
-        .card::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(120deg, transparent, rgba(56,189,248,0.1), transparent);
-            transform: translateX(-100%);
-            transition: 0.6s;
-        }
-
-        .card:hover::before {
-            transform: translateX(100%);
-        }
-
-        .card h3 {
+        /* --- DROPDOWN CUSTOM SELECT BOX --- */
+        .select-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 14px 20px;
             font-size: 16px;
-            color: #7dd3fc;
-            margin: 0 0 15px 0;
-            line-height: 1.4;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-weight: 600;
+            color: #fff;
+            background-color: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2338bdf8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 18px;
         }
 
-        /* --- TOMBOL DOWNLOAD NEON --- */
+        .select-box:focus, .select-box:hover {
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56,189,248,.4);
+            background-color: #0f172a;
+        }
+
+        .select-box option {
+            background-color: #020617;
+            color: #fff;
+            padding: 10px;
+        }
+
+        /* --- ACTION AREA BUTTON --- */
+        .action-area {
+            margin-top: 30px;
+            min-height: 80px;
+        }
+
         .btn-download {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            background-color: #1e293b;
-            color: #38bdf8;
-            border: 2px solid #334155;
-            padding: 10px 15px;
+            gap: 10px;
+            background-color: #020617;
+            color: #fff;
+            border: 2px solid #38bdf8;
+            padding: 14px 35px;
             border-radius: 8px;
             text-decoration: none;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 15px;
+            box-shadow: 0 0 15px rgba(56,189,248,0.3);
             transition: all 0.3s ease;
-            margin-top: 10px;
+            animation: fadeIn 0.4s ease forwards;
         }
 
         .btn-download:hover {
-            background-color: #0f172a;
-            border-color: #38bdf8;
-            color: #fff;
-            box-shadow: 0 0 12px rgba(56,189,248,.5);
+            background-color: #38bdf8;
+            color: #020617;
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(56,189,248,0.7);
         }
 
-        /* --- EFFECT EFREK SALJU JATUH --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- BACKGROUND SNOWFALL EFFECT --- */
         .snow-container {
             position: fixed;
             top: 0;
@@ -238,62 +244,47 @@
     </div>
 </div>
 
-<div class="container">
+<div class="download-section">
+    <h2>Choose a File to Download</h2>
+    <p style="color: #94a3b8; font-size: 14px; margin-bottom: 25px;">Select the tool or driver option from the dropdown menu below:</p>
     
-    <div class="card">
-        <h3>📦 Ultra Viewer</h3>
-        <a href="https://www.ultraviewer.net/id/UltraViewer_setup_6.6_id.exe" class="btn-download" target="_blank">
-            📥 Download File
-        </a>
-    </div>
+    <select class="select-box" id="fileSelector" onchange="updateDownloadLink()">
+        <option value="" disabled selected>-- Select File Here --</option>
+        <option value="https://www.ultraviewer.net/id/UltraViewer_setup_6.6_id.exe">📦 Ultra Viewer</option>
+        <option value="https://anydesk.com/en/downloads/thank-you?dv=win_exe">📦 Anydesk</option>
+        <option value="https://mega.nz/file/joAECASY#YOsZjbygx1CZBpZerWMXiY45US619J514jxbC7GZSO4">📦 Unlock Tool</option>
+        <option value="https://www.mediafire.com/file_premium/5tkr3dipig0cbmq/QcomMtk_Driver_2.0.1.zip/file">📦 Driver QC MTK</option>
+        <option value="https://www.mediafire.com/file_premium/uw2238zj1et234q/Spreadtrum_77xx_Drivers.7z/file">📦 Driver SPD</option>
+        <option value="https://driver-unlocktool.s3-hcm-r2.s3cloud.vn/Driver_Huawei_USB1.0.zip">📦 Huawei Kirin Driver</option>
+        <option value="https://www.mediafire.com/file_premium/hy8dt11iakmkdnp/WinRa1n2.1_Jailbreak_iPhone_%252B_iPad.rar/file">📦 WinRa1n (Jailbreak)</option>
+    </select>
 
-    <div class="card">
-        <h3>📦 Anydesk</h3>
-        <a href="https://anydesk.com/en/downloads/thank-you?dv=win_exe" class="btn-download" target="_blank">
-            📥 Download File
-        </a>
-    </div>
-
-    <div class="card">
-        <h3>📦 Unlock Tool</h3>
-        <a href="https://mega.nz/file/joAECASY#YOsZjbygx1CZBpZerWMXiY45US619J514jxbC7GZSO4" class="btn-download" target="_blank">
-            📥 Download File
-        </a>
-    </div>
-
-    <div class="card">
-        <h3>📦 Driver QC MTK</h3>
-        <a href="https://www.mediafire.com/file_premium/5tkr3dipig0cbmq/QcomMtk_Driver_2.0.1.zip/file" class="btn-download" target="_blank">
-            📥 Download File
-        </a>
-    </div>
-
-    <div class="card">
-        <h3>📦 Driver SPD</h3>
-        <a href="https://www.mediafire.com/file_premium/uw2238zj1et234q/Spreadtrum_77xx_Drivers.7z/file" class="btn-download" target="_blank">
-            📥 Download File
-        </a>
-    </div>
-
-    <div class="card">
-        <h3>📦 Huawei Kirin Driver</h3>
-        <a href="https://driver-unlocktool.s3-hcm-r2.s3cloud.vn/Driver_Huawei_USB1.0.zip" class="btn-download" target="_blank">
-            📥 Download File
-        </a>
-    </div>
-
-    <div class="card">
-        <h3>📦 WinRa1n (Jailbreak)</h3>
-        <a href="https://www.mediafire.com/file_premium/hy8dt11iakmkdnp/WinRa1n2.1_Jailbreak_iPhone_%252B_iPad.rar/file" class="btn-download" target="_blank">
-            📥 Download File
-        </a>
-    </div>
-
+    <div class="action-area" id="actionArea">
+        </div>
 </div>
 
 <div class="footer">
     © 2026 Ferdinan Flasher Batam — All Rights Reserved
 </div>
+
+<script>
+function updateDownloadLink() {
+    const selector = document.getElementById('fileSelector');
+    const actionArea = document.getElementById('actionArea');
+    const selectedLink = selector.value;
+
+    if (selectedLink) {
+        // Dynamically creates the target download button
+        actionArea.innerHTML = `
+            <a href="${selectedLink}" class="btn-download" target="_blank">
+                📥 Download File Now
+            </a>
+        `;
+    } else {
+        actionArea.innerHTML = '';
+    }
+}
+</script>
 
 <script>
 function createSnowflake() {
