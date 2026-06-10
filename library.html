@@ -111,7 +111,7 @@
         /* --- DROPDOWN CUSTOM SELECT BOX --- */
         .select-box {
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             padding: 14px 20px;
             font-size: 16px;
             font-weight: 600;
@@ -136,10 +136,19 @@
             background-color: #0f172a;
         }
 
+        /* Styling for Option Groups (Categories) */
+        .select-box optgroup {
+            background-color: #020617;
+            color: #38bdf8;
+            font-weight: bold;
+            font-style: normal;
+        }
+
         .select-box option {
             background-color: #020617;
             color: #fff;
             padding: 10px;
+            font-weight: normal;
         }
 
         /* --- ACTION AREA BUTTON --- */
@@ -224,6 +233,7 @@
 
 <div class="snow-container" id="snow"></div>
 
+<!-- MAIN HEADER -->
 <div class="header">
     <div class="fire-wrapper">
         <h1 class="running-rgb-fire">Ferdinan Flasher Batam</h1>
@@ -244,29 +254,58 @@
     </div>
 </div>
 
+<!-- DROPDOWN SELECT CONTAINER -->
 <div class="download-section">
     <h2>Choose a File to Download</h2>
-    <p style="color: #94a3b8; font-size: 14px; margin-bottom: 25px;">Select the tool or driver option from the dropdown menu below:</p>
+    <p style="color: #94a3b8; font-size: 14px; margin-bottom: 25px;">Select the required section and file from the dropdown menu below:</p>
     
+    <!-- DROPDOWN SELECTION BOX WITH ALPHABETICAL SORTING -->
     <select class="select-box" id="fileSelector" onchange="updateDownloadLink()">
         <option value="" disabled selected>-- Select File Here --</option>
-        <option value="https://www.ultraviewer.net/id/UltraViewer_setup_6.6_id.exe">📦 Ultra Viewer</option>
-        <option value="https://anydesk.com/en/downloads/thank-you?dv=win_exe">📦 Anydesk</option>
-        <option value="https://mega.nz/file/joAECASY#YOsZjbygx1CZBpZerWMXiY45US619J514jxbC7GZSO4">📦 Unlock Tool</option>
-        <option value="https://www.mediafire.com/file_premium/5tkr3dipig0cbmq/QcomMtk_Driver_2.0.1.zip/file">📦 Driver QC MTK</option>
-        <option value="https://www.mediafire.com/file_premium/uw2238zj1et234q/Spreadtrum_77xx_Drivers.7z/file">📦 Driver SPD</option>
-        <option value="https://driver-unlocktool.s3-hcm-r2.s3cloud.vn/Driver_Huawei_USB1.0.zip">📦 Huawei Kirin Driver</option>
-        <option value="https://www.mediafire.com/file_premium/hy8dt11iakmkdnp/WinRa1n2.1_Jailbreak_iPhone_%252B_iPad.rar/file">📦 WinRa1n (Jailbreak)</option>
+        
+        <!-- DRIVERS CATEGORY (A-Z) -->
+        <optgroup label="📂 DRIVERS">
+            <option value="http://hydradongle.store/Drivers/Allwinner_Driver.7z">📦 All Winner Driver</option>
+            <option value="https://www.mediafire.com/file_premium/5tkr3dipig0cbmq/QcomMtk_Driver_2.0.1.zip/file">📦 Driver QC MTK</option>
+            <option value="https://www.mediafire.com/file_premium/uw2238zj1et234q/Spreadtrum_77xx_Drivers.7z/file">📦 Driver SPD</option>
+            <option value="https://driver-unlocktool.s3-hcm-r2.s3cloud.vn/Driver_Huawei_USB1.0.zip">📦 Huawei Kirin Driver</option>
+            <option value="http://hydradongle.store/Drivers/RockChip.7z">📦 RockChip Driver</option>
+            <option value="https://github.com/pbatard/libwdi/releases/download/v1.5.1/zadig-2.9.exe">📦 Zadig</option>
+        </optgroup>
+        
+        <!-- TOOLS CATEGORY (A-Z) -->
+        <optgroup label="🛠️ TOOLS">
+            <option value="https://drive.google.com/file/d/1dJ2P7L_SqRkBG8BEdJxQUJmSvuvjxbmA/view?usp=drivesdk">📦 AIO Command</option>
+            <option value="https://anydesk.com/en/downloads/thank-you?dv=win_exe">📦 Anydesk</option>
+            <option value="https://mega.nz/file/qlVTUAzA#ikpBJeEX86rvKC_eNRLlfQcaUH0i0aAOpSA-eX9PYGU">📦 iRemoval Pro</option>
+            <option value="https://www.mediafire.com/file/l2ea7tpf9awlh20/ModemMETA_v10.2044.0.02.zip/file">📦 ModemMETA</option>
+            <option value="https://drive.google.com/file/d/1U7sgaJxdQX4ATJLSiyrbOg3KHxUVOhmU/view?usp=drivesdk">📦 ODIN</option>
+            <option value="https://dl.google.com/android/repository/platform-tools-latest-windows.zip">📦 Platform Tools</option>
+            <option value="https://qfiltool.com/wp-content/uploads/Qualcomm_Flash_Image_Loader_v2.0.3.5.zip">📦 QFIL</option>
+            <option value="https://www.ultraviewer.net/id/UltraViewer_setup_6.6_id.exe">📦 Ultra Viewer</option>
+            <option value="https://mega.nz/file/joAECASY#YOsZjbygx1CZBpZerWMXiY45US619J514jxbC7GZSO4">📦 Unlock Tool</option>
+            <option value="https://drive.google.com/file/d/1M0K4wlkh9CsxGvZy5ADsGM4Iva6SzM2u/view?usp=drivesdk">📦 USB Customer</option>
+            <option value="https://www.mediafire.com/file_premium/hy8dt11iakmkdnp/WinRa1n2.1_Jailbreak_iPhone_%252B_iPad.rar/file">📦 WinRa1n (Jailbreak)</option>
+        </optgroup>
+
+        <!-- ETC CATEGORY (A-Z) -->
+        <optgroup label="✨ ETC">
+            <option value="https://github.com/abbodi1406/vcredist/releases/download/v0.105.0/VisualCppRedist_AIO_x86_x64.exe">📦 VCredits AIO</option>
+        </optgroup>
     </select>
 
+    <!-- DOWNLOAD BUTTON GENERATION AREA -->
     <div class="action-area" id="actionArea">
-        </div>
+        <!-- The download button will render here dynamically via Javascript -->
+    </div>
 </div>
 
+<!-- FOOTER -->
 <div class="footer">
     © 2026 Ferdinan Flasher Batam — All Rights Reserved
 </div>
 
+<!-- SCRIPT 1: DROPDOWN LINKS INTERACTIVE CONTROLLER -->
 <script>
 function updateDownloadLink() {
     const selector = document.getElementById('fileSelector');
@@ -286,6 +325,7 @@ function updateDownloadLink() {
 }
 </script>
 
+<!-- SCRIPT 2: SMOOTH DOT SNOWFALL ENGINE -->
 <script>
 function createSnowflake() {
     const snowContainer = document.getElementById('snow');
@@ -305,6 +345,7 @@ function createSnowflake() {
 setInterval(createSnowflake, 800);
 </script>
 
+<!-- SCRIPT 3: CONTROLS SYSTEM SOURCE PROTECTION -->
 <script>
 document.addEventListener('contextmenu', event => event.preventDefault());
 
