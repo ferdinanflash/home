@@ -62,6 +62,39 @@
     box-shadow: 0 0 10px rgba(56,189,248,.5);
 }
 
+/* CSS TOMBOL LOGIN DI POJOK KANAN ATAS */
+.fixed-login-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 10000;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(145deg, #0f172a, #1e293b);
+    color: #38bdf8;
+    border: 2px solid #334155;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(56,189,248,.15);
+    transition: all 0.3s ease;
+}
+
+.fixed-login-btn:hover {
+    color: #fff;
+    background: #0f172a;
+    border-color: #38bdf8;
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(56,189,248,.4);
+}
+
+.fixed-login-btn:active {
+    transform: translateY(0);
+}
+
 /* CSS TOMBOL PAYMENT PAGE BARU */
 .payment-page-container {
     text-align: center;
@@ -239,12 +272,32 @@ body {
     color: #64748b;
     font-size: 13px;
 }
+
+/* RESPONSIVITAS TOMBOL ATAS DI LAYAR HP */
+@media (max-width: 480px) {
+    .fixed-logo {
+        width: 45px;
+        height: 45px;
+        top: 10px;
+        left: 10px;
+    }
+    .fixed-login-btn {
+        padding: 6px 14px;
+        font-size: 12px;
+        top: 10px;
+        right: 10px;
+    }
+}
 </style>
 </head>
 
 <body>
 
 <img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/FB_IMG_1781070367755.jpg" alt="Logo Ferdinan" class="fixed-logo">
+
+<a href="https://ferdinanflash.github.io/home/library" target="_blank" class="fixed-login-btn">
+    🔑 Login
+</a>
 
 <div class="header">
     <div class="fire-wrapper">
@@ -408,7 +461,6 @@ body {
     </a>
 </div>
 
-<!-- SECTION PAYMENT PAGE BARU -->
 <div class="payment-page-container">
     <a href="https://ferdinanflash.github.io/home/Payment" target="_blank" class="btn-payment-page">
         💳 Payment Page
@@ -453,7 +505,7 @@ function createSnowflake() {
     
     setTimeout(() => {
         snowflake.remove();
-    }, duration * 600);
+    }, duration * 500);
 }
 
 setInterval(createSnowflake, 600);
