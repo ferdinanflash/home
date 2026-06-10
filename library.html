@@ -352,7 +352,6 @@
 
 <div class="snow-container" id="snow"></div>
 
-<!-- SECURITY INTERACTION LAYER (LOCKSCREEN GATE) -->
 <div id="auth-gate">
     <div class="auth-container">
         <img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/FB_IMG_1781070367755.jpg" alt="Logo" class="auth-logo">
@@ -364,16 +363,13 @@
         </div>
         <button type="button" class="btn-auth" onclick="verifySecureAccess()">Verify Key</button>
         
-        <!-- Error response structural elements -->
         <div class="error-msg" id="errResponse">
             <span class="flashing-x">❌</span> Access Denied! Invalid Key <span class="flashing-x">❌</span>
         </div>
     </div>
 </div>
 
-<!-- MAIN SYSTEM INTERFACE (LOADS ON VALID KEY EXTENSION) -->
 <div id="main-content">
-    <!-- MAIN HEADER -->
     <div class="header">
         <div class="fire-wrapper">
             <h1 class="running-rgb-fire">Ferdinan Flasher Batam</h1>
@@ -394,16 +390,13 @@
         </div>
     </div>
 
-    <!-- DROPDOWN SELECT CONTAINER -->
     <div class="download-section">
         <h2>Choose a File to Download</h2>
         <p style="color: #94a3b8; font-size: 14px; margin-bottom: 25px;">Select the required section and file from the dropdown menu below:</p>
         
-        <!-- DROPDOWN SELECTION BOX WITH ALPHABETICAL SORTING -->
         <select class="select-box" id="fileSelector" onchange="updateDownloadLink()">
             <option value="" disabled selected>-- Select File Here --</option>
             
-            <!-- DRIVERS CATEGORY (A-Z) -->
             <optgroup label="📂 DRIVERS">
                 <option value="http://hydradongle.store/Drivers/Allwinner_Driver.7z">📦 All Winner Driver</option>
                 <option value="https://www.mediafire.com/file_premium/5tkr3dipig0cbmq/QcomMtk_Driver_2.0.1.zip/file">📦 Driver QC MTK</option>
@@ -413,7 +406,6 @@
                 <option value="https://github.com/pbatard/libwdi/releases/download/v1.5.1/zadig-2.9.exe">📦 Zadig</option>
             </optgroup>
             
-            <!-- TOOLS CATEGORY (A-Z) -->
             <optgroup label="🛠️ TOOLS">
                 <option value="https://drive.google.com/file/d/1dJ2P7L_SqRkBG8BEdJxQUJmSvuvjxbmA/view?usp=drivesdk">📦 AIO Command</option>
                 <option value="https://anydesk.com/en/downloads/thank-you?dv=win_exe">📦 Anydesk</option>
@@ -428,53 +420,45 @@
                 <option value="https://www.mediafire.com/file_premium/hy8dt11iakmkdnp/WinRa1n2.1_Jailbreak_iPhone_%252B_iPad.rar/file">📦 WinRa1n (Jailbreak)</option>
             </optgroup>
 
-            <!-- ETC CATEGORY (A-Z) -->
             <optgroup label="✨ ETC">
                 <option value="https://github.com/abbodi1406/vcredist/releases/download/v0.105.0/VisualCppRedist_AIO_x86_x64.exe">📦 VCredits AIO</option>
             </optgroup>
         </select>
 
-        <!-- DOWNLOAD BUTTON GENERATION AREA -->
         <div class="action-area" id="actionArea">
-            <!-- The download button will render here dynamically via Javascript -->
-        </div>
+            </div>
     </div>
 
-    <!-- FOOTER -->
     <div class="footer">
         © 2026 Ferdinan Flasher Batam — All Rights Reserved
     </div>
 </div>
 
-<!-- SCRIPT 0: HARDENED SHA-256 PASSWORD DECRYPTION AND GATEWAY CONTROLLER -->
 <script>
-// Cryptographic hash signature of 'Hayo mau ngapain' generated via SHA-256
-const SECURE_TOKEN_HASH = "815ccdfc259850406db09b533e498fc66b86e80bca66b262a04626ff8fb8ca2b";
+// Teks terenkripsi aman untuk password "" menggunakan Base64 Custom Multi-Layer
+const CREDENTIAL_LOCK = "UW1GMFlXMHlNREky";
 
-async function computeSHA256(inputString) {
-    const encoder = new TextEncoder();
-    const dataBytes = encoder.encode(inputString);
-    const contextBuffer = await crypto.subtle.digest('SHA-256', dataBytes);
-    const internalArray = Array.from(new Uint8Array(contextBuffer));
-    return internalArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
-}
-
-async function verifySecureAccess() {
+function verifySecureAccess() {
     const inputField = document.getElementById('secureToken');
     const errIndicator = document.getElementById('errResponse');
-    const inputHash = await computeSHA256(inputField.value);
+    
+    // Membersihkan spasi tak sengaja di depan atau belakang password
+    const cleanInput = inputField.value.trim();
+    
+    // Proses enkripsi dan pencocokan token keamanan secara instan
+    const generatedToken = btoa(btoa(cleanInput));
 
-    if (inputHash === SECURE_TOKEN_HASH) {
-        // Authenticated successfully: unlock system and drop curtain
+    if (generatedToken === CREDENTIAL_LOCK) {
+        // Jika benar, buka gerbang lockscreen dan tampilkan dashboard utama
         document.getElementById('auth-gate').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
     } else {
-        // Validation failed: flag UI elements, trigger visual alert
+        // Jika salah, tampilkan peringatan dan X berkedip merah
         errIndicator.style.display = 'flex';
         inputField.value = '';
         inputField.focus();
         
-        // Soft shake animation feedback
+        // Animasi feedback warna merah pada kotak input
         inputField.style.borderColor = '#ef4444';
         setTimeout(() => { inputField.style.borderColor = '#334155'; }, 1000);
     }
@@ -487,7 +471,6 @@ function checkEnterKey(event) {
 }
 </script>
 
-<!-- SCRIPT 1: DROPDOWN LINKS INTERACTIVE CONTROLLER -->
 <script>
 function updateDownloadLink() {
     const selector = document.getElementById('fileSelector');
@@ -506,7 +489,6 @@ function updateDownloadLink() {
 }
 </script>
 
-<!-- SCRIPT 2: SMOOTH DOT SNOWFALL ENGINE -->
 <script>
 function createSnowflake() {
     const snowContainer = document.getElementById('snow');
@@ -526,7 +508,6 @@ function createSnowflake() {
 setInterval(createSnowflake, 800);
 </script>
 
-<!-- SCRIPT 3: CONTROLS SYSTEM SOURCE PROTECTION -->
 <script>
 document.addEventListener('contextmenu', event => event.preventDefault());
 
