@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web ADB - Panel Kontrol</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body {
+            background-color: #0d1117;
+        }
+    </style>
+</head>
+<body class="text-gray-200 font-sans min-h-screen p-6 flex justify-center items-start">
+
+    <div class="w-full max-w-md bg-[#161b22] border border-gray-800 rounded-2xl shadow-xl overflow-hidden p-6 space-y-6">
+        
+        <div class="flex flex-col items-center border-b border-gray-800 pb-4">
+            <div id="status-indicator" class="flex items-center space-x-2 text-sm text-gray-400 mb-3">
+                <span class="w-2.5 h-2.5 bg-red-500 rounded-full inline-block animate-pulse" id="status-dot"></span>
+                <span id="status-text">Perangkat Terputus</span>
+            </div>
+            <button id="btn-connect" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-xl transition duration-200 flex items-center justify-center space-x-2 shadow-lg shadow-blue-900/30">
+                <span>⚡ Hubungkan Perangkat (ADB)</span>
+            </button>
+        </div>
+
+        <div class="space-y-3">
+            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                📄 Read Info
+            </h3>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-[#21262d] p-3 rounded-xl border border-gray-800">
+                    <label class="text-xs text-gray-500 block">CODENAME</label>
+                    <span id="info-codename" class="text-sm font-mono font-bold text-blue-400">-</span>
+                </div>
+                <div class="bg-[#21262d] p-3 rounded-xl border border-gray-800">
+                    <label class="text-xs text-gray-500 block">BRAND / MODEL</label>
+                    <span id="info-model" class="text-sm font-mono font-bold text-gray-300">-</span>
+                </div>
+                <div class="bg-[#21262d] p-3 rounded-xl border border-gray-800">
+                    <label class="text-xs text-gray-500 block">REGION</label>
+                    <span id="info-region" class="text-sm font-mono font-bold text-gray-300">-</span>
+                </div>
+                <div class="bg-[#21262d] p-3 rounded-xl border border-gray-800">
+                    <label class="text-xs text-gray-500 block">VERSI ANDROID</label>
+                    <span id="info-version" class="text-sm font-mono font-bold text-gray-300">-</span>
+                </div>
+            </div>
+            
+            <button id="btn-read-info" disabled class="w-full bg-gray-800 hover:bg-gray-700 text-gray-400 disabled:opacity-40 disabled:hover:bg-gray-800 font-medium py-2 rounded-lg text-sm transition">
+                Ambil Data Perangkat
+            </button>
+        </div>
+
+        <div class="space-y-3 border-t border-gray-800 pt-4">
+            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                ⚙️ Sistem Perintah
+            </h3>
+            <div class="grid grid-cols-2 gap-3">
+                <button id="btn-reboot" disabled class="bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 border border-amber-500/30 disabled:opacity-40 font-medium py-2 rounded-lg text-sm transition">
+                    🔄 Reboot System
+                </button>
+                <button id="btn-reboot-recovery" disabled class="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 disabled:opacity-40 font-medium py-2 rounded-lg text-sm transition">
+                    ⚠️ Reboot Recovery
+                </button>
+            </div>
+        </div>
+
+        <div class="space-y-1.5 border-t border-gray-800 pt-4">
+            <label class="text-xs font-semibold text-gray-500 uppercase">Log Konsol</label>
+            <div id="log-output" class="w-full h-24 bg-black/50 border border-gray-800 rounded-lg p-2 font-mono text-xs text-green-400 overflow-y-auto whitespace-pre-wrap">Sistem siap... Silakan klik Hubungkan.</div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        // Import module resmi backend usb dan core adb dari CDN unpkg
+        import { AdbWebUsbBackend, AdbWebUsbBackendWatcher } from 'https://unpkg.com/@yume-chan/adb-backend-webusb@0.0.23/dist/index.js';
+        import { Adb, AdbWebCredentialStore } from 'https://unpkg.com/@yume-chan/adb@0.0.23/dist/index.js';
+
+        // Inisialisasi Kredensial Otentikasi RSA (Disimpan di browser agar tidak selalu meminta izin baru)
+        const CredentialStore = new AdbWebCredentialStore('web-adb-panel');
+        
+        let currentAdbInstance = null;
+
+        // Elemen UI
+        const btnConnect = document.getElementById('btn-connect');
+        const btnReadInfo = document.getElementById('btn-read-info');
+        const btnReboot = document.getElementById('btn-reboot');
+        const btnRebootRec = document.getElementById('btn-reboot-recovery');
+        
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const logOutput = document.getElementById('log-output');
+
+        // Fungsi mencetak log ke layar web
+        function writeLog(text) {
+            logOutput.innerText += `\n> ${text}`;
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+
+        // Fungsi memperbarui status koneksi pada UI
+        function updateUIConnected(isConnected, deviceName = "") {
+            if (isConnected) {
+                statusDot.classList.replace('bg-red-500', 'bg-green-500');
+                statusText.innerText = `Terhubung: ${deviceName}`;
+                btnReadInfo.removeAttribute('disabled');
+                btnReboot.removeAttribute('disabled');
+                btnRebootRec.removeAttribute('disabled');
+                btnConnect.innerHTML = '❌ Putuskan Sambungan';
+                btnConnect.classList.replace('bg-blue-600', 'bg-red-600/80');
+                btnConnect.classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
+            } else {
+                statusDot.classList.replace('bg-green-500', 'bg-red-500');
+                statusText.innerText = 'Perangkat Terputus';
+                btnReadInfo.setAttribute('disabled', 'true');
+                btnReboot.setAttribute('disabled', 'true');
+                btnRebootRec.setAttribute('disabled', 'true');
+                btnConnect.innerHTML = '⚡ Hubungkan Perangkat (ADB)';
+                btnConnect.classList.replace('bg-red-600/80', 'bg-blue-600');
+                btnConnect.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
+                
+                // Reset tabel info
+                document.getElementById('info-codename').innerText = '-';
+                document.getElementById('info-model').innerText = '-';
+                document.getElementById('info-region').innerText = '-';
+                document.getElementById('info-version').innerText = '-';
+            }
+        }
+
+        // Eksekusi Tombol Hubungkan Perangkat
+        btnConnect.addEventListener('click', async () => {
+            if (currentAdbInstance) {
+                // Jika sudah tersambung, aksi tombol adalah memutuskan koneksi
+                currentAdbInstance = null;
+                updateUIConnected(false);
+                writeLog("Koneksi diputuskan oleh pengguna.");
+                return;
+            }
+
+            try {
+                writeLog("Membuka jendela pemilihan perangkat USB...");
+                // 1. Request akses hardware ke browser
+                const backend = await AdbWebUsbBackend.requestDevice();
+                if (!backend) {
+                    writeLog("Pemilihan perangkat dibatalkan.");
+                    return;
+                }
+
+                writeLog(`Menghubungkan ke USB: ${backend.serialNumber || 'Perangkat USB'}`);
+                await backend.connect();
+
+                writeLog("Memulai Autentikasi ADB... (Periksa layar HP Anda!)");
+                
+                // 2. Melakukan jabat tangan autentikasi RSA
+                const adb = await Adb.authenticate({
+                    backend,
+                    credentialStore: CredentialStore,
+                });
+
+                currentAdbInstance = adb;
+                updateUIConnected(true, backend.serialNumber || "Android Device");
+                writeLog("Berhasil Masuk Terotorisasi! Siap menjalankan perintah.");
+                
+                // Jalankan read info secara otomatis setelah terhubung
+                readDeviceInformation();
+
+            } catch (err) {
+                writeLog(`Error: ${err.message}`);
+                console.error(err);
+                updateUIConnected(false);
+            }
+        });
+
+        // Fungsi Membaca Properti Internal Android (getprop)
+        async function readDeviceInformation() {
+            if (!currentAdbInstance) return;
+            try {
+                writeLog("Membaca informasi spesifikasi...");
+                
+                // Menjalankan utilitas getprop bawaan android melalui instance ADB
+                const codename = await currentAdbInstance.getprop("ro.product.name");
+                const brand = await currentAdbInstance.getprop("ro.product.brand");
+                const model = await currentAdbInstance.getprop("ro.product.model");
+                const version = await currentAdbInstance.getprop("ro.build.version.release");
+                
+                // Khusus region, membaca property umum regional atau milik MIUI/HyperOS
+                let region = await currentAdbInstance.getprop("ro.miui.region");
+                if(!region) region = await currentAdbInstance.getprop("ro.product.locale.region");
+
+                // Tempel data ke UI tampilan
+                document.getElementById('info-codename').innerText = codename.toUpperCase();
+                document.getElementById('info-model').innerText = `${brand.toUpperCase()} ${model}`;
+                document.getElementById('info-region').innerText = region ? region.toUpperCase() : "UNKNOWN";
+                document.getElementById('info-version').innerText = `Android ${version}`;
+
+                writeLog("Informasi perangkat berhasil dimuat.");
+            } catch (err) {
+                writeLog(`Gagal mengambil data: ${err.message}`);
+            }
+        }
+
+        // Handler Aksi Tombol Manual Info
+        btnReadInfo.addEventListener('click', readDeviceInformation);
+
+        // Handler Perintah Reboot Normal
+        btnReboot.addEventListener('click', async () => {
+            if (!currentAdbInstance) return;
+            try {
+                writeLog("Mengirim perintah: adb reboot");
+                await currentAdbInstance.reboot();
+                writeLog("Perintah terkirim. Perangkat sedang memuat ulang.");
+            } catch (err) {
+                writeLog(`Gagal merestart: ${err.message}`);
+            }
+        });
+
+        // Handler Perintah Reboot ke Recovery Mode
+        btnRebootRec.addEventListener('click', async () => {
+            if (!currentAdbInstance) return;
+            try {
+                writeLog("Mengirim perintah: adb reboot recovery");
+                await currentAdbInstance.reboot("recovery");
+                writeLog("Perintah terkirim. Perangkat masuk ke mode Recovery.");
+            } catch (err) {
+                writeLog(`Gagal masuk recovery: ${err.message}`);
+            }
+        });
+    </script>
+</body>
+</html>
