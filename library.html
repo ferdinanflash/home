@@ -15,6 +15,125 @@
             min-height: 100vh;
         }
 
+        /* --- CRYPTO PASS GATE LOCKSCREEN --- */
+        #auth-gate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center, #0f172a, #020617);
+            z-index: 100000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .auth-container {
+            background: linear-gradient(145deg, #0b1220, #020617);
+            border: 1px solid #1e293b;
+            padding: 40px 30px;
+            border-radius: 12px;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.15);
+        }
+
+        .auth-logo {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: 2px solid #38bdf8;
+            margin-bottom: 15px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+
+        .auth-container h2 {
+            margin: 0 0 5px 0;
+            color: #fff;
+            font-size: 20px;
+        }
+
+        .auth-container p {
+            color: #64748b;
+            font-size: 13px;
+            margin: 0 0 25px 0;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .auth-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px 20px;
+            background-color: #1e293b;
+            border: 2px solid #334155;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            text-align: center;
+            letter-spacing: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .auth-input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn-auth {
+            width: 100%;
+            background-color: #020617;
+            color: #fff;
+            border: 2px solid #38bdf8;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-auth:hover {
+            background-color: #38bdf8;
+            color: #020617;
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
+        }
+
+        /* Error Warning & Flashing X Sign Layout */
+        .error-msg {
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 15px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .flashing-x {
+            animation: fastBlink 0.6s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes fastBlink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0; transform: scale(0.8); }
+        }
+
+        /* --- MAIN SYSTEM DASHBOARD CONTENT (HIDDEN UNTIL AUTHENTICATED) --- */
+        #main-content {
+            display: none;
+        }
+
         /* --- HEADER & RUNNING RGB LED EFFECT --- */
         .header {
             text-align: center;
@@ -170,7 +289,7 @@
             text-decoration: none;
             font-weight: bold;
             font-size: 15px;
-            box-shadow: 0 0 15px rgba(56,189,248,0.3);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
             transition: all 0.3s ease;
             animation: fadeIn 0.4s ease forwards;
         }
@@ -233,77 +352,140 @@
 
 <div class="snow-container" id="snow"></div>
 
-<!-- MAIN HEADER -->
-<div class="header">
-    <div class="fire-wrapper">
-        <h1 class="running-rgb-fire">Ferdinan Flasher Batam</h1>
-    </div>
-    <p>Official Flashing Tools & Drivers Download Center</p>
-    
-    <div style="margin-top: 15px; display: flex; justify-content: center; gap: 20px; margin-bottom: 15px;">
-        <a href="https://fb.me/FS.TPP" target="_blank" title="Facebook Ferdinan Flasher">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/2023_Facebook_icon.svg" alt="Facebook" style="width: 30px; height: 30px;">
-        </a>
-        <a href="https://wa.me/+6287846414300" target="_blank" title="WhatsApp Ferdinan Flasher">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 30px; height: 30px;">
-        </a>
-    </div>
-
-    <div>
-        <img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/FB_IMG_1781070367755.jpg" alt="Logo Ferdinan Flasher" class="center-logo">
-    </div>
-</div>
-
-<!-- DROPDOWN SELECT CONTAINER -->
-<div class="download-section">
-    <h2>Choose a File to Download</h2>
-    <p style="color: #94a3b8; font-size: 14px; margin-bottom: 25px;">Select the required section and file from the dropdown menu below:</p>
-    
-    <!-- DROPDOWN SELECTION BOX WITH ALPHABETICAL SORTING -->
-    <select class="select-box" id="fileSelector" onchange="updateDownloadLink()">
-        <option value="" disabled selected>-- Select File Here --</option>
+<!-- SECURITY INTERACTION LAYER (LOCKSCREEN GATE) -->
+<div id="auth-gate">
+    <div class="auth-container">
+        <img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/FB_IMG_1781070367755.jpg" alt="Logo" class="auth-logo">
+        <h2>System Authentication</h2>
+        <p>Enter the security key to access the terminal</p>
         
-        <!-- DRIVERS CATEGORY (A-Z) -->
-        <optgroup label="📂 DRIVERS">
-            <option value="http://hydradongle.store/Drivers/Allwinner_Driver.7z">📦 All Winner Driver</option>
-            <option value="https://www.mediafire.com/file_premium/5tkr3dipig0cbmq/QcomMtk_Driver_2.0.1.zip/file">📦 Driver QC MTK</option>
-            <option value="https://www.mediafire.com/file_premium/uw2238zj1et234q/Spreadtrum_77xx_Drivers.7z/file">📦 Driver SPD</option>
-            <option value="https://driver-unlocktool.s3-hcm-r2.s3cloud.vn/Driver_Huawei_USB1.0.zip">📦 Huawei Kirin Driver</option>
-            <option value="http://hydradongle.store/Drivers/RockChip.7z">📦 RockChip Driver</option>
-            <option value="https://github.com/pbatard/libwdi/releases/download/v1.5.1/zadig-2.9.exe">📦 Zadig</option>
-        </optgroup>
+        <div class="input-group">
+            <input type="password" id="secureToken" class="auth-input" placeholder="••••••••" onkeydown="checkEnterKey(event)">
+        </div>
+        <button type="button" class="btn-auth" onclick="verifySecureAccess()">Verify Key</button>
         
-        <!-- TOOLS CATEGORY (A-Z) -->
-        <optgroup label="🛠️ TOOLS">
-            <option value="https://drive.google.com/file/d/1dJ2P7L_SqRkBG8BEdJxQUJmSvuvjxbmA/view?usp=drivesdk">📦 AIO Command</option>
-            <option value="https://anydesk.com/en/downloads/thank-you?dv=win_exe">📦 Anydesk</option>
-            <option value="https://mega.nz/file/qlVTUAzA#ikpBJeEX86rvKC_eNRLlfQcaUH0i0aAOpSA-eX9PYGU">📦 iRemoval Pro</option>
-            <option value="https://www.mediafire.com/file/l2ea7tpf9awlh20/ModemMETA_v10.2044.0.02.zip/file">📦 ModemMETA</option>
-            <option value="https://drive.google.com/file/d/1U7sgaJxdQX4ATJLSiyrbOg3KHxUVOhmU/view?usp=drivesdk">📦 ODIN</option>
-            <option value="https://dl.google.com/android/repository/platform-tools-latest-windows.zip">📦 Platform Tools</option>
-            <option value="https://qfiltool.com/wp-content/uploads/Qualcomm_Flash_Image_Loader_v2.0.3.5.zip">📦 QFIL</option>
-            <option value="https://www.ultraviewer.net/id/UltraViewer_setup_6.6_id.exe">📦 Ultra Viewer</option>
-            <option value="https://mega.nz/file/joAECASY#YOsZjbygx1CZBpZerWMXiY45US619J514jxbC7GZSO4">📦 Unlock Tool</option>
-            <option value="https://drive.google.com/file/d/1M0K4wlkh9CsxGvZy5ADsGM4Iva6SzM2u/view?usp=drivesdk">📦 USB Customer</option>
-            <option value="https://www.mediafire.com/file_premium/hy8dt11iakmkdnp/WinRa1n2.1_Jailbreak_iPhone_%252B_iPad.rar/file">📦 WinRa1n (Jailbreak)</option>
-        </optgroup>
-
-        <!-- ETC CATEGORY (A-Z) -->
-        <optgroup label="✨ ETC">
-            <option value="https://github.com/abbodi1406/vcredist/releases/download/v0.105.0/VisualCppRedist_AIO_x86_x64.exe">📦 VCredits AIO</option>
-        </optgroup>
-    </select>
-
-    <!-- DOWNLOAD BUTTON GENERATION AREA -->
-    <div class="action-area" id="actionArea">
-        <!-- The download button will render here dynamically via Javascript -->
+        <!-- Error response structural elements -->
+        <div class="error-msg" id="errResponse">
+            <span class="flashing-x">❌</span> Access Denied! Invalid Key <span class="flashing-x">❌</span>
+        </div>
     </div>
 </div>
 
-<!-- FOOTER -->
-<div class="footer">
-    © 2026 Ferdinan Flasher Batam — All Rights Reserved
+<!-- MAIN SYSTEM INTERFACE (LOADS ON VALID KEY EXTENSION) -->
+<div id="main-content">
+    <!-- MAIN HEADER -->
+    <div class="header">
+        <div class="fire-wrapper">
+            <h1 class="running-rgb-fire">Ferdinan Flasher Batam</h1>
+        </div>
+        <p>Official Flashing Tools & Drivers Download Center</p>
+        
+        <div style="margin-top: 15px; display: flex; justify-content: center; gap: 20px; margin-bottom: 15px;">
+            <a href="https://fb.me/FS.TPP" target="_blank" title="Facebook Ferdinan Flasher">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/2023_Facebook_icon.svg" alt="Facebook" style="width: 30px; height: 30px;">
+            </a>
+            <a href="https://wa.me/+6287846414300" target="_blank" title="WhatsApp Ferdinan Flasher">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 30px; height: 30px;">
+            </a>
+        </div>
+
+        <div>
+            <img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/FB_IMG_1781070367755.jpg" alt="Logo Ferdinan Flasher" class="center-logo">
+        </div>
+    </div>
+
+    <!-- DROPDOWN SELECT CONTAINER -->
+    <div class="download-section">
+        <h2>Choose a File to Download</h2>
+        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 25px;">Select the required section and file from the dropdown menu below:</p>
+        
+        <!-- DROPDOWN SELECTION BOX WITH ALPHABETICAL SORTING -->
+        <select class="select-box" id="fileSelector" onchange="updateDownloadLink()">
+            <option value="" disabled selected>-- Select File Here --</option>
+            
+            <!-- DRIVERS CATEGORY (A-Z) -->
+            <optgroup label="📂 DRIVERS">
+                <option value="http://hydradongle.store/Drivers/Allwinner_Driver.7z">📦 All Winner Driver</option>
+                <option value="https://www.mediafire.com/file_premium/5tkr3dipig0cbmq/QcomMtk_Driver_2.0.1.zip/file">📦 Driver QC MTK</option>
+                <option value="https://www.mediafire.com/file_premium/uw2238zj1et234q/Spreadtrum_77xx_Drivers.7z/file">📦 Driver SPD</option>
+                <option value="https://driver-unlocktool.s3-hcm-r2.s3cloud.vn/Driver_Huawei_USB1.0.zip">📦 Huawei Kirin Driver</option>
+                <option value="http://hydradongle.store/Drivers/RockChip.7z">📦 RockChip Driver</option>
+                <option value="https://github.com/pbatard/libwdi/releases/download/v1.5.1/zadig-2.9.exe">📦 Zadig</option>
+            </optgroup>
+            
+            <!-- TOOLS CATEGORY (A-Z) -->
+            <optgroup label="🛠️ TOOLS">
+                <option value="https://drive.google.com/file/d/1dJ2P7L_SqRkBG8BEdJxQUJmSvuvjxbmA/view?usp=drivesdk">📦 AIO Command</option>
+                <option value="https://anydesk.com/en/downloads/thank-you?dv=win_exe">📦 Anydesk</option>
+                <option value="https://mega.nz/file/qlVTUAzA#ikpBJeEX86rvKC_eNRLlfQcaUH0i0aAOpSA-eX9PYGU">📦 iRemoval Pro</option>
+                <option value="https://www.mediafire.com/file/l2ea7tpf9awlh20/ModemMETA_v10.2044.0.02.zip/file">📦 ModemMETA</option>
+                <option value="https://drive.google.com/file/d/1U7sgaJxdQX4ATJLSiyrbOg3KHxUVOhmU/view?usp=drivesdk">📦 ODIN</option>
+                <option value="https://dl.google.com/android/repository/platform-tools-latest-windows.zip">📦 Platform Tools</option>
+                <option value="https://qfiltool.com/wp-content/uploads/Qualcomm_Flash_Image_Loader_v2.0.3.5.zip">📦 QFIL</option>
+                <option value="https://www.ultraviewer.net/id/UltraViewer_setup_6.6_id.exe">📦 Ultra Viewer</option>
+                <option value="https://mega.nz/file/joAECASY#YOsZjbygx1CZBpZerWMXiY45US619J514jxbC7GZSO4">📦 Unlock Tool</option>
+                <option value="https://drive.google.com/file/d/1M0K4wlkh9CsxGvZy5ADsGM4Iva6SzM2u/view?usp=drivesdk">📦 USB Customer</option>
+                <option value="https://www.mediafire.com/file_premium/hy8dt11iakmkdnp/WinRa1n2.1_Jailbreak_iPhone_%252B_iPad.rar/file">📦 WinRa1n (Jailbreak)</option>
+            </optgroup>
+
+            <!-- ETC CATEGORY (A-Z) -->
+            <optgroup label="✨ ETC">
+                <option value="https://github.com/abbodi1406/vcredist/releases/download/v0.105.0/VisualCppRedist_AIO_x86_x64.exe">📦 VCredits AIO</option>
+            </optgroup>
+        </select>
+
+        <!-- DOWNLOAD BUTTON GENERATION AREA -->
+        <div class="action-area" id="actionArea">
+            <!-- The download button will render here dynamically via Javascript -->
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        © 2026 Ferdinan Flasher Batam — All Rights Reserved
+    </div>
 </div>
+
+<!-- SCRIPT 0: HARDENED SHA-256 PASSWORD DECRYPTION AND GATEWAY CONTROLLER -->
+<script>
+// Cryptographic hash signature of 'Hayo mau ngapain' generated via SHA-256
+const SECURE_TOKEN_HASH = "815ccdfc259850406db09b533e498fc66b86e80bca66b262a04626ff8fb8ca2b";
+
+async function computeSHA256(inputString) {
+    const encoder = new TextEncoder();
+    const dataBytes = encoder.encode(inputString);
+    const contextBuffer = await crypto.subtle.digest('SHA-256', dataBytes);
+    const internalArray = Array.from(new Uint8Array(contextBuffer));
+    return internalArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+async function verifySecureAccess() {
+    const inputField = document.getElementById('secureToken');
+    const errIndicator = document.getElementById('errResponse');
+    const inputHash = await computeSHA256(inputField.value);
+
+    if (inputHash === SECURE_TOKEN_HASH) {
+        // Authenticated successfully: unlock system and drop curtain
+        document.getElementById('auth-gate').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+    } else {
+        // Validation failed: flag UI elements, trigger visual alert
+        errIndicator.style.display = 'flex';
+        inputField.value = '';
+        inputField.focus();
+        
+        // Soft shake animation feedback
+        inputField.style.borderColor = '#ef4444';
+        setTimeout(() => { inputField.style.borderColor = '#334155'; }, 1000);
+    }
+}
+
+function checkEnterKey(event) {
+    if (event.key === "Enter") {
+        verifySecureAccess();
+    }
+}
+</script>
 
 <!-- SCRIPT 1: DROPDOWN LINKS INTERACTIVE CONTROLLER -->
 <script>
@@ -313,7 +495,6 @@ function updateDownloadLink() {
     const selectedLink = selector.value;
 
     if (selectedLink) {
-        // Dynamically creates the target download button
         actionArea.innerHTML = `
             <a href="${selectedLink}" class="btn-download" target="_blank">
                 📥 Download File Now
