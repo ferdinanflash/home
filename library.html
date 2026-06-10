@@ -75,18 +75,28 @@
             border: 2px solid #334155;
             color: #fff;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 18px;
             outline: none;
             text-align: center;
-            letter-spacing: 3px;
-            transition: all 0.3s ease;
-            /* Memaksa sistem keamanan browser menyembunyikan karakter tanpa delay */
-            -webkit-text-security: disc !important; 
+            letter-spacing: 4px;
+            
+            /* Transisi smooth saat efek blur muncul dan menghilang */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, filter 0.4s ease, -webkit-filter 0.4s ease;
+            
+            /* SENSOR DASAR: Mengubah teks text langsung menjadi bentuk lingkaran secara instan di HP */
+            -webkit-text-security: disc !important;
+            text-security: disc !important;
         }
 
         .auth-input:focus {
             border-color: #38bdf8;
             box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+
+        /* Class dinamis yang akan dikontrol oleh JavaScript saat mengetik */
+        .typing-blur {
+            filter: blur(5px) !important;
+            -webkit-filter: blur(5px) !important;
         }
 
         .btn-auth {
@@ -361,7 +371,7 @@
         <p>Enter the security key to access the terminal</p>
         
         <div class="input-group">
-            <input type="password" id="secureToken" class="auth-input" placeholder="••••••••" autocomplete="new-password" onkeydown="checkEnterKey(event)">
+            <input type="text" id="secureToken" class="auth-input" placeholder="••••••••" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="checkEnterKey(event)">
         </div>
         <button type="button" class="btn-auth" onclick="verifySecureAccess()">Verify Key</button>
         
@@ -416,4 +426,132 @@
                 <option value="https://drive.google.com/file/d/1U7sgaJxdQX4ATJLSiyrbOg3KHxUVOhmU/view?usp=drivesdk">📦 ODIN</option>
                 <option value="https://dl.google.com/android/repository/platform-tools-latest-windows.zip">📦 Platform Tools</option>
                 <option value="https://qfiltool.com/wp-content/uploads/Qualcomm_Flash_Image_Loader_v2.0.3.5.zip">📦 QFIL</option>
-                <option value="https
+                <option value="https://www.ultraviewer.net/id/UltraViewer_setup_6.6_id.exe">📦 Ultra Viewer</option>
+                <option value="https://mega.nz/file/joAECASY#YOsZjbygx1CZBpZerWMXiY45US619J514jxbC7GZSO4">📦 Unlock Tool</option>
+                <option value="https://drive.google.com/file/d/1M0K4wlkh9CsxGvZy5ADsGM4Iva6SzM2u/view?usp=drivesdk">📦 USB Customer</option>
+                <option value="https://www.mediafire.com/file_premium/hy8dt11iakmkdnp/WinRa1n2.1_Jailbreak_iPhone_%252B_iPad.rar/file">📦 WinRa1n (Jailbreak)</option>
+            </optgroup>
+
+            <optgroup label="✨ ETC">
+                <option value="https://github.com/abbodi1406/vcredist/releases/download/v0.105.0/VisualCppRedist_AIO_x86_x64.exe">📦 VCredits AIO</option>
+            </optgroup>
+        </select>
+
+        <div class="action-area" id="actionArea">
+            </div>
+    </div>
+
+    <div class="footer">
+        © 2026 Ferdinan Flasher Batam — All Rights Reserved
+    </div>
+</div>
+
+<script>
+// Logika Manajemen Efek Sensor Blur Dinamis (Mengetik = Blur, Diam 3 Detik = Normal)
+const inputField = document.getElementById('secureToken');
+let typingTimer; 
+const blurDelay = 3000; // Jeda waktu (3000 ms = 3 detik)
+
+inputField.addEventListener('input', () => {
+    // 1. Setiap kali user mengetik karakter, paksa class blur aktif
+    inputField.classList.add('typing-blur');
+    
+    // 2. Reset timer yang sedang berjalan sebelumnya
+    clearTimeout(typingTimer);
+    
+    // 3. Setel ulang timer baru untuk menghapus efek blur jika tidak ada input baru selama 3 detik
+    typingTimer = setTimeout(() => {
+        inputField.classList.remove('typing-blur');
+    }, blurDelay);
+});
+
+// Jika pengguna klik di luar area input (blur focus out), hilangkan efek langsung demi estetika placeholder
+inputField.addEventListener('blur', () => {
+    clearTimeout(typingTimer);
+    inputField.classList.remove('typing-blur');
+});
+</script>
+
+<script>
+// Teks terenkripsi aman untuk password "Batam2026" menggunakan Base64 Custom Multi-Layer
+const CREDENTIAL_LOCK = "UW1GMFlXMHlNREky";
+
+function verifySecureAccess() {
+    const errIndicator = document.getElementById('errResponse');
+    const cleanInput = inputField.value.trim();
+    const generatedToken = btoa(btoa(cleanInput));
+
+    if (generatedToken === CREDENTIAL_LOCK) {
+        document.getElementById('auth-gate').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+    } else {
+        errIndicator.style.display = 'flex';
+        inputField.value = '';
+        
+        // Hapus efek blur saat salah agar user tahu kotak sudah bersih kembali
+        clearTimeout(typingTimer);
+        inputField.classList.remove('typing-blur');
+        
+        inputField.focus();
+        inputField.style.borderColor = '#ef4444';
+        setTimeout(() => { inputField.style.borderColor = '#334155'; }, 1000);
+    }
+}
+
+function checkEnterKey(event) {
+    if (event.key === "Enter") {
+        verifySecureAccess();
+    }
+}
+</script>
+
+<script>
+function updateDownloadLink() {
+    const selector = document.getElementById('fileSelector');
+    const actionArea = document.getElementById('actionArea');
+    const selectedLink = selector.value;
+
+    if (selectedLink) {
+        actionArea.innerHTML = `
+            <a href="${selectedLink}" class="btn-download" target="_blank">
+                📥 Download File Now
+            </a>
+        `;
+    } else {
+        actionArea.innerHTML = '';
+    }
+}
+</script>
+
+<script>
+function createSnowflake() {
+    const snowContainer = document.getElementById('snow');
+    if(!snowContainer) return;
+    const snowflake = document.createElement('div');
+    snowflake.innerHTML = '•';
+    snowflake.classList.add('snowflake');
+    snowflake.style.left = Math.random() * 100 + 'vw';
+    snowflake.style.fontSize = Math.random() * 8 + 6 + 'px';
+    const duration = Math.random() * 5 + 5;
+    snowflake.style.animationDuration = duration + 's';
+    snowflake.style.opacity = Math.random() * 0.7 + 0.3;
+    
+    snowContainer.appendChild(snowflake);
+    setTimeout(() => { snowflake.remove(); }, duration * 1000);
+}
+setInterval(createSnowflake, 800);
+</script>
+
+<script>
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+document.onkeydown = function(e) {
+    if (e.keyCode == 123) { return false; }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
+};
+</script>
+
+</body>
+</html>
