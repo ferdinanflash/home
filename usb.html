@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web ADB</title>
+    <title>Web ADB - Panel Kontrol</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        body {
-            background-color: #0b0f17;
-        }
+        body { background-color: #0b0f17; }
     </style>
 </head>
 <body class="text-gray-200 font-sans min-h-screen p-6 flex justify-center items-start">
@@ -67,17 +65,17 @@
     </div>
 
     <script type="module">
+        // Import library ADB resmi
         import { AdbWebUsbBackend } from 'https://unpkg.com/@yume-chan/adb-backend-webusb@0.0.23/dist/index.js';
         import { Adb, AdbWebCredentialStore } from 'https://unpkg.com/@yume-chan/adb@0.0.23/dist/index.js';
 
-        const CredentialStore = new AdbWebCredentialStore('web-adb-panel-v2');
+        const CredentialStore = new AdbWebCredentialStore('web-adb-panel-v3');
         let currentAdbInstance = null;
 
         // Elemen UI
         const btnConnect = document.getElementById('btn-connect');
         const btnReadInfo = document.getElementById('btn-read-info');
         const btnReboot = document.getElementById('btn-reboot');
-        
         const statusDot = document.getElementById('status-dot');
         const statusText = document.getElementById('status-text');
         const logOutput = document.getElementById('log-output');
@@ -87,32 +85,25 @@
             logOutput.scrollTop = logOutput.scrollHeight;
         }
 
-        // Fungsi sinkronisasi status UI berdasarkan koneksi perangkat
         function updateUIConnected(isConnected, deviceName = "") {
             if (isConnected) {
                 statusDot.className = "w-2.5 h-2.5 bg-green-500 rounded-full inline-block animate-pulse";
                 statusText.innerText = `Connected: ${deviceName}`;
                 statusText.classList.replace('text-gray-400', 'text-green-400');
-                
                 btnReadInfo.removeAttribute('disabled');
                 btnReboot.removeAttribute('disabled');
-                
                 btnConnect.innerHTML = '<span>➔ Disconnect Device</span>';
                 btnConnect.classList.replace('bg-blue-600', 'bg-red-600/80');
-                btnConnect.classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
             } else {
                 statusDot.className = "w-2.5 h-2.5 bg-gray-600 rounded-full inline-block";
                 statusText.innerText = 'No device connected';
                 statusText.classList.replace('text-green-400', 'text-gray-400');
-                
                 btnReadInfo.setAttribute('disabled', 'true');
                 btnReboot.setAttribute('disabled', 'true');
-                
                 btnConnect.innerHTML = '<span>➔ Connect ADB</span>';
                 btnConnect.classList.replace('bg-red-600/80', 'bg-blue-600');
-                btnConnect.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
                 
-                // Kosongkan info tabel
+                // Reset text
                 document.getElementById('info-codename').innerText = '-';
                 document.getElementById('info-model').innerText = '-';
                 document.getElementById('info-region').innerText = '-';
@@ -120,7 +111,7 @@
             }
         }
 
-        // Logika saat tombol Connect ADB diklik
+        // AKSI KLIK TOMBOL CONNECT ADB
         btnConnect.addEventListener('click', async () => {
             if (currentAdbInstance) {
                 currentAdbInstance = null;
@@ -130,19 +121,27 @@
             }
 
             try {
-                writeLog("Membuka pilihan device USB browser...");
+                writeLog("Meminta akses hardware langsung ke browser...");
                 
-                // Baris ini yang memicu browser memunculkan daftar pilihan Device
-                const backend = await AdbWebUsbBackend.requestDevice();
-                if (!backend) {
-                    writeLog("Pemilihan device dibatalkan.");
+                // PERBAIKAN UTAMA: Menggunakan fungsi bawaan browser murni (Native Browser API)
+                // Ini memaksa browser langsung memunculkan pop-up pilihan perangkat Android tanpa terhalang script luar.
+                // Filter 0xFF, 0x42, 0x01 adalah standar Google khusus untuk interface ADB perangkat Android.
+                const usbDevice = await navigator.usb.requestDevice({
+                    filters: [{ classCode: 0xff, subclassCode: 0x42, protocolCode: 0x01 }]
+                });
+
+                if (!usbDevice) {
+                    writeLog("Pemilihan perangkat dibatalkan.");
                     return;
                 }
 
-                writeLog(`Menghubungkan fisik USB: ${backend.serialNumber || 'Android'}`);
+                writeLog(`Membuka koneksi fisik ke: ${usbDevice.productName || 'Android Device'}`);
+                
+                // Teruskan objek hardware murni tadi ke engine backend ADB
+                const backend = new AdbWebUsbBackend(usbDevice);
                 await backend.connect();
 
-                writeLog("Mengirim kunci autentikasi RSA ke HP... (Cek layar HP Anda dan pilih Izinkan/Allow)");
+                writeLog("Menjalankan Otentikasi RSA ADB... (Lihat layar HP Anda, centang 'Selalu Izinkan' dan klik OK/Allow)");
                 
                 const adb = await Adb.authenticate({
                     backend,
@@ -150,25 +149,24 @@
                 });
 
                 currentAdbInstance = adb;
-                updateUIConnected(true, backend.serialNumber || "Android Device");
-                writeLog("Device Terhubung & Terotorisasi!");
+                updateUIConnected(true, usbDevice.productName || "Android Device");
+                writeLog("Koneksi Berhasil! Otentikasi diterima.");
                 
-                // Otomatis read info setelah sukses connect
+                // Otomatis lakukan read info
                 readDeviceInformation();
 
             } catch (err) {
-                writeLog(`Gagal terhubung: ${err.message}`);
+                writeLog(`Gagal memunculkan pop-up / menghubungkan: ${err.message}`);
                 console.error(err);
                 updateUIConnected(false);
             }
         });
 
-        // Logika fungsi mengambil informasi device internal (getprop)
+        // Logika Ambil Info (getprop)
         async function readDeviceInformation() {
             if (!currentAdbInstance) return;
             try {
-                writeLog("Mengambil data properti internal device...");
-                
+                writeLog("Membaca data internal Android...");
                 const codename = await currentAdbInstance.getprop("ro.product.name");
                 const brand = await currentAdbInstance.getprop("ro.product.brand");
                 const model = await currentAdbInstance.getprop("ro.product.model");
@@ -180,10 +178,9 @@
                 document.getElementById('info-model').innerText = `${brand.toUpperCase()} ${model}`;
                 document.getElementById('info-region').innerText = region ? region.toUpperCase() : "UNKNOWN";
                 document.getElementById('info-version').innerText = `Android ${version}`;
-
-                writeLog("Proses Read Info Selesai.");
+                writeLog("Data perangkat berhasil ditampilkan.");
             } catch (err) {
-                writeLog(`Gagal Read Info: ${err.message}`);
+                writeLog(`Gagal membaca info perangkat: ${err.message}`);
             }
         }
 
@@ -192,11 +189,11 @@
         btnReboot.addEventListener('click', async () => {
             if (!currentAdbInstance) return;
             try {
-                writeLog("Mengirim perintah: adb reboot");
+                writeLog("Mengirim perintah reboot...");
                 await currentAdbInstance.reboot();
-                writeLog("Perintah reboot berhasil dikirim.");
+                writeLog("Perangkat diperintahkan untuk restart.");
             } catch (err) {
-                writeLog(`Gagal reboot: ${err.message}`);
+                writeLog(`Gagal mengirim perintah: ${err.message}`);
             }
         });
     </script>
