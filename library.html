@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferdinan Flasher - Download Center</title>
+    <style>
+        /* --- STYLE DASAR TEMA GELAP --- */
+        body {
+            background: radial-gradient(circle at top, #0b1220, #05070c);
+            color: #d1d5db;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER & EFFECT RUNNING RGB LED KOBARAN API --- */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(180deg, #020617, #020617cc);
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .fire-wrapper {
+            padding: 15px 0;
+            display: inline-block;
+        }
+
+        .running-rgb-fire {
+            font-size: 26px;
+            margin: 0;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff, #ff0000);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            animation: runningLED 4s linear infinite, fireFlicker 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes runningLED {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes fireFlicker {
+            0% {
+                text-shadow: 
+                    0 -2px 4px rgba(255, 80, 0, 0.6), 
+                    0 -4px 10px rgba(255, 150, 0, 0.4), 
+                    0 -10px 20px rgba(255, 200, 0, 0.2), 
+                    0 -16px 35px rgba(255, 0, 0, 0.4);
+            }
+            50% {
+                text-shadow: 
+                    0 -3px 5px rgba(255, 80, 0, 0.7), 
+                    2px -6px 12px rgba(255, 130, 0, 0.5), 
+                    -2px -12px 25px rgba(255, 220, 0, 0.3), 
+                    0 -22px 45px rgba(255, 50, 0, 0.5);
+            }
+            100% {
+                text-shadow: 
+                    0 -1px 3px rgba(255, 80, 0, 0.6), 
+                    -1px -5px 9px rgba(255, 160, 0, 0.4), 
+                    1px -8px 18px rgba(255, 180, 0, 0.2), 
+                    0 -14px 30px rgba(255, 0, 0, 0.3);
+            }
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .center-logo {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .center-logo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.7);
+        }
+
+        /* --- LAYOUT CONTAINER & CARDS --- */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: linear-gradient(145deg, #0b1220, #020617);
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(56,189,248,.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #38bdf8;
+            box-shadow: 0 0 25px rgba(56,189,248,.35);
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, transparent, rgba(56,189,248,0.1), transparent);
+            transform: translateX(-100%);
+            transition: 0.6s;
+        }
+
+        .card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .card h3 {
+            font-size: 16px;
+            color: #7dd3fc;
+            margin: 0 0 15px 0;
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- TOMBOL DOWNLOAD NEON --- */
+        .btn-download {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: #1e293b;
+            color: #38bdf8;
+            border: 2px solid #334155;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-download:hover {
+            background-color: #0f172a;
+            border-color: #38bdf8;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(56,189,248,.5);
+        }
+
+        /* --- EFFECT EFREK SALJU JATUH --- */
+        .snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            user-select: none;
+            pointer-events: none;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(105vh) translateX(50px); opacity: 0; }
+        }
+
+        /* --- FOOTER --- */
+        .footer {
+            margin-top: 60px;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #1e293b;
+            background: #020617;
+            color: #64748b;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="snow-container" id="snow"></div>
+
+<div class="header">
+    <div class="fire-wrapper">
+        <h1 class="running-rgb-fire">Ferdinan Flasher Batam</h1>
+    </div>
+    <p>Official Flashing Tools & Drivers Download Center</p>
+    
+    <div style="margin-top: 15px; display: flex; justify-content: center; gap: 20px; margin-bottom: 15px;">
+        <a href="https://fb.me/FS.TPP" target="_blank" title="Facebook Ferdinan Flasher">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/2023_Facebook_icon.svg" alt="Facebook" style="width: 30px; height: 30px;">
+        </a>
+        <a href="https://wa.me/+6287846414300" target="_blank" title="WhatsApp Ferdinan Flasher">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 30px; height: 30px;">
+        </a>
+    </div>
+
+    <div>
+        <img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/FB_IMG_1781070367755.jpg" alt="Logo Ferdinan Flasher" class="center-logo">
+    </div>
+</div>
+
+<div class="container">
+    
+    <div class="card">
+        <h3>📦 Ultra Viewer</h3>
+        <a href="https://www.ultraviewer.net/id/UltraViewer_setup_6.6_id.exe" class="btn-download" target="_blank">
+            📥 Download File
+        </a>
+    </div>
+
+    <div class="card">
+        <h3>📦 Anydesk</h3>
+        <a href="https://anydesk.com/en/downloads/thank-you?dv=win_exe" class="btn-download" target="_blank">
+            📥 Download File
+        </a>
+    </div>
+
+    <div class="card">
+        <h3>📦 Unlock Tool</h3>
+        <a href="https://mega.nz/file/joAECASY#YOsZjbygx1CZBpZerWMXiY45US619J514jxbC7GZSO4" class="btn-download" target="_blank">
+            📥 Download File
+        </a>
+    </div>
+
+    <div class="card">
+        <h3>📦 Driver QC MTK</h3>
+        <a href="https://www.mediafire.com/file_premium/5tkr3dipig0cbmq/QcomMtk_Driver_2.0.1.zip/file" class="btn-download" target="_blank">
+            📥 Download File
+        </a>
+    </div>
+
+    <div class="card">
+        <h3>📦 Driver SPD</h3>
+        <a href="https://www.mediafire.com/file_premium/uw2238zj1et234q/Spreadtrum_77xx_Drivers.7z/file" class="btn-download" target="_blank">
+            📥 Download File
+        </a>
+    </div>
+
+    <div class="card">
+        <h3>📦 Huawei Kirin Driver</h3>
+        <a href="https://driver-unlocktool.s3-hcm-r2.s3cloud.vn/Driver_Huawei_USB1.0.zip" class="btn-download" target="_blank">
+            📥 Download File
+        </a>
+    </div>
+
+    <div class="card">
+        <h3>📦 WinRa1n (Jailbreak)</h3>
+        <a href="https://www.mediafire.com/file_premium/hy8dt11iakmkdnp/WinRa1n2.1_Jailbreak_iPhone_%252B_iPad.rar/file" class="btn-download" target="_blank">
+            📥 Download File
+        </a>
+    </div>
+
+</div>
+
+<div class="footer">
+    © 2026 Ferdinan Flasher Batam — All Rights Reserved
+</div>
+
+<script>
+function createSnowflake() {
+    const snowContainer = document.getElementById('snow');
+    if(!snowContainer) return;
+    const snowflake = document.createElement('div');
+    snowflake.innerHTML = '•';
+    snowflake.classList.add('snowflake');
+    snowflake.style.left = Math.random() * 100 + 'vw';
+    snowflake.style.fontSize = Math.random() * 8 + 6 + 'px';
+    const duration = Math.random() * 5 + 5;
+    snowflake.style.animationDuration = duration + 's';
+    snowflake.style.opacity = Math.random() * 0.7 + 0.3;
+    
+    snowContainer.appendChild(snowflake);
+    setTimeout(() => { snowflake.remove(); }, duration * 1000);
+}
+setInterval(createSnowflake, 800);
+</script>
+
+<script>
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+document.onkeydown = function(e) {
+    if (e.keyCode == 123) { return false; }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
+};
+</script>
+
+</body>
+</html>
