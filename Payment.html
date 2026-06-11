@@ -5,22 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ferdinan Flasher - Metode Pembayaran</title>
     <style>
-        /* --- IKON HOME POJOK KIRI ATAS --- */
+        /* --- IKON HOME FIXED (MENGAMBANG SAAT DI-SCROLL) --- */
         .btn-home-top {
-            position: absolute;
+            position: fixed; /* Mengubah dari absolute ke fixed agar tetap di posisi */
             top: 20px;
             left: 20px;
-            z-index: 10000;
+            z-index: 100000; /* Ditinggikan agar selalu di atas elemen lain saat di-scroll */
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid #334155;
+            background: rgba(11, 18, 32, 0.85); /* Dibuat sedikit lebih gelap agar kontras saat menimpa konten */
+            backdrop-filter: blur(4px); /* Efek blur blur di belakang tombol */
+            border: 1px solid #1e293b;
             padding: 10px;
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
             text-decoration: none;
         }
 
@@ -28,7 +29,7 @@
             background-color: #0f172a;
             border-color: #38bdf8;
             transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
         }
 
         .btn-home-top svg {
@@ -81,7 +82,7 @@
             width: 100vw;
             height: 100vh;
             background-color: #05070c; 
-            z-index: 99999; 
+            z-index: 999999; /* Di atas tombol home saat awal animasi */
             pointer-events: none;
             animation: tvOpen 1.2s cubic-bezier(0.15, 0.85, 0.3, 1) forwards;
         }
@@ -381,14 +382,12 @@
 </head>
 <body>
 
-<!-- TOMBOL HOME POJOK KIRI ATAS -->
 <a href="https://ferdinanflash.github.io/home/" class="btn-home-top" title="Kembali ke Home">
     <svg viewBox="0 0 24 24">
         <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
     </svg>
 </a>
 
-<!-- OVERLAY EFEK TV NYALA -->
 <div class="tv-turn-on" id="tvOverlay"></div>
 
 <div class="snow-container" id="snow"></div>
@@ -408,7 +407,6 @@
         </a>
     </div>
 
-    <!-- TULISAN BERJALAN -->
     <div class="marquee-container">
         <div class="marquee-content">
             ALL SERVICES ANDROID & IOS - FRP, MDM, UNLOCK BOOTLOADER, ID LOCK, IMEI REPAIR, AUTH FLASH, ROOTING, CUSTOM ROM, UNLOCK NETWORK, ICLOUD BYPASS &nbsp;&bull;&nbsp; 
@@ -416,14 +414,12 @@
         </div>
     </div>
 
-    <!-- LOGO DI POSISI TENGAH BAWAH ICON SOSMED -->
     <div style="margin-top: 20px;">
         <img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/FB_IMG_1781070367755.jpg" alt="Logo Ferdinan Flasher" class="center-logo">
     </div>
 </div>
     
 <div class="payment-section">
-    <!-- KOTAK JAM DIGITAL REAL-TIME INDONESIA (WIB) SEBELUM METODE PEMBAYARAN -->
     <div class="live-clock-container">
         <span class="clock-label">Indonesia Time (WIB)</span>
         <div id="liveClock" class="clock-time">00:00:00</div>
@@ -472,7 +468,6 @@
     © 2026 Ferdinan Flasher Batam — All Rights Reserved
 </div>
 
-<!-- SCRIPT 1: LOGIKA PEMBAYARAN & COPY SYSTEM -->
 <script>
 function showPayment(method) {
     var details = document.getElementById('payment-details');
@@ -546,7 +541,6 @@ function copyText(textToCopy, buttonElement) {
 }
 </script>
 
-<!-- SCRIPT 2: EFEK SALJU SEDIKIT (800ms) -->
 <script>
 function createSnowflake() {
     const snowContainer = document.getElementById('snow');
@@ -566,7 +560,6 @@ function createSnowflake() {
 setInterval(createSnowflake, 800);
 </script>
 
-<!-- SCRIPT 3: SECURITY ANTI VIEW-SOURCE & JAM REAL TIME -->
 <script>
 // Anti View Source
 document.addEventListener('contextmenu', event => event.preventDefault());
