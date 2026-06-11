@@ -545,16 +545,35 @@ body {
             <div class="brand-item"><iconify-icon icon="simple-icons:realme" style="color: #FFC915;"></iconify-icon><span>Realme</span></div>
             <div class="brand-item"><iconify-icon icon="simple-icons:vivo" style="color: #415FFF;"></iconify-icon><span>Vivo</span></div>
         </div>
-        <!-- Group 3 -->
-                <div class="brand-group">
-            <div class="brand-item"><iconify-icon icon="simple-icons:infinix" style="color: #40FF00;"></iconify-icon><span>Infinix</span></div>
-            
+        
+        <!-- Group 3 (DIEDIT SESUAI DENGAN GAMBAR 194727.png) -->
+        <div class="brand-group">
+            <!-- Logo Infinix Custom -->
             <div class="brand-item">
-                <div style="font-family: 'Arial Black', sans-serif; font-size: 26px; font-weight: 900; color: #D61C23; letter-spacing: -1px; height: 38px; display: flex; align-items: center; justify-content: center; text-shadow: 0 0 6px rgba(214, 28, 35, 0.3);">itel</div>
-                <span>Itel</span>
+                <div class="logo-infinix-custom">Infinix</div>
             </div>
             
-            <div class="brand-item"><iconify-icon icon="simple-icons:tecno" style="color: #0056B3;"></iconify-icon><span>Tecno</span></div>
+            <!-- Logo Itel Custom Lengkap dengan Garis Lingkar Elips Merah Atas & Bawah -->
+            <div class="brand-item">
+                <div class="logo-itel-box">
+                    <svg class="itel-curve curve-top" viewBox="0 0 100 20">
+                        <path d="M 5,18 Q 45,2 95,12" fill="none" stroke="#D61C23" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                    <div class="logo-itel-text">itel</div>
+                    <svg class="itel-curve curve-bottom" viewBox="0 0 100 25">
+                        <path d="M 5,5 Q 55,22 80,10 L 50,22 L 40,12" fill="none" stroke="#D61C23" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- Logo Tecno Custom SVG Path -->
+            <div class="brand-item">
+                <div class="logo-tecno-custom">
+                    <svg viewBox="0 0 420 80" width="105" height="24">
+                        <path d="M0,0 H50 V18 H34 V80 H16 V18 H0 Z M65,0 H115 V15 H83 V32 H110 V47 H83 V65 H115 V80 H65 Z M175,15 C160,15 148,25 148,40 C148,55 160,65 175,65 C188,65 195,58 198,52 L212,61 C205,73 192,80 174,80 C142,80 130,58 130,40 C130,22 145,0 175,0 C194,0 207,8 213,20 L198,30 C194,22 186,15 175,15 Z M228,0 H246 L278,46 V0 H296 V80 H280 L246,32 V80 H228 Z M320,40 C320,15 338,0 365,0 C392,0 410,15 410,40 C410,65 392,80 365,80 C338,80 320,65 320,40 Z M338,40 C338,55 348,65 365,65 C382,65 392,55 392,40 C392,25 382,15 365,15 C348,15 338,25 338,40 Z" fill="#0076E3"/>
+                    </svg>
+                </div>
+            </div>
         </div>
 
         <!-- Group 4 -->
@@ -579,6 +598,70 @@ body {
 </div>
 
 <style>
+/* CSS TAMBAHAN UTK LOGO CUSTOM INFINIX, ITEL, TECNO SESUAI GAMBAR 194727.png */
+.logo-infinix-custom {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 28px;
+    font-weight: bold;
+    color: #000000; /* Hitam pekat sesuai gambar */
+    letter-spacing: -0.5px;
+    background: #ffffff;
+    padding: 2px 14px;
+    border-radius: 4px;
+    box-shadow: 0 0 8px rgba(255,255,255,0.2);
+}
+
+.logo-itel-box {
+    position: relative;
+    width: 90px;
+    height: 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 0 8px;
+    box-shadow: 0 0 8px rgba(255,255,255,0.2);
+}
+
+.logo-itel-text {
+    font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    font-style: italic;
+    color: #D61C23; /* Merah Itel */
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-top: -2px;
+}
+
+.itel-curve {
+    position: absolute;
+    width: 85%;
+    left: 7.5%;
+}
+
+.curve-top {
+    top: 4px;
+    height: 12px;
+}
+
+.curve-bottom {
+    bottom: -1px;
+    height: 16px;
+}
+
+.logo-tecno-custom {
+    background: #ffffff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 8px rgba(255,255,255,0.2);
+}
+
 /* CSS CAROUSEL LOGO MERK HP */
 .brand-carousel-container {
     max-width: 500px;
@@ -603,7 +686,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 50px; /* Jarak antar logo */
+    gap: 40px; /* Jarak antar logo diatur seimbang */
     opacity: 0;
     transform: scale(0.95);
     transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
@@ -620,7 +703,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
     transition: transform 0.3s;
 }
 
@@ -639,6 +722,7 @@ body {
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    margin-top: 8px;
 }
 
 /* Responsivitas Layar HP */
@@ -647,7 +731,7 @@ body {
         max-width: 100%;
     }
     .brand-group {
-        gap: 30px;
+        gap: 20px;
     }
     .brand-item iconify-icon {
         font-size: 32px;
@@ -655,6 +739,11 @@ body {
     .brand-item span {
         font-size: 10px;
     }
+    .logo-infinix-custom { font-size: 22px; padding: 2px 8px; }
+    .logo-itel-box { width: 75px; height: 42px; }
+    .logo-itel-text { font-size: 18px; }
+    .logo-tecno-custom { padding: 6px 8px; }
+    .logo-tecno-custom svg { width: 80px; height: 18px; }
 }
 </style>
 
