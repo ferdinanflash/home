@@ -5,6 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ferdinan Flasher - Metode Pembayaran</title>
     <style>
+        /* --- EFEK TV DIHIDUPKAN --- */
+.tv-turn-on {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #05070c; /* Menyamakan warna background web asli */
+    z-index: 99999; /* Di atas segalanya */
+    pointer-events: none;
+    animation: tvOpen 1.2s cubic-bezier(0.15, 0.85, 0.3, 1) forwards;
+}
+
+@keyframes tvOpen {
+    0% {
+        /* Awalnya layar mati total (hitam gelap gulita) */
+        background: #000;
+        clip-path: ellipse(0% 0% at 50% 50%);
+    }
+    20% {
+        /* Muncul garis horizontal putih terang di tengah */
+        background: #fff;
+        clip-path: ellipse(100% 1px at 50% 50%);
+        box-shadow: 0 0 20px #fff;
+    }
+    55% {
+        /* Garis melebar sedikit ke atas dan bawah, warna mulai memudar */
+        background: #1e293b;
+        clip-path: ellipse(100% 8px at 50% 50%);
+    }
+    100% {
+        /* Layar terbuka penuh 100% dan transparan (menampilkan web asli) */
+        background: transparent;
+        clip-path: ellipse(100% 100% at 50% 50%);
+    }
+}
+
         /* --- STYLE DASAR TEMA GELAP --- */
         body {
             background: radial-gradient(circle at top, #0b1220, #05070c);
@@ -278,6 +315,9 @@
     </style>
 </head>
 <body>
+    <!-- OVERLAY EFEK TV NYALA -->
+<div class="tv-turn-on" id="tvOverlay"></div>
+
 
 <div class="snow-container" id="snow"></div>
 
