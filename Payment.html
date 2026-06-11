@@ -22,6 +22,32 @@
             background: linear-gradient(180deg, #020617, #020617cc);
             border-bottom: 1px solid #1e293b;
         }
+/* CSS UNTUK TULISAN BERJALAN (MARQUEE) */
+.marquee-container {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-top: 25px;
+    background: rgba(30, 41, 59, 0.4); /* Background gelap transparan */
+    border-y: 1px solid #1e293b;
+    padding: 10px 0;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.marquee-content {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bold;
+    color: #38bdf8; /* Warna biru muda neon */
+    letter-spacing: 1px;
+    animation: marquee 25s linear infinite;
+    text-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+}
+
+@keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+}
 
         .fire-wrapper {
             padding: 15px 0;
@@ -259,7 +285,7 @@
     <div class="fire-wrapper">
         <h1 class="running-rgb-fire">Ferdinan Flasher Batam</h1>
     </div>
-    <p>Server Price & Server Status Monitoring</p>
+    <p>Payment Method</p>
     
     <div style="margin-top: 15px; display: flex; justify-content: center; gap: 20px;">
         <a href="https://fb.me/FS.TPP" target="_blank" title="Facebook Ferdinan Flasher">
@@ -268,6 +294,14 @@
         <a href="https://wa.me/+6287846414300" target="_blank" title="WhatsApp Ferdinan Flasher">
             <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 35px; height: 35px;">
         </a>
+            <!-- TULISAN BERJALAN BARU -->
+    <div class="marquee-container">
+        <div class="marquee-content">
+            ALL SERVICES ANDROID & IOS - FRP, MDM, UNLOCK BOOTLOADER, ID LOCK, IMEI REPAIR, AUTH FLASH, ROOTING, CUSTOM ROM, UNLOCK NETWORK, ICLOUD BYPASS &nbsp;&bull;&nbsp; 
+            ALL SERVICES ANDROID & IOS - FRP, MDM, UNLOCK BOOTLOADER, ID LOCK, IMEI REPAIR, AUTH FLASH, ROOTING, CUSTOM ROM, UNLOCK NETWORK, ICLOUD BYPASS &nbsp;&bull;&nbsp;
+        </div>
+    </div>
+
     </div>
 
     <!-- LOGO DI POSISI TENGAH BAWAH ICON SOSMED -->
