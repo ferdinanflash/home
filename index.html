@@ -316,8 +316,42 @@ body {
         </a>
     </div>
 </div>
+    <!-- TULISAN BERJALAN BARU -->
+    <div class="marquee-container">
+        <div class="marquee-content">
+            ALL SERVICES ANDROID & IOS - FRP, MDM, UNLOCK BOOTLOADER, ID LOCK, IMEI REPAIR, AUTH FLASH, ROOTING, CUSTOM ROM, UNLOCK NETWORK, ICLOUD BYPASS &nbsp;&bull;&nbsp; 
+            ALL SERVICES ANDROID & IOS - FRP, MDM, UNLOCK BOOTLOADER, ID LOCK, IMEI REPAIR, AUTH FLASH, ROOTING, CUSTOM ROM, UNLOCK NETWORK, ICLOUD BYPASS &nbsp;&bull;&nbsp;
+        </div>
+    </div>
 
 <style>
+    /* CSS UNTUK TULISAN BERJALAN (MARQUEE) */
+.marquee-container {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-top: 25px;
+    background: rgba(30, 41, 59, 0.4); /* Background gelap transparan */
+    border-y: 1px solid #1e293b;
+    padding: 10px 0;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.marquee-content {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bold;
+    color: #38bdf8; /* Warna biru muda neon */
+    letter-spacing: 1px;
+    animation: marquee 25s linear infinite;
+    text-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+}
+
+@keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+}
+
 .fire-wrapper {
     padding: 20px 0;
     display: inline-block;
