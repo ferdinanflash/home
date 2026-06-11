@@ -517,7 +517,7 @@ body {
         </div>
         <div class="brand-group">
             <div class="brand-item"><iconify-icon icon="simple-icons:infinix" style="color: #40FF00;"></iconify-icon><span>Infinix</span></div>
-            <div class="brand-item"><iconify-icon icon="simple-icons:intel" style="transform: rotate(180deg); color: #0067B8;"></iconify-icon><span>Itel</span></div>
+            <div class="brand-item"><iconify-icon icon="simple-icons:itel" style="transform: rotate(180deg); color: #0067B8;"></iconify-icon><span>Itel</span></div>
             <div class="brand-item"><iconify-icon icon="simple-icons:tecno" style="color: #0056B3;"></iconify-icon><span>Tecno</span></div>
         </div>
         <div class="brand-group">
@@ -762,27 +762,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .brand-item span {
         font-size: 10px;
     }
-}
-</style>
 
-<script>
-/* SCRIPT UTK MENUKAR GRUP LOGO SETIAP 2 DETIK (2000ms) */
-document.addEventListener("DOMContentLoaded", function () {
-    const groups = document.querySelectorAll('.brand-group');
-    let currentGroupIndex = 0;
-
-    setInterval(() => {
-        // Hapus kelas aktif dari grup saat ini
-        groups[currentGroupIndex].classList.remove('active');
-        
-        // Pindah ke grup berikutnya (kembali ke 0 jika sudah di akhir)
-        currentGroupIndex = (currentGroupIndex + 1) % groups.length;
-        
-        // Tambahkan kelas aktif ke grup yang baru
-        groups[currentGroupIndex].addClassList ? groups[currentGroupIndex].classList.add('active') : groups[currentGroupIndex].className += ' active';
-    }, 2000); // 2000 milidetik = 2 detik
-});
-</script>
 <div class="footer">
     © 2026 Ferdinan Flasher Batam — All Rights Reserved
 </div>
