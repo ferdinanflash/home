@@ -501,7 +501,143 @@ body {
     </a>
 </div>
 
-    ```html
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+
+<div class="brand-carousel-container">
+    <div class="brand-carousel-inner" id="brandCarousel">
+        <div class="brand-group active">
+            <div class="brand-item"><iconify-icon icon="simple-icons:xiaomi" style="color: #FF6700;"></iconify-icon><span></span></div>
+            <div class="brand-item"><iconify-icon icon="simple-icons:samsung" style="color: #1428A0;"></iconify-icon><span></span></div>
+            <div class="brand-item"><iconify-icon icon="simple-icons:oppo" style="color: #00925A;"></iconify-icon><span></span></div>
+        </div>
+        <div class="brand-group">
+            <div class="brand-item"><iconify-icon icon="simple-icons:oneplus" style="color: #F50514;"></iconify-icon><span>OnePlus</span></div>
+            <div class="brand-item"><iconify-icon icon="simple-icons:realme" style="color: #FFC915;"></iconify-icon><span>Realme</span></div>
+            <div class="brand-item"><iconify-icon icon="simple-icons:vivo" style="color: #415FFF;"></iconify-icon><span>Vivo</span></div>
+        </div>
+        <div class="brand-group">
+            <div class="brand-item"><iconify-icon icon="simple-icons:infinix" style="color: #40FF00;"></iconify-icon><span>Infinix</span></div>
+            <div class="brand-item"><iconify-icon icon="simple-icons:intel" style="transform: rotate(180deg); color: #0067B8;"></iconify-icon><span>Itel</span></div>
+            <div class="brand-item"><iconify-icon icon="simple-icons:tecno" style="color: #0056B3;"></iconify-icon><span>Tecno</span></div>
+        </div>
+        <div class="brand-group">
+            <div class="brand-item"><iconify-icon icon="simple-icons:asus" style="color: #00539B;"></iconify-icon><span>ASUS</span></div>
+            <div class="brand-item"><iconify-icon icon="simple-icons:nothing" style="color: #FFFFFF;"></iconify-icon><span>Nothing</span></div>
+            <div class="brand-item"><iconify-icon icon="simple-icons:lg" style="color: #A50034;"></iconify-icon><span>LG</span></div>
+        </div>
+        <div class="brand-group">
+            <div class="brand-item"><iconify-icon icon="simple-icons:nokia" style="color: #1241C6;"></iconify-icon><span>Nokia</span></div>
+            <div class="brand-item"><iconify-icon icon="simple-icons:huawei" style="color: #FF0000;"></iconify-icon><span>Huawei</span></div>
+            <div class="brand-item"><iconify-icon icon="simple-icons:honor" style="color: #FFFFFF;"></iconify-icon><span>Honor</span></div>
+        </div>
+        <div class="brand-group">
+            <div class="brand-item"><iconify-icon icon="simple-icons:sony" style="color: #FFFFFF;"></iconify-icon><span>Xperia</span></div>
+            <div class="brand-item"><iconify-icon icon="simple-icons:zte" style="color: #005AA5;"></iconify-icon><span>ZTE</span></div>
+            <div class="brand-item"><iconify-icon icon="simple-icons:apple" style="color: #D1D5DB;"></iconify-icon><span>Apple</span></div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* CSS CAROUSEL LOGO MERK HP */
+.brand-carousel-container {
+    max-width: 500px;
+    margin: 25px auto 30px auto;
+    overflow: hidden;
+    position: relative;
+    height: 90px;
+}
+
+.brand-carousel-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.brand-group {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px; /* Jarak antar logo */
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+    pointer-events: none;
+}
+
+.brand-group.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+.brand-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.3s;
+}
+
+.brand-item:hover {
+    transform: translateY(-5px);
+}
+
+.brand-item iconify-icon {
+    font-size: 38px; /* Ukuran icon logo */
+    /* Efek glow halus di belakang logo asli */
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.15)); 
+}
+
+.brand-item span {
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Responsivitas Layar HP */
+@media (max-width: 480px) {
+    .brand-carousel-container {
+        max-width: 100%;
+    }
+    .brand-group {
+        gap: 30px;
+    }
+    .brand-item iconify-icon {
+        font-size: 32px;
+    }
+    .brand-item span {
+        font-size: 10px;
+    }
+}
+</style>
+
+<script>
+/* SCRIPT ROTASI OTOMATIS SETIAP 2 DETIK */
+document.addEventListener("DOMContentLoaded", function () {
+    const groups = document.querySelectorAll('.brand-group');
+    let currentGroupIndex = 0;
+
+    setInterval(() => {
+        // Hilangkan kelas aktif dari grup saat ini
+        groups[currentGroupIndex].classList.remove('active');
+        
+        // Pindah index ke grup berikutnya
+        currentGroupIndex = (currentGroupIndex + 1) % groups.length;
+        
+        // Munculkan grup baru
+        groups[currentGroupIndex].classList.add('active');
+    }, 2000); // 2000ms = 2 detik
+});
+</script>
+
 <!-- SCRIPT TAMBAHAN UNTUK ICON BRAND -->
 <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
 
