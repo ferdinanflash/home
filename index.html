@@ -12,8 +12,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 9999; /* Memastikan salju di depan background tetapi tidak mengganggu klik */
-    pointer-events: none; /* Penting! Agar tombol/link di web tetap bisa diklik */
+    z-index: 9999; 
+    pointer-events: none; 
     overflow: hidden;
 }
 
@@ -25,7 +25,6 @@
     font-family: Arial, sans-serif;
     user-select: none;
     pointer-events: none;
-    /* Efek pendaran salju putih */
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); 
     animation: fall linear infinite;
 }
@@ -130,7 +129,7 @@
     transform: translateY(-1px);
 }
   
-/* CSS ASLI WEBSITE ANDA (DIPERTAHANKAN) */
+/* CSS ASLI WEBSITE (DIPERTAHANKAN) */
 @keyframes glow {
     0% { text-shadow: 0 0 5px #0ea5e9; }
     50% { text-shadow: 0 0 20px #38bdf8; }
@@ -316,6 +315,7 @@ body {
         </a>
     </div>
 </div>
+
     <!-- TULISAN BERJALAN BARU -->
     <div class="marquee-container">
         <div class="marquee-content">
@@ -325,13 +325,13 @@ body {
     </div>
 
 <style>
-    /* CSS UNTUK TULISAN BERJALAN (MARQUEE) */
+/* CSS UNTUK TULISAN BERJALAN (MARQUEE) */
 .marquee-container {
     width: 100%;
     overflow: hidden;
     white-space: nowrap;
     margin-top: 25px;
-    background: rgba(30, 41, 59, 0.4); /* Background gelap transparan */
+    background: rgba(30, 41, 59, 0.4); 
     border-y: 1px solid #1e293b;
     padding: 10px 0;
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
@@ -341,7 +341,7 @@ body {
     display: inline-block;
     font-size: 14px;
     font-weight: bold;
-    color: #38bdf8; /* Warna biru muda neon */
+    color: #38bdf8; 
     letter-spacing: 1px;
     animation: marquee 25s linear infinite;
     text-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
@@ -521,11 +521,11 @@ body {
         <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWU4ajhjNzJ3ZTUwMXQ1ZGpicXI4NWhmcGw2NDlpZXA4bmI4ZnlrdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/f7BCWwgz5KaiY0tgpz/giphy.gif" alt="order now" width="200" style="opacity: 0.5; display: inline-block;">
     </a>
 </div>
+
 <div class="payment-page-container">
     <a href="https://ferdinanflash.github.io/home/Payment" target="_blank" class="btn-payment-page">
         💳 Payment Page
     </a>
-    <!-- Teks Tambahan Rata Tengah -->
     <div style="margin-top: 15px; font-size: 14px; font-weight: bold; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 0 5px rgba(148, 163, 184, 0.2);">
         Brand Supported
     </div>
@@ -549,14 +549,9 @@ body {
             <div class="brand-item"><iconify-icon icon="simple-icons:vivo" style="color: #415FFF;"></iconify-icon><span>Vivo</span></div>
         </div>
         
-        <!-- Group 3 (DIEDIT SESUAI DENGAN GAMBAR 194727.png) -->
+        <!-- Group 3 -->
         <div class="brand-group">
-            <!-- Logo Infinix Custom -->
-            <div class="brand-item">
-                <div class="logo-infinix-custom">Infinix</div>
-            </div>
-            
-            <!-- Logo Itel Custom Lengkap dengan Garis Lingkar Elips Merah Atas & Bawah -->
+            <div class="brand-item"><div class="logo-infinix-custom">Infinix</div></div>
             <div class="brand-item">
                 <div class="logo-itel-box">
                     <svg class="itel-curve curve-top" viewBox="0 0 100 20">
@@ -568,8 +563,6 @@ body {
                     </svg>
                 </div>
             </div>
-            
-            <!-- Logo Tecno Custom SVG Path -->
             <div class="brand-item">
                 <div class="logo-tecno-custom">
                     <svg viewBox="0 0 420 80" width="105" height="24">
@@ -597,16 +590,22 @@ body {
             <div class="brand-item"><iconify-icon icon="simple-icons:zte" style="color: #005AA5;"></iconify-icon><span>ZTE</span></div>
             <div class="brand-item"><iconify-icon icon="simple-icons:apple" style="color: #D1D5DB;"></iconify-icon><span>Apple</span></div>
         </div>
+        <!-- Group 7 -->
+        <div class="brand-group">
+            <div class="brand-item"><iconify-icon icon="flat-color-icons:google" style="font-size: 38px;"></iconify-icon><span>Pixel</span></div>
+            <div class="brand-item"><iconify-icon icon="simple-icons:motorola" style="color: #00AEEF;"></iconify-icon><span>Moto</span></div>
+            <div class="brand-item"><iconify-icon icon="simple-icons:tcl" style="color: #E21919;"></iconify-icon><span>TCL</span></div>
+        </div>
     </div>
 </div>
 
 <style>
-/* CSS TAMBAHAN UTK LOGO CUSTOM INFINIX, ITEL, TECNO SESUAI GAMBAR 194727.png */
+/* CSS TAMBAHAN UTK LOGO CUSTOM INFINIX, ITEL, TECNO */
 .logo-infinix-custom {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-size: 28px;
     font-weight: bold;
-    color: #000000; /* Hitam pekat sesuai gambar */
+    color: #000000;
     letter-spacing: -0.5px;
     background: #ffffff;
     padding: 2px 14px;
@@ -633,7 +632,7 @@ body {
     font-size: 24px;
     font-weight: bold;
     font-style: italic;
-    color: #D61C23; /* Merah Itel */
+    color: #D61C23;
     letter-spacing: -1px;
     line-height: 1;
     margin-top: -2px;
@@ -689,7 +688,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 40px; /* Jarak antar logo diatur seimbang */
+    gap: 40px;
     opacity: 0;
     transform: scale(0.95);
     transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
@@ -715,7 +714,7 @@ body {
 }
 
 .brand-item iconify-icon {
-    font-size: 38px; /* Ukuran icon logo */
+    font-size: 38px;
     filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.15)); 
 }
 
@@ -757,15 +756,10 @@ document.addEventListener("DOMContentLoaded", function () {
     let currentGroupIndex = 0;
 
     setInterval(() => {
-        // Hilangkan kelas aktif dari grup saat ini
         groups[currentGroupIndex].classList.remove('active');
-        
-        // Pindah index ke grup berikutnya
         currentGroupIndex = (currentGroupIndex + 1) % groups.length;
-        
-        // Munculkan grup baru
         groups[currentGroupIndex].classList.add('active');
-    }, 2000); // 2000ms = 2 detik
+    }, 2000);
 });
 </script>
 
