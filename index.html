@@ -530,7 +530,6 @@ body {
         Brand Supported
     </div>
 </div>
-
 <!-- SCRIPT LOGO BRAND HP DENGAN WARNA ASLI -->
 <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
 
@@ -747,6 +746,60 @@ body {
     .logo-tecno-custom { padding: 6px 8px; }
     .logo-tecno-custom svg { width: 80px; height: 18px; }
 }
+    /* CSS TOMBOL WHATSAPP MENGAMBANG */
+.floating-wa-btn {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10005; /* Di atas salju dan elemen lainnya */
+    background-color: #25d366;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+    transition: all 0.3s ease;
+    animation: waBreathe 2s infinite;
+}
+
+.floating-wa-btn img {
+    width: 35px;
+    height: 35px;
+}
+
+.floating-wa-btn:hover {
+    background-color: #20ba5a;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 25px rgba(37, 211, 102, 0.7);
+}
+
+.floating-wa-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+/* Animasi Denyut Lembut */
+@keyframes waBreathe {
+    0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); }
+    70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+/* Penyesuaian Ukuran untuk Layar HP */
+@media (max-width: 480px) {
+    .floating-wa-btn {
+        right: 15px;
+        width: 50px;
+        height: 50px;
+    }
+    .floating-wa-btn img {
+        width: 28px;
+        height: 28px;
+    }
+}
+
 </style>
 
 <script>
@@ -806,6 +859,10 @@ function createSnowflake() {
 
 setInterval(createSnowflake, 600);
 </script>
+<!-- TOMBOL WHATSAPP MENGAMBANG (KANAN TENGAH) -->
+<a href="https://wa.me/+6287846414300" target="_blank" class="floating-wa-btn" title="Chat via WhatsApp">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+</a>
 
 </body>
 </html>
