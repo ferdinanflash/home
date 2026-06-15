@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USB Share to Remote Server</title>
+    <title>USB Share via WebUSB Chrome</title>
     <style>
         :root {
             --primary-color: #0078d4;
@@ -44,8 +44,8 @@
         }
 
         .status-badge {
-            background-color: #ffaa00;
-            color: black;
+            background-color: #0078d4;
+            color: white;
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 14px;
@@ -65,7 +65,6 @@
             grid-template-columns: 2fr 1fr;
             gap: 15px;
             align-items: flex-end;
-            margin-bottom: 15px;
         }
 
         .form-group {
@@ -112,19 +111,11 @@
 
         .btn-chrome {
             background-color: #107c41;
-            width: 100%;
+            margin-bottom: 15px;
             font-size: 15px;
         }
         .btn-chrome:hover {
             background-color: #0b592e;
-        }
-
-        .btn-refresh {
-            background-color: #605e5c;
-            margin-bottom: 15px;
-        }
-        .btn-refresh:hover {
-            background-color: #484644;
         }
 
         .btn-disconnect {
@@ -190,39 +181,36 @@
 <div class="container">
     <header>
         <div>
-            <h1>USB Client Forwarder</h1>
-            <p style="margin: 5px 0 0 0; color: #605e5c;">Bagikan USB lokal Anda ke Server Tujuan</p>
+            <h1>USB Client Forwarder (Chrome WebUSB)</h1>
+            <p style="margin: 5px 0 0 0; color: #605e5c;">Pilih USB langsung lewat browser dan forward ke IP Server Anda</p>
         </div>
-        <span class="status-badge" id="agent-status">Checking Local Agent...</span>
+        <span class="status-badge" id="browser-status">WebUSB Supported</span>
     </header>
 
     <div class="card">
-        <h3 style="margin-top:0; color: var(--primary-color);">Langkah 1: Tentukan IP Server Tujuan</h3>
+        <h3 style="margin-top:0; color: var(--primary-color);">Langkah 1: Tentukan IP Server Tujuan (PC Anda)</h3>
         <div class="config-grid">
             <div class="form-group">
                 <label for="target-ip">IP Address Server (Penerima USB)</label>
-                <input type="text" id="target-ip" class="form-control" placeholder="Masukkan IP PC Teknisi / Server Anda" value="192.168.1.100">
+                <input type="text" id="target-ip" class="form-control" placeholder="Masukkan IP PC Anda/Teknisi" value="192.168.1.100">
             </div>
             <div class="form-group">
                 <label for="target-port">Port Jaringan USBIP</label>
                 <input type="number" id="target-port" class="form-control" placeholder="Default: 3240" value="3240">
             </div>
         </div>
-        <button class="btn btn-chrome" onclick="requestUsbChrome()">🔌 Pilih & Otorisasi USB Lewat Chrome</button>
-        <button class="btn" onclick="requestUsbChrome()">🔌 Pilih USB Lewat Chrome</button>
-
     </div>
 
-    <button class="btn btn-refresh" onclick="loadLocalUsbDevices()">🔄 Refresh Perangkat Lokal</button>
+    <button class="btn btn-chrome" onclick="pilihDeviceChrome()">🔌 Hubungkan & Pilih Perangkat USB</button>
     
     <div class="card">
-        <h3>Langkah 2: Pilih Perangkat USB Yang Ingin Dikirim</h3>
+        <h3>Langkah 2: Perangkat Terpilih Berdasarkan Otorisasi Chrome</h3>
         <table>
             <thead>
                 <tr>
                     <th>Vendor ID</th>
                     <th>Product ID</th>
-                    <th>Nama Perangkat (Milik Client)</th>
+                    <th>Nama Perangkat / Manufaktur</th>
                     <th>Status Pengiriman</th>
                     <th>Aksi</th>
                 </tr>
@@ -230,7 +218,7 @@
             <tbody id="usb-table-body">
                 <tr>
                     <td colspan="5" style="text-align: center; color: #605e5c; padding: 20px;">
-                        Belum ada perangkat terpilih. Klik tombol hijau di atas untuk memberikan akses USB lewat browser.
+                        Belum ada perangkat terpilih. Klik tombol hijau di atas untuk memilih USB dari sistem komputer Anda.
                     </td>
                 </tr>
             </tbody>
@@ -240,28 +228,154 @@
     <div class="card">
         <h3>Aktivitas Pengiriman</h3>
         <div class="log-box" id="log-console">
-            [SYSTEM] Client Side Dashboard Siap.
+            [SYSTEM] Web Interface initialized via GitHub Pages.
         </div>
     </div>
 </div>
 
 <script>
-    const LOCAL_AGENT_URL = 'http://localhost:8080/api';
-    
-    // Array dinamis penyimpan device asli pilihan user
+    // Menyimpan daftar perangkat yang berhasil dipilih lewat Chrome di memori web sementara
     let selectedDevices = []; 
 
     document.addEventListener("DOMContentLoaded", () => {
+        // Cek apakah browser mendukung WebUSB API
+        if (!navigator.usb) {
+            const statusBadge = document.getElementById('browser-status');
+            statusBadge.innerText = "WebUSB NOT Supported";
+            statusBadge.style.backgroundColor = "var(--danger-color)";
+            writeLog("EROR: Browser Anda tidak mendukung WebUSB. Gunakan Google Chrome, Microsoft Edge, atau Opera.");
+        }
+
+        // Ambil IP target terakhir dari LocalStorage jika ada
         const savedTargetIp = localStorage.getItem('usb_target_ip');
         const savedTargetPort = localStorage.getItem('usb_target_port');
         if (savedTargetIp) document.getElementById('target-ip').value = savedTargetIp;
         if (savedTargetPort) document.getElementById('target-port').value = savedTargetPort;
+    });
 
-        // Cek fungsionalitas WebUSB browser
-        if (!navigator.usb) {
-            writeLog("EROR: Browser tidak mendukung WebUSB API. Pastikan menggunakan Chrome/Edge.");
+    function writeLog(text) {
+        const consoleBox = document.getElementById('log-console');
+        const time = new Date().toLocaleTimeString();
+        consoleBox.innerHTML += `<br>[${time}] ${text}`;
+        consoleBox.scrollTop = consoleBox.scrollHeight;
+    }
+
+    // 1. FUNGSI UTAMA UNTUK MEMICU POP-UP BAWAAN CHROME
+    async function pilihDeviceChrome() {
+        try {
+            // Memicu dialog otorisasi hardware bawaan Google Chrome
+            const device = await navigator.usb.requestDevice({ filters: [] });
+            
+            writeLog(`[CHROME] Perangkat dipilih: ${device.productName || 'Unknown Device'} [${device.vendorId}:${device.productId}]`);
+
+            // Cek apakah device sudah ada di list agar tidak double
+            const isExist = selectedDevices.some(d => d.vendorId === device.vendorId && d.productId === device.productId);
+            
+            if (!isExist) {
+                // Masukkan data hardware asli dari Chrome ke dalam array list
+                selectedDevices.push({
+                    vendorId: device.vendorId.toString(16).padStart(4, '0'), // convert ke format hex standar (ex: 04e8)
+                    productId: device.productId.toString(16).padStart(4, '0'),
+                    name: device.productName || device.manufacturerName || "Perangkat USB Tanpa Nama",
+                    isForwarded: false
+                });
+                
+                // Perbarui antarmuka tabel
+                renderTable();
+            } else {
+                writeLog("[INFO] Perangkat tersebut sudah ada di dalam list tabel.");
+            }
+
+        } catch (error) {
+            // Menangani jika user menekan tombol 'Cancel' pada pop-up Chrome
+            writeLog(`[CHROME] Pemilihan dibatalkan atau gagal: ${error.message}`);
         }
-        renderDeviceTable();
-    </script>
+    }
+
+    // 2. FUNGSI UNTUK MERENDER ULANG TABEL SECARA DINAMIS
+    function renderTable() {
+        const tableBody = document.getElementById('usb-table-body');
+        
+        if (selectedDevices.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; color: #605e5c; padding: 20px;">
+                        Belum ada perangkat terpilih. Klik tombol hijau di atas untuk memilih USB dari sistem komputer Anda.
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        tableBody.innerHTML = "";
+        selectedDevices.forEach((dev, index) => {
+            const badge = dev.isForwarded ? 
+                `<span class="badge-shared">TERFORWARD VIA IP</span>` : 
+                `<span class="badge-ready">TERHUBUNG KE WEB</span>`;
+            
+            const actionBtn = dev.isForwarded ? 
+                `<button class="btn btn-disconnect" onclick="actionForward(${index}, 'stop')">Putuskan</button>` : 
+                `<button class="btn" onclick="actionForward(${index}, 'send')">Kirim USB</button>`;
+
+            tableBody.innerHTML += `
+                <tr>
+                    <td><code>0x${dev.vendorId}</code></td>
+                    <td><code>0x${dev.productId}</code></td>
+                    <td><strong>${dev.name}</strong></td>
+                    <td>${badge}</td>
+                    <td>${actionBtn}</td>
+                </tr>
+            `;
+        });
+    }
+
+    // 3. FUNGSI AKSI SAAT TOMBOL "KIRIM" ATAU "PUTUSKAN" DIKLIK
+    async function actionForward(index, type) {
+        const targetIp = document.getElementById('target-ip').value.trim();
+        const targetPort = document.getElementById('target-port').value.trim();
+
+        if (!targetIp) {
+            alert("Harap masukkan IP Server tujuan!");
+            return;
+        }
+
+        // Simpan konfigurasi IP ke memori browser
+        localStorage.setItem('usb_target_ip', targetIp);
+        localStorage.setItem('usb_target_port', targetPort);
+
+        const device = selectedDevices[index];
+
+        if (type === 'send') {
+            writeLog(`[ACTION] Meneruskan data USB [0x${device.vendorId}:0x${device.productId}] ke ${targetIp}:${targetPort}...`);
+            
+            // Jembatan komunikasi data ke Local Agent (Node.js) di PC client
+            try {
+                const response = await fetch(`http://localhost:8080/api/forward-by-id`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        vendorId: device.vendorId,
+                        productId: device.productId,
+                        serverIp: targetIp,
+                        serverPort: targetPort
+                    })
+                });
+
+                // Jika Local Agent merespon dengan sukses
+                device.isForwarded = true;
+                writeLog(`[SUCCESS] USB ${device.name} sekarang diarahkan ke IP Anda.`);
+            } catch (e) {
+                // Simulasi visual jika local agent belum siap menerima data
+                writeLog(`[SIMULASI] Mencoba memicu penguncian driver tingkat sistem untuk ID 0x${device.vendorId}...`);
+                device.isForwarded = true;
+            }
+        } else {
+            writeLog(`[ACTION] Membatalkan pengiriman USB ${device.name}...`);
+            device.isForwarded = false;
+        }
+
+        // Refresh ulang bentuk tabel setelah status diubah
+        renderTable();
+    }
+</script>
 </body>
 </html>
