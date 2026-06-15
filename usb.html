@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USB over IP Web Dashboard</title>
+    <title>USB Share to Remote Server</title>
     <style>
         :root {
             --primary-color: #0078d4;
@@ -44,8 +44,8 @@
         }
 
         .status-badge {
-            background-color: var(--success-color);
-            color: white;
+            background-color: #ffaa00;
+            color: black;
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 14px;
@@ -60,10 +60,9 @@
             margin-bottom: 20px;
         }
 
-        /* Style untuk Form Input IP dan Port */
         .config-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr auto;
+            grid-template-columns: 2fr 1fr;
             gap: 15px;
             align-items: flex-end;
         }
@@ -86,6 +85,7 @@
             border-radius: 4px;
             font-size: 14px;
             outline: none;
+            background-color: #fff;
         }
 
         .form-control:focus {
@@ -111,6 +111,7 @@
 
         .btn-refresh {
             background-color: #605e5c;
+            margin-bottom: 15px;
         }
         .btn-refresh:hover {
             background-color: #484644;
@@ -126,7 +127,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 5px;
         }
 
         th, td {
@@ -145,8 +146,8 @@
         }
 
         .badge-shared {
-            background-color: #fff4ce;
-            color: #794500;
+            background-color: #dff6dd;
+            color: #107c41;
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 12px;
@@ -154,8 +155,8 @@
         }
         
         .badge-ready {
-            background-color: #dff6dd;
-            color: #107c41;
+            background-color: #edebe9;
+            color: #323130;
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 12px;
@@ -179,97 +180,70 @@
 <div class="container">
     <header>
         <div>
-            <h1>USB over IP - Control Panel</h1>
-            <p style="margin: 5px 0 0 0; color: #605e5c;">Target Node: <strong id="current-target">Mengonfigurasi...</strong></p>
+            <h1>USB Client Forwarder</h1>
+            <p style="margin: 5px 0 0 0; color: #605e5c;">Bagikan USB lokal Anda ke Server Tujuan</p>
         </div>
-        <span class="status-badge">Service Active</span>
+        <span class="status-badge" id="agent-status">Checking Local Agent...</span>
     </header>
 
     <div class="card">
+        <h3 style="margin-top:0; color: var(--primary-color);">Langkah 1: Tentukan IP Server Tujuan</h3>
         <div class="config-grid">
             <div class="form-group">
-                <label for="server-ip">IP Address Server Back-End</label>
-                <input type="text" id="server-ip" class="form-control" placeholder="Contoh: 192.168.1.50" value="localhost">
+                <label for="target-ip">IP Address Server (Penerima USB)</label>
+                <input type="text" id="target-ip" class="form-control" placeholder="Masukkan IP PC Teknisi / Server Anda" value="192.168.1.100">
             </div>
             <div class="form-group">
-                <label for="server-port">Port API</label>
-                <input type="number" id="server-port" class="form-control" placeholder="Contoh: 8080" value="8080">
-            </div>
-            <div>
-                <button class="btn btn-refresh" onclick="saveConfigAndRefresh()">🔄 Hubungkan & Refresh</button>
+                <label for="target-port">Port Jaringan USBIP</label>
+                <input type="number" id="target-port" class="form-control" placeholder="Default: 3240" value="3240">
             </div>
         </div>
     </div>
 
+    <button class="btn btn-refresh" onclick="loadLocalUsbDevices()">🔄 Refresh Perangkat Lokal</button>
+    
     <div class="card">
-        <h3>Perangkat USB Terdeteksi di Server</h3>
+        <h3>Langkah 2: Pilih Perangkat USB Yang Ingin Dikirim</h3>
         <table>
             <thead>
                 <tr>
                     <th>Bus ID</th>
-                    <th>Nama Perangkat / Vendor</th>
+                    <th>Nama Perangkat (Milik Client)</th>
                     <th>ID Hardware</th>
-                    <th>Status</th>
+                    <th>Status Pengiriman</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody id="usb-table-body">
                 <tr>
-                    <td colspan="5" style="text-align: center; color: #605e5c;">Silakan klik "Hubungkan & Refresh" untuk memuat data.</td>
+                    <td colspan="5" style="text-align: center; color: #605e5c;">Mencari agen lokal...</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
     <div class="card">
-        <h3>System Live Logs</h3>
+        <h3>Aktivitas Pengiriman</h3>
         <div class="log-box" id="log-console">
-            [SYSTEM] Web Interface initialized.
+            [SYSTEM] Client Side Dashboard Siap.
         </div>
     </div>
 </div>
 
 <script>
-    // Fungsi otomatis berjalan saat halaman dibuka pertama kali
+    // URL Back-end lokal milik si Client sendiri (agar web bisa akses USB fisik mereka)
+    const LOCAL_AGENT_URL = 'http://localhost:8080/api';
+
     document.addEventListener("DOMContentLoaded", () => {
-        // Ambil konfigurasi lama dari memori browser jika ada
-        const savedIp = localStorage.getItem('usb_server_ip');
-        const savedPort = localStorage.getItem('usb_server_port');
+        // Load IP tujuan terakhir yang pernah diketik client agar tidak lupa
+        const savedTargetIp = localStorage.getItem('usb_target_ip');
+        const savedTargetPort = localStorage.getItem('usb_target_port');
+        if (savedTargetIp) document.getElementById('target-ip').value = savedTargetIp;
+        if (savedTargetPort) document.getElementById('target-port').value = savedTargetPort;
 
-        if (savedIp) document.getElementById('server-ip').value = savedIp;
-        if (savedPort) document.getElementById('server-port').value = savedPort;
-
-        updateTargetText();
-        loadUsbDevices();
+        loadLocalUsbDevices();
     });
 
-    // Mengambil nilai dinamis dari input form
-    function getApiUrl() {
-        const ip = document.getElementById('server-ip').value.trim() || 'localhost';
-        const port = document.getElementById('server-port').value.trim() || '8080';
-        return `http://${ip}:${port}/api`;
-    }
-
-    function updateTargetText() {
-        const ip = document.getElementById('server-ip').value.trim() || 'localhost';
-        const port = document.getElementById('server-port').value.trim() || '8080';
-        document.getElementById('current-target').innerText = `${ip}:${port}`;
-    }
-
-    // Fungsi menyimpan konfigurasi ke LocalStorage dan refresh data
-    function saveConfigAndRefresh() {
-        const ip = document.getElementById('server-ip').value.trim();
-        const port = document.getElementById('server-port').value.trim();
-
-        localStorage.setItem('usb_server_ip', ip);
-        localStorage.setItem('usb_server_port', port);
-
-        updateTargetText();
-        writeLog(`Konfigurasi target diubah ke -> http://${ip}:${port}`);
-        loadUsbDevices();
-    }
-
-    // Fungsi menulis log ke layar console dashboard
     function writeLog(text) {
         const consoleBox = document.getElementById('log-console');
         const time = new Date().toLocaleTimeString();
@@ -277,77 +251,106 @@
         consoleBox.scrollTop = consoleBox.scrollHeight;
     }
 
-    // 1. Fungsi GET data dari Back-end secara Dinamis
-    async function loadUsbDevices() {
-        const baseUrl = getApiUrl();
-        writeLog(`Meminta daftar USB dari target: ${baseUrl}/list-usb ...`);
+    // Mengambil daftar USB fisik yang menancap di PC Client saat ini
+    async function loadLocalUsbDevices() {
         const tableBody = document.getElementById('usb-table-body');
+        const statusBadge = document.getElementById('agent-status');
         
         try {
-            /* // Integrasi Nyata: Hapus tanda komentar blok ini jika service back-end sudah aktif
-            const response = await fetch(`${baseUrl}/list-usb`);
-            if (!response.ok) throw new Error(`HTTP Error Status: ${response.status}`);
+            // Memanggil service lokal yang berjalan di PC Client
+            const response = await fetch(`${LOCAL_AGENT_URL}/list-usb`);
+            if (!response.ok) throw new Error();
             const data = await response.json();
-            */
+            
+            statusBadge.innerText = "Local Agent: Connected";
+            statusBadge.style.backgroundColor = "var(--success-color)";
+            statusBadge.style.color = "white";
 
-            // DATA MOCKUP / SIMULASI (Hapus jika integrasi nyata di atas sudah aktif)
-            const mockDevices = [
-                { busId: "1-1", name: "Samsung Galaxy A54 (MTP Mode)", hwId: "04e8:6860", status: "Ready" },
-                { busId: "1-3", name: "SanDisk Cruzer Glide Flashdrive", hwId: "0781:5575", status: "Shared" }
-            ];
-
-            tableBody.innerHTML = "";
-            mockDevices.forEach(dev => {
-                const isShared = dev.status === "Shared";
-                const badge = isShared ? `<span class="badge-shared">SHARED / BUSY</span>` : `<span class="badge-ready">AVAILABLE</span>`;
-                
-                const actionBtn = isShared ? 
-                    `<button class="btn btn-disconnect" onclick="toggleShare('${dev.busId}', 'unshare')">Disconnect</button>` : 
-                    `<button class="btn" onclick="toggleShare('${dev.busId}', 'share')">Share Device</button>`;
-
-                tableBody.innerHTML += `
-                    <tr>
-                        <td><strong>${dev.busId}</strong></td>
-                        <td>${dev.name}</td>
-                        <td><code>${dev.hwId}</code></td>
-                        <td>${badge}</td>
-                        <td>${actionBtn}</td>
-                    </tr>
-                `;
-            });
-            writeLog("Daftar USB berhasil diperbarui berdasarkan alamat IP saat ini.");
-
+            // Proses parsing data asli di sini...
+            
         } catch (error) {
-            writeLog(`EROR KONEKSI: Tidak dapat menghubungi service di ${baseUrl}/list-usb. Pesan: ${error.message}`);
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger-color); font-weight:bold;">Gagal terhubung ke Agent Service! Periksa IP, Port, atau pastikan Back-end Anda sudah dinyalakan.</td></tr>`;
+            statusBadge.innerText = "Local Agent: Disconnected";
+            statusBadge.style.backgroundColor = "var(--danger-color)";
+            statusBadge.style.color = "white";
+            
+            writeLog("EROR: Gagal mendeteksi Local Agent. Pastikan aplikasi background service sudah terinstal di PC Anda.");
+            
+            // DEMO DATA SISI CLIENT (Hapus jika sudah diintegrasikan dengan service lokal client)
+            showMockDevices();
         }
     }
 
-    // 2. Fungsi POST untuk eksekusi Share/Unshare secara Dinamis
-    async function toggleShare(busId, action) {
-        const baseUrl = getApiUrl();
-        writeLog(`Mengirim perintah ${action.toUpperCase()} ke ${baseUrl}/${action} untuk Bus ID: ${busId}...`);
-        
-        try {
-            /*
-            // Integrasi Nyata: Hapus tanda komentar jika back-end aktif
-            const response = await fetch(`${baseUrl}/${action}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ busId: busId })
-            });
-            const result = await response.json();
-            writeLog(`Respon Server: ${result.message}`);
-            */
+    function showMockDevices() {
+        const tableBody = document.getElementById('usb-table-body');
+        const mockDevices = [
+            { busId: "1-1", name: "Vivo Y22 (Fastboot Mode)", hwId: "2d95:6001", isForwarded: false },
+            { busId: "1-4", name: "Xiaomi Redmi Note 10 (EDL Mode 9008)", hwId: "05c6:9008", isForwarded: true }
+        ];
 
-            // Simulasi Sukses di Sisi Frontend
-            alert(`Sukses! Perintah [${action}] untuk USB [${busId}] dikirim ke ${baseUrl}`);
-            writeLog(`Aksi ${action} pada perangkat ${busId} selesai.`);
-            loadUsbDevices();
+        tableBody.innerHTML = "";
+        mockDevices.forEach(dev => {
+            const badge = dev.isForwarded ? 
+                `<span class="badge-shared">TERKIRIM ➔ SERVER</span>` : 
+                `<span class="badge-ready">STANDBY LOKAL</span>`;
             
-        } catch (error) {
-            writeLog(`Eror saat mengeksekusi aksi: ${error.message}`);
+            const actionBtn = dev.isForwarded ? 
+                `<button class="btn btn-disconnect" onclick="handleUsbAction('${dev.busId}', 'stop')">Putuskan</button>` : 
+                `<button class="btn" onclick="handleUsbAction('${dev.busId}', 'send')">Kirim USB</button>`;
+
+            tableBody.innerHTML += `
+                <tr>
+                    <td><strong>${dev.busId}</strong></td>
+                    <td>${dev.name}</td>
+                    <td><code>${dev.hwId}</code></td>
+                    <td>${badge}</td>
+                    <td>${actionBtn}</td>
+                </tr>
+            `;
+        });
+    }
+
+    // Fungsi eksekusi kirim USB ke IP Anda
+    async function handleUsbAction(busId, action) {
+        const targetIp = document.getElementById('target-ip').value.trim();
+        const targetPort = document.getElementById('target-port').value.trim();
+
+        if(!targetIp) {
+            alert("Harap isi IP Server tujuan terlebih dahulu!");
+            return;
         }
+
+        // Simpan IP target ke memori browser client
+        localStorage.setItem('usb_target_ip', targetIp);
+        localStorage.setItem('usb_target_port', targetPort);
+
+        if (action === 'send') {
+            writeLog(`Mengunci USB ${busId} dan mengarahkannya ke Server -> ${targetIp}:${targetPort}...`);
+            
+            try {
+                // Mengirim perintah ke backend local client agar mengeksekusi usbip bind/attach ke IP Anda
+                /*
+                const response = await fetch(`${LOCAL_AGENT_URL}/forward`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        busId: busId,
+                        serverIp: targetIp,
+                        serverPort: targetPort
+                    })
+                });
+                */
+                
+                alert(`USB ${busId} Berhasil dialihkan ke IP ${targetIp}`);
+                writeLog(`Status: USB ${busId} sekarang aktif di remote server.`);
+            } catch (e) {
+                writeLog(`Gagal mengirim: ${e.message}`);
+            }
+        } else {
+            writeLog(`Menghentikan pengalihan USB ${busId}...`);
+            alert(`Koneksi USB ${busId} ke server telah diputus.`);
+        }
+        
+        loadLocalUsbDevices();
     }
 </script>
 </body>
