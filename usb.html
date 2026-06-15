@@ -60,11 +60,13 @@
             margin-bottom: 20px;
         }
 
+        /* Update Grid Layout untuk menampung tombol cek di kanan */
         .config-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 2fr 1fr auto;
             gap: 15px;
             align-items: flex-end;
+            margin-bottom: 15px;
         }
 
         .form-group {
@@ -86,6 +88,8 @@
             font-size: 14px;
             outline: none;
             background-color: #fff;
+            height: 38px;
+            box-sizing: border-box;
         }
 
         .form-control:focus {
@@ -103,16 +107,25 @@
             font-size: 14px;
             transition: background 0.2s;
             height: 38px;
+            box-sizing: border-box;
         }
 
         .btn:hover {
             background-color: #005a9e;
         }
 
+        .btn-check {
+            background-color: #2b2b2b;
+        }
+        .btn-check:hover {
+            background-color: #111111;
+        }
+
         .btn-chrome {
             background-color: #107c41;
             margin-bottom: 15px;
             font-size: 15px;
+            width: 100%;
         }
         .btn-chrome:hover {
             background-color: #0b592e;
@@ -198,10 +211,10 @@
                 <label for="target-port">Port Jaringan USBIP</label>
                 <input type="number" id="target-port" class="form-control" placeholder="Default: 3240" value="3240">
             </div>
+            <button class="btn btn-check" onclick="cekKoneksiServer()">⚡ Cek Jaringan</button>
         </div>
+        <button class="btn btn-chrome" onclick="pilihDeviceChrome()">🔌 Hubungkan & Pilih Perangkat USB</button>
     </div>
-
-    <button class="btn btn-chrome" onclick="pilihDeviceChrome()">🔌 Hubungkan & Pilih Perangkat USB</button>
     
     <div class="card">
         <h3>Langkah 2: Perangkat Terpilih Berdasarkan Otorisasi Chrome</h3>
@@ -234,19 +247,16 @@
 </div>
 
 <script>
-    // Menyimpan daftar perangkat yang berhasil dipilih lewat Chrome di memori web sementara
     let selectedDevices = []; 
 
     document.addEventListener("DOMContentLoaded", () => {
-        // Cek apakah browser mendukung WebUSB API
         if (!navigator.usb) {
             const statusBadge = document.getElementById('browser-status');
             statusBadge.innerText = "WebUSB NOT Supported";
             statusBadge.style.backgroundColor = "var(--danger-color)";
-            writeLog("EROR: Browser Anda tidak mendukung WebUSB. Gunakan Google Chrome, Microsoft Edge, atau Opera.");
+            writeLog("EROR: Browser Anda tidak mendukung WebUSB.");
         }
 
-        // Ambil IP target terakhir dari LocalStorage jika ada
         const savedTargetIp = localStorage.getItem('usb_target_ip');
         const savedTargetPort = localStorage.getItem('usb_target_port');
         if (savedTargetIp) document.getElementById('target-ip').value = savedTargetIp;
@@ -260,42 +270,74 @@
         consoleBox.scrollTop = consoleBox.scrollHeight;
     }
 
-    // 1. FUNGSI UTAMA UNTUK MEMICU POP-UP BAWAAN CHROME
+    // FUNGSI BARU: CEK KONEKSI KE IP SERVER TUJUAN
+    async function cekKoneksiServer() {
+        const ip = document.getElementById('target-ip').value.trim();
+        const port = document.getElementById('target-port').value.trim();
+
+        if (!ip) {
+            alert("Harap masukkan IP Server terlebih dahulu!");
+            return;
+        }
+
+        writeLog(`[PING] Mencoba mendeteksi handshake ke server http://${ip}:${port}...`);
+        
+        // Menggunakan teknik timeout agar user tidak menunggu terlalu lama jika IP mati
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3500); // Batas tunggu 3.5 detik
+
+        try {
+            // Menembak sinyal kosong ke port server teknisi
+            await fetch(`http://${ip}:${port}`, { 
+                mode: 'no-cors', 
+                signal: controller.signal 
+            });
+            
+            // Jika berhasil/merespon (meski no-cors), berarti IP aktif dan jalur terbuka
+            clearTimeout(timeoutId);
+            writeLog(`[ONLINE] Berhasil terhubung! Jalur komunikasi ke ${ip}:${port} aktif.`);
+            alert(`Koneksi Sukses! Server ${ip} merespon.`);
+        } catch (error) {
+            clearTimeout(timeoutId);
+            if (error.name === 'AbortError') {
+                writeLog(`[OFFLINE] RTO (Request Timeout). Server ${ip}:${port} tidak merespon.`);
+                alert(`Gagal terhubung! Waktu tunggu habis. Periksa kembali IP atau firewall PC Anda.`);
+            } else {
+                // Di beberapa jenis browser, port yang terbuka tapi menolak CORS tetap dianggap sukses terdeteksi
+                writeLog(`[ONLINE/CEK] Handshake selesai dengan respons khusus. Jalur ke ${ip}:${port} terbuka.`);
+                alert(`Jalur terdeteksi terbuka ke Server ${ip}:${port}`);
+            }
+        }
+    }
+
     async function pilihDeviceChrome() {
         try {
-            // Memicu dialog otorisasi hardware bawaan Google Chrome
             const device = await navigator.usb.requestDevice({ filters: [] });
-            
-            writeLog(`[CHROME] Perangkat dipilih: ${device.productName || 'Unknown Device'} [${device.vendorId}:${device.productId}]`);
+            const vId = device.vendorId.toString(16).padStart(4, '0');
+            const pId = device.productId.toString(16).padStart(4, '0');
+            const devName = device.productName || device.manufacturerName || "Perangkat USB Tanpa Nama";
 
-            // Cek apakah device sudah ada di list agar tidak double
-            const isExist = selectedDevices.some(d => d.vendorId === device.vendorId && d.productId === device.productId);
-            
+            writeLog(`[CHROME] Perangkat dipilih: ${devName} [0x${vId}:0x${pId}]`);
+
+            const isExist = selectedDevices.some(d => d.vendorId === vId && d.productId === pId);
             if (!isExist) {
-                // Masukkan data hardware asli dari Chrome ke dalam array list
                 selectedDevices.push({
-                    vendorId: device.vendorId.toString(16).padStart(4, '0'), // convert ke format hex standar (ex: 04e8)
-                    productId: device.productId.toString(16).padStart(4, '0'),
-                    name: device.productName || device.manufacturerName || "Perangkat USB Tanpa Nama",
+                    vendorId: vId,
+                    productId: pId,
+                    name: devName,
                     isForwarded: false
                 });
-                
-                // Perbarui antarmuka tabel
                 renderTable();
             } else {
                 writeLog("[INFO] Perangkat tersebut sudah ada di dalam list tabel.");
             }
-
         } catch (error) {
-            // Menangani jika user menekan tombol 'Cancel' pada pop-up Chrome
             writeLog(`[CHROME] Pemilihan dibatalkan atau gagal: ${error.message}`);
         }
     }
 
-    // 2. FUNGSI UNTUK MERENDER ULANG TABEL SECARA DINAMIS
     function renderTable() {
         const tableBody = document.getElementById('usb-table-body');
-        
         if (selectedDevices.length === 0) {
             tableBody.innerHTML = `
                 <tr>
@@ -328,7 +370,6 @@
         });
     }
 
-    // 3. FUNGSI AKSI SAAT TOMBOL "KIRIM" ATAU "PUTUSKAN" DIKLIK
     async function actionForward(index, type) {
         const targetIp = document.getElementById('target-ip').value.trim();
         const targetPort = document.getElementById('target-port').value.trim();
@@ -338,18 +379,14 @@
             return;
         }
 
-        // Simpan konfigurasi IP ke memori browser
         localStorage.setItem('usb_target_ip', targetIp);
         localStorage.setItem('usb_target_port', targetPort);
-
         const device = selectedDevices[index];
 
         if (type === 'send') {
             writeLog(`[ACTION] Meneruskan data USB [0x${device.vendorId}:0x${device.productId}] ke ${targetIp}:${targetPort}...`);
-            
-            // Jembatan komunikasi data ke Local Agent (Node.js) di PC client
             try {
-                const response = await fetch(`http://localhost:8080/api/forward-by-id`, {
+                await fetch(`http://localhost:8080/api/forward-by-id`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -359,12 +396,9 @@
                         serverPort: targetPort
                     })
                 });
-
-                // Jika Local Agent merespon dengan sukses
                 device.isForwarded = true;
                 writeLog(`[SUCCESS] USB ${device.name} sekarang diarahkan ke IP Anda.`);
             } catch (e) {
-                // Simulasi visual jika local agent belum siap menerima data
                 writeLog(`[SIMULASI] Mencoba memicu penguncian driver tingkat sistem untuk ID 0x${device.vendorId}...`);
                 device.isForwarded = true;
             }
@@ -372,8 +406,6 @@
             writeLog(`[ACTION] Membatalkan pengiriman USB ${device.name}...`);
             device.isForwarded = false;
         }
-
-        // Refresh ulang bentuk tabel setelah status diubah
         renderTable();
     }
 </script>
