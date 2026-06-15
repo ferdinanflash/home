@@ -12,6 +12,7 @@
             --bg-color: #f3f2f1;
             --card-bg: #ffffff;
             --text-color: #323130;
+            --border-color: #edebe9;
         }
 
         body {
@@ -31,8 +32,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #edebe9;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
             padding-bottom: 15px;
         }
 
@@ -59,15 +60,49 @@
             margin-bottom: 20px;
         }
 
+        /* Style untuk Form Input IP dan Port */
+        .config-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #605e5c;
+        }
+
+        .form-control {
+            padding: 8px 12px;
+            border: 1px solid #a19f9d;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+        }
+
         .btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 9px 16px;
             border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 14px;
             transition: background 0.2s;
+            height: 38px;
         }
 
         .btn:hover {
@@ -97,7 +132,7 @@
         th, td {
             text-align: left;
             padding: 12px;
-            border-bottom: 1px solid #edebe9;
+            border-bottom: 1px solid var(--border-color);
         }
 
         th {
@@ -145,17 +180,29 @@
     <header>
         <div>
             <h1>USB over IP - Control Panel</h1>
-            <p style="margin: 5px 0 0 0; color: #605e5c;">Server Node ID: <strong id="server-ip">127.0.0.1</strong></p>
+            <p style="margin: 5px 0 0 0; color: #605e5c;">Target Node: <strong id="current-target">Mengonfigurasi...</strong></p>
         </div>
         <span class="status-badge">Service Active</span>
     </header>
 
-    <div style="margin-bottom: 15px; display: flex; gap: 10px;">
-        <button class="btn btn-refresh" onclick="loadUsbDevices()">🔄 Refresh List</button>
+    <div class="card">
+        <div class="config-grid">
+            <div class="form-group">
+                <label for="server-ip">IP Address Server Back-End</label>
+                <input type="text" id="server-ip" class="form-control" placeholder="Contoh: 192.168.1.50" value="localhost">
+            </div>
+            <div class="form-group">
+                <label for="server-port">Port API</label>
+                <input type="number" id="server-port" class="form-control" placeholder="Contoh: 8080" value="8080">
+            </div>
+            <div>
+                <button class="btn btn-refresh" onclick="saveConfigAndRefresh()">🔄 Hubungkan & Refresh</button>
+            </div>
+        </div>
     </div>
 
     <div class="card">
-        <h3>Perangkat USB Terdeteksi (Lokal)</h3>
+        <h3>Perangkat USB Terdeteksi di Server</h3>
         <table>
             <thead>
                 <tr>
@@ -168,7 +215,7 @@
             </thead>
             <tbody id="usb-table-body">
                 <tr>
-                    <td colspan="5" style="text-align: center; color: #605e5c;">Mengambil data perangkat...</td>
+                    <td colspan="5" style="text-align: center; color: #605e5c;">Silakan klik "Hubungkan & Refresh" untuk memuat data.</td>
                 </tr>
             </tbody>
         </table>
@@ -177,48 +224,76 @@
     <div class="card">
         <h3>System Live Logs</h3>
         <div class="log-box" id="log-console">
-            [SYSTEM] Web Interface initialized.<br>
-            [SYSTEM] Siap menghubungkan ke API local service...
+            [SYSTEM] Web Interface initialized.
         </div>
     </div>
 </div>
 
 <script>
-    // Konfigurasi alamat API Back-End Node.js/Go Anda
-    const API_BASE_URL = 'http://localhost:8080/api';
-
-    // Fungsi otomatis berjalan saat halaman dibuka
+    // Fungsi otomatis berjalan saat halaman dibuka pertama kali
     document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById('server-ip').innerText = window.location.hostname;
+        // Ambil konfigurasi lama dari memori browser jika ada
+        const savedIp = localStorage.getItem('usb_server_ip');
+        const savedPort = localStorage.getItem('usb_server_port');
+
+        if (savedIp) document.getElementById('server-ip').value = savedIp;
+        if (savedPort) document.getElementById('server-port').value = savedPort;
+
+        updateTargetText();
         loadUsbDevices();
     });
 
-    // Fungsi menulis log ke layar
+    // Mengambil nilai dinamis dari input form
+    function getApiUrl() {
+        const ip = document.getElementById('server-ip').value.trim() || 'localhost';
+        const port = document.getElementById('server-port').value.trim() || '8080';
+        return `http://${ip}:${port}/api`;
+    }
+
+    function updateTargetText() {
+        const ip = document.getElementById('server-ip').value.trim() || 'localhost';
+        const port = document.getElementById('server-port').value.trim() || '8080';
+        document.getElementById('current-target').innerText = `${ip}:${port}`;
+    }
+
+    // Fungsi menyimpan konfigurasi ke LocalStorage dan refresh data
+    function saveConfigAndRefresh() {
+        const ip = document.getElementById('server-ip').value.trim();
+        const port = document.getElementById('server-port').value.trim();
+
+        localStorage.setItem('usb_server_ip', ip);
+        localStorage.setItem('usb_server_port', port);
+
+        updateTargetText();
+        writeLog(`Konfigurasi target diubah ke -> http://${ip}:${port}`);
+        loadUsbDevices();
+    }
+
+    // Fungsi menulis log ke layar console dashboard
     function writeLog(text) {
         const consoleBox = document.getElementById('log-console');
         const time = new Date().toLocaleTimeString();
         consoleBox.innerHTML += `<br>[${time}] ${text}`;
-        consoleBox.scrollTop = consoleBox.scrollHeight; // Auto scroll ke bawah
+        consoleBox.scrollTop = consoleBox.scrollHeight;
     }
 
-    // 1. Fungsi GET data dari Back-end
+    // 1. Fungsi GET data dari Back-end secara Dinamis
     async function loadUsbDevices() {
-        writeLog("Meminta daftar USB terbaru dari server...");
+        const baseUrl = getApiUrl();
+        writeLog(`Meminta daftar USB dari target: ${baseUrl}/list-usb ...`);
         const tableBody = document.getElementById('usb-table-body');
         
         try {
-            // Uncomment baris di bawah ini jika API Back-End sudah siap dijalankan:
-            /*
-            const response = await fetch(`${API_BASE_URL}/list-usb`);
+            /* // Integrasi Nyata: Hapus tanda komentar blok ini jika service back-end sudah aktif
+            const response = await fetch(`${baseUrl}/list-usb`);
+            if (!response.ok) throw new Error(`HTTP Error Status: ${response.status}`);
             const data = await response.json();
-            // Proses parsing data JSON dari server di sini
             */
 
-            // DEMO/MOCKUP DATA (Hapus bagian ini jika sudah pakai API asli)
+            // DATA MOCKUP / SIMULASI (Hapus jika integrasi nyata di atas sudah aktif)
             const mockDevices = [
                 { busId: "1-1", name: "Samsung Galaxy A54 (MTP Mode)", hwId: "04e8:6860", status: "Ready" },
-                { busId: "1-3", name: "SanDisk Cruzer Glide Flashdrive", hwId: "0781:5575", status: "Shared" },
-                { busId: "2-1", name: "Alcor Micro USB Smart Card Reader", hwId: "058f:9540", status: "Ready" }
+                { busId: "1-3", name: "SanDisk Cruzer Glide Flashdrive", hwId: "0781:5575", status: "Shared" }
             ];
 
             tableBody.innerHTML = "";
@@ -240,22 +315,23 @@
                     </tr>
                 `;
             });
-            writeLog("Daftar USB berhasil diperbarui.");
+            writeLog("Daftar USB berhasil diperbarui berdasarkan alamat IP saat ini.");
 
         } catch (error) {
-            writeLog(`Gagal mengambil data: ${error.message}`);
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger-color);">Gagal berkomunikasi dengan Agent Service!</td></tr>`;
+            writeLog(`EROR KONEKSI: Tidak dapat menghubungi service di ${baseUrl}/list-usb. Pesan: ${error.message}`);
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger-color); font-weight:bold;">Gagal terhubung ke Agent Service! Periksa IP, Port, atau pastikan Back-end Anda sudah dinyalakan.</td></tr>`;
         }
     }
 
-    // 2. Fungsi POST untuk eksekusi Share/Unshare
+    // 2. Fungsi POST untuk eksekusi Share/Unshare secara Dinamis
     async function toggleShare(busId, action) {
-        writeLog(`Mengirim permintaan ${action.toUpperCase()} untuk Bus ID: ${busId}...`);
+        const baseUrl = getApiUrl();
+        writeLog(`Mengirim perintah ${action.toUpperCase()} ke ${baseUrl}/${action} untuk Bus ID: ${busId}...`);
         
         try {
-            // Skema integrasi API nyata
             /*
-            const response = await fetch(`${API_BASE_URL}/${action}`, {
+            // Integrasi Nyata: Hapus tanda komentar jika back-end aktif
+            const response = await fetch(`${baseUrl}/${action}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ busId: busId })
@@ -264,15 +340,13 @@
             writeLog(`Respon Server: ${result.message}`);
             */
 
-            // Simulasi Frontend Berhasil
-            alert(`Aksi ${action} untuk perangkat ${busId} berhasil dieksekusi!`);
-            writeLog(`Perangkat ${busId} status berubah.`);
-            
-            // Reload tabel setelah aksi
+            // Simulasi Sukses di Sisi Frontend
+            alert(`Sukses! Perintah [${action}] untuk USB [${busId}] dikirim ke ${baseUrl}`);
+            writeLog(`Aksi ${action} pada perangkat ${busId} selesai.`);
             loadUsbDevices();
             
         } catch (error) {
-            writeLog(`Eror saat eksekusi aksi: ${error.message}`);
+            writeLog(`Eror saat mengeksekusi aksi: ${error.message}`);
         }
     }
 </script>
