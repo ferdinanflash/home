@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USB Share via WebUSB Chrome</title>
+    <title>USB Remote Service</title>
     <style>
         :root {
             --primary-color: #0078d4;
@@ -194,7 +194,7 @@
 <div class="container">
     <header>
         <div>
-            <h1>USB Client Forwarder (Chrome WebUSB)</h1>
+            <h1>USB Remote Service</h1>
             <p style="margin: 5px 0 0 0; color: #605e5c;">Pilih USB langsung lewat browser dan forward ke IP Server Anda</p>
         </div>
         <span class="status-badge" id="browser-status">WebUSB Supported</span>
@@ -205,11 +205,11 @@
         <div class="config-grid">
             <div class="form-group">
                 <label for="target-ip">IP Address Server (Penerima USB)</label>
-                <input type="text" id="target-ip" class="form-control" placeholder="Masukkan IP PC Anda/Teknisi" value="192.168.1.100">
+                <input type="text" id="target-ip" class="form-control" placeholder="IP" value="192.168.1.100">
             </div>
             <div class="form-group">
                 <label for="target-port">Port Jaringan USBIP</label>
-                <input type="number" id="target-port" class="form-control" placeholder="Default: 3240" value="3240">
+                <input type="number" id="target-port" class="form-control" placeholder="Default: 32032" value="32032">
             </div>
             <button class="btn btn-check" onclick="cekKoneksiServer()">⚡ Cek Jaringan</button>
         </div>
@@ -217,7 +217,7 @@
     </div>
     
     <div class="card">
-        <h3>Langkah 2: Perangkat Terpilih Berdasarkan Otorisasi Chrome</h3>
+        <h3>Langkah 2: Perangkat Terpilih</h3>
         <table>
             <thead>
                 <tr>
@@ -305,7 +305,7 @@
             } else {
                 // Di beberapa jenis browser, port yang terbuka tapi menolak CORS tetap dianggap sukses terdeteksi
                 writeLog(`[ONLINE/CEK] Handshake selesai dengan respons khusus. Jalur ke ${ip}:${port} terbuka.`);
-                alert(`Jalur terdeteksi terbuka ke Server ${ip}:${port}`);
+                alert(`OK ${ip}:${port}`);
             }
         }
     }
@@ -351,8 +351,8 @@
         tableBody.innerHTML = "";
         selectedDevices.forEach((dev, index) => {
             const badge = dev.isForwarded ? 
-                `<span class="badge-shared">TERFORWARD VIA IP</span>` : 
-                `<span class="badge-ready">TERHUBUNG KE WEB</span>`;
+                `<span class="badge-shared">CONNECTED</span>` : 
+                `<span class="badge-ready">CONNECTED TO FERDINAN FLASHER</span>`;
             
             const actionBtn = dev.isForwarded ? 
                 `<button class="btn btn-disconnect" onclick="actionForward(${index}, 'stop')">Putuskan</button>` : 
