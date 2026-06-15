@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>USB Share to Remote Server</title>
-    <button class="btn" onclick="requestUsbChrome()">🔌 Pilih USB Lewat Chrome</button>
-
     <style>
         :root {
             --primary-color: #0078d4;
@@ -67,6 +65,7 @@
             grid-template-columns: 2fr 1fr;
             gap: 15px;
             align-items: flex-end;
+            margin-bottom: 15px;
         }
 
         .form-group {
@@ -109,6 +108,15 @@
 
         .btn:hover {
             background-color: #005a9e;
+        }
+
+        .btn-chrome {
+            background-color: #107c41;
+            width: 100%;
+            font-size: 15px;
+        }
+        .btn-chrome:hover {
+            background-color: #0b592e;
         }
 
         .btn-refresh {
@@ -157,8 +165,8 @@
         }
         
         .badge-ready {
-            background-color: #edebe9;
-            color: #323130;
+            background-color: #fff4ce;
+            color: #794500;
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 12px;
@@ -200,6 +208,7 @@
                 <input type="number" id="target-port" class="form-control" placeholder="Default: 3240" value="3240">
             </div>
         </div>
+        <button class="btn btn-chrome" onclick="requestUsbChrome()">🔌 Pilih & Otorisasi USB Lewat Chrome</button>
     </div>
 
     <button class="btn btn-refresh" onclick="loadLocalUsbDevices()">🔄 Refresh Perangkat Lokal</button>
@@ -209,16 +218,18 @@
         <table>
             <thead>
                 <tr>
-                    <th>Bus ID</th>
+                    <th>Vendor ID</th>
+                    <th>Product ID</th>
                     <th>Nama Perangkat (Milik Client)</th>
-                    <th>ID Hardware</th>
                     <th>Status Pengiriman</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody id="usb-table-body">
                 <tr>
-                    <td colspan="5" style="text-align: center; color: #605e5c;">Mencari agen lokal...</td>
+                    <td colspan="5" style="text-align: center; color: #605e5c; padding: 20px;">
+                        Belum ada perangkat terpilih. Klik tombol hijau di atas untuk memberikan akses USB lewat browser.
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -233,158 +244,22 @@
 </div>
 
 <script>
-    // URL Back-end lokal milik si Client sendiri (agar web bisa akses USB fisik mereka)
     const LOCAL_AGENT_URL = 'http://localhost:8080/api';
+    
+    // Array dinamis penyimpan device asli pilihan user
+    let selectedDevices = []; 
 
     document.addEventListener("DOMContentLoaded", () => {
-        // Load IP tujuan terakhir yang pernah diketik client agar tidak lupa
         const savedTargetIp = localStorage.getItem('usb_target_ip');
         const savedTargetPort = localStorage.getItem('usb_target_port');
         if (savedTargetIp) document.getElementById('target-ip').value = savedTargetIp;
         if (savedTargetPort) document.getElementById('target-port').value = savedTargetPort;
 
-        loadLocalUsbDevices();
-    });
-
-    function writeLog(text) {
-        const consoleBox = document.getElementById('log-console');
-        const time = new Date().toLocaleTimeString();
-        consoleBox.innerHTML += `<br>[${time}] ${text}`;
-        consoleBox.scrollTop = consoleBox.scrollHeight;
-    }
-
-    // Mengambil daftar USB fisik yang menancap di PC Client saat ini
-    async function loadLocalUsbDevices() {
-        const tableBody = document.getElementById('usb-table-body');
-        const statusBadge = document.getElementById('agent-status');
-        
-        try {
-            // Memanggil service lokal yang berjalan di PC Client
-            const response = await fetch(`${LOCAL_AGENT_URL}/list-usb`);
-            if (!response.ok) throw new Error();
-            const data = await response.json();
-            
-            statusBadge.innerText = "Local Agent: Connected";
-            statusBadge.style.backgroundColor = "var(--success-color)";
-            statusBadge.style.color = "white";
-
-            // Proses parsing data asli di sini...
-            
-        } catch (error) {
-            statusBadge.innerText = "Local Agent: Disconnected";
-            statusBadge.style.backgroundColor = "var(--danger-color)";
-            statusBadge.style.color = "white";
-            
-            writeLog("EROR: Gagal mendeteksi Local Agent. Pastikan aplikasi background service sudah terinstal di PC Anda.");
-            
-            // DEMO DATA SISI CLIENT (Hapus jika sudah diintegrasikan dengan service lokal client)
-            showMockDevices();
+        // Cek fungsionalitas WebUSB browser
+        if (!navigator.usb) {
+            writeLog("EROR: Browser tidak mendukung WebUSB API. Pastikan menggunakan Chrome/Edge.");
         }
-    }
-
-    function showMockDevices() {
-        const tableBody = document.getElementById('usb-table-body');
-        const mockDevices = [
-            { busId: "1-1", name: "Vivo Y22 (Fastboot Mode)", hwId: "2d95:6001", isForwarded: false },
-            { busId: "1-4", name: "Xiaomi Redmi Note 10 (EDL Mode 9008)", hwId: "05c6:9008", isForwarded: true }
-        ];
-
-        tableBody.innerHTML = "";
-        mockDevices.forEach(dev => {
-            const badge = dev.isForwarded ? 
-                `<span class="badge-shared">TERKIRIM ➔ SERVER</span>` : 
-                `<span class="badge-ready">STANDBY LOKAL</span>`;
-            
-            const actionBtn = dev.isForwarded ? 
-                `<button class="btn btn-disconnect" onclick="handleUsbAction('${dev.busId}', 'stop')">Putuskan</button>` : 
-                `<button class="btn" onclick="handleUsbAction('${dev.busId}', 'send')">Kirim USB</button>`;
-
-            tableBody.innerHTML += `
-                <tr>
-                    <td><strong>${dev.busId}</strong></td>
-                    <td>${dev.name}</td>
-                    <td><code>${dev.hwId}</code></td>
-                    <td>${badge}</td>
-                    <td>${actionBtn}</td>
-                </tr>
-            `;
-        });
-    }
-
-    // Fungsi eksekusi kirim USB ke IP Anda
-    async function handleUsbAction(busId, action) {
-        const targetIp = document.getElementById('target-ip').value.trim();
-        const targetPort = document.getElementById('target-port').value.trim();
-
-        if(!targetIp) {
-            alert("Harap isi IP Server tujuan terlebih dahulu!");
-            return;
-        }
-
-        // Simpan IP target ke memori browser client
-        localStorage.setItem('usb_target_ip', targetIp);
-        localStorage.setItem('usb_target_port', targetPort);
-
-        if (action === 'send') {
-            writeLog(`Mengunci USB ${busId} dan mengarahkannya ke Server -> ${targetIp}:${targetPort}...`);
-            
-            try {
-                // Mengirim perintah ke backend local client agar mengeksekusi usbip bind/attach ke IP Anda
-                /*
-                const response = await fetch(`${LOCAL_AGENT_URL}/forward`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        busId: busId,
-                        serverIp: targetIp,
-                        serverPort: targetPort
-                    })
-                });
-                */
-                
-                alert(`USB ${busId} Berhasil dialihkan ke IP ${targetIp}`);
-                writeLog(`Status: USB ${busId} sekarang aktif di remote server.`);
-            } catch (e) {
-                writeLog(`Gagal mengirim: ${e.message}`);
-            }
-        } else {
-            writeLog(`Menghentikan pengalihan USB ${busId}...`);
-            alert(`Koneksi USB ${busId} ke server telah diputus.`);
-        }
-        
-        loadLocalUsbDevices();
-    }
-    async function requestUsbChrome() {
-    try {
-        // Memicu jendela pop-up bawaan Chrome untuk memilih USB
-        const device = await navigator.usb.requestDevice({ filters: [] });
-        
-        writeLog(`User memilih perangkat: ${device.productName}`);
-        writeLog(`Vendor ID: ${device.vendorId}, Product ID: ${device.productId}`);
-
-        // Kirim data USB yang dipilih ini ke Agent lokal untuk di-forward lewat IP
-        sendToAgent(device.vendorId, device.productId);
-
-    } catch (error) {
-        writeLog(`Gagal/Batal memilih perangkat: ${error.message}`);
-    }
-}
-
-async function sendToAgent(vendorId, productId) {
-    const targetIp = document.getElementById('target-ip').value.trim();
-    
-    // Kirim ID perangkat ke agent lokal agar agent yang mengeksekusi penguncian tingkat sistem
-    fetch(`http://localhost:8080/api/forward-by-id`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            vendorId: vendorId,
-            productId: productId,
-            serverIp: targetIp
-        })
-    });
-}
-
-</script>
+        renderDeviceTable();
+    </script>
 </body>
 </html>
