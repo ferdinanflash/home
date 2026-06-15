@@ -1,303 +1,280 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web ADB Flasher Panel</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>USB over IP Web Dashboard</title>
     <style>
+        :root {
+            --primary-color: #0078d4;
+            --success-color: #107c41;
+            --danger-color: #a80000;
+            --bg-color: #f3f2f1;
+            --card-bg: #ffffff;
+            --text-color: #323130;
+        }
+
         body {
-            background-color: #080b11;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
         }
-        /* Custom scrollbar untuk log konsol */
-        ::-webkit-scrollbar {
-            width: 5px;
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
         }
-        ::-webkit-scrollbar-track {
-            background: #0f1422;
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #edebe9;
+            padding-bottom: 15px;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #1e293b;
+
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        .status-badge {
+            background-color: var(--success-color);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
             border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #005a9e;
+        }
+
+        .btn-refresh {
+            background-color: #605e5c;
+        }
+        .btn-refresh:hover {
+            background-color: #484644;
+        }
+
+        .btn-disconnect {
+            background-color: var(--danger-color);
+        }
+        .btn-disconnect:hover {
+            background-color: #830000;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #edebe9;
+        }
+
+        th {
+            background-color: #faf9f8;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f3f2f1;
+        }
+
+        .badge-shared {
+            background-color: #fff4ce;
+            color: #794500;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .badge-ready {
+            background-color: #dff6dd;
+            color: #107c41;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .log-box {
+            background-color: #201f1e;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 15px;
+            border-radius: 4px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 13px;
         }
     </style>
 </head>
-<body class="text-slate-300 font-sans min-h-screen flex text-sm selection:bg-blue-600/30">
+<body>
 
-    <aside class="w-16 bg-[#0c101b] border-r border-slate-900 flex flex-col items-center py-4 space-y-6 shrink-0">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold text-xs shadow-md shadow-blue-500/20">
-            F
+<div class="container">
+    <header>
+        <div>
+            <h1>USB over IP - Control Panel</h1>
+            <p style="margin: 5px 0 0 0; color: #605e5c;">Server Node ID: <strong id="server-ip">127.0.0.1</strong></p>
         </div>
+        <span class="status-badge">Service Active</span>
+    </header>
+
+    <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+        <button class="btn btn-refresh" onclick="loadUsbDevices()">🔄 Refresh List</button>
+    </div>
+
+    <div class="card">
+        <h3>Perangkat USB Terdeteksi (Lokal)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Bus ID</th>
+                    <th>Nama Perangkat / Vendor</th>
+                    <th>ID Hardware</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="usb-table-body">
+                <tr>
+                    <td colspan="5" style="text-align: center; color: #605e5c;">Mengambil data perangkat...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>System Live Logs</h3>
+        <div class="log-box" id="log-console">
+            [SYSTEM] Web Interface initialized.<br>
+            [SYSTEM] Siap menghubungkan ke API local service...
+        </div>
+    </div>
+</div>
+
+<script>
+    // Konfigurasi alamat API Back-End Node.js/Go Anda
+    const API_BASE_URL = 'http://localhost:8080/api';
+
+    // Fungsi otomatis berjalan saat halaman dibuka
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById('server-ip').innerText = window.location.hostname;
+        loadUsbDevices();
+    });
+
+    // Fungsi menulis log ke layar
+    function writeLog(text) {
+        const consoleBox = document.getElementById('log-console');
+        const time = new Date().toLocaleTimeString();
+        consoleBox.innerHTML += `<br>[${time}] ${text}`;
+        consoleBox.scrollTop = consoleBox.scrollHeight; // Auto scroll ke bawah
+    }
+
+    // 1. Fungsi GET data dari Back-end
+    async function loadUsbDevices() {
+        writeLog("Meminta daftar USB terbaru dari server...");
+        const tableBody = document.getElementById('usb-table-body');
         
-        <nav class="flex-1 w-full flex flex-col items-center space-y-2">
-            <button class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-300 transition cursor-pointer">⏱️</button>
-            <button class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-300 transition cursor-pointer">📱</button>
-            <button class="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-600/90 text-white shadow-lg shadow-blue-600/30 cursor-pointer">🛡️</button>
-            <button class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-300 transition cursor-pointer">⚡</button>
-            <button class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-300 transition cursor-pointer">🔓</button>
-            <button class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-300 transition cursor-pointer">🎛️</button>
-            <button class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-300 transition cursor-pointer">📜</button>
-            <button class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-300 transition cursor-pointer">🔒</button>
-        </nav>
+        try {
+            // Uncomment baris di bawah ini jika API Back-End sudah siap dijalankan:
+            /*
+            const response = await fetch(`${API_BASE_URL}/list-usb`);
+            const data = await response.json();
+            // Proses parsing data JSON dari server di sini
+            */
 
-        <button class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:text-red-400 transition cursor-pointer">🚪</button>
-    </aside>
+            // DEMO/MOCKUP DATA (Hapus bagian ini jika sudah pakai API asli)
+            const mockDevices = [
+                { busId: "1-1", name: "Samsung Galaxy A54 (MTP Mode)", hwId: "04e8:6860", status: "Ready" },
+                { busId: "1-3", name: "SanDisk Cruzer Glide Flashdrive", hwId: "0781:5575", status: "Shared" },
+                { busId: "2-1", name: "Alcor Micro USB Smart Card Reader", hwId: "058f:9540", status: "Ready" }
+            ];
 
-    <main class="flex-1 p-5 max-w-lg mx-auto space-y-5 pb-12 overflow-y-auto h-screen">
+            tableBody.innerHTML = "";
+            mockDevices.forEach(dev => {
+                const isShared = dev.status === "Shared";
+                const badge = isShared ? `<span class="badge-shared">SHARED / BUSY</span>` : `<span class="badge-ready">AVAILABLE</span>`;
+                
+                const actionBtn = isShared ? 
+                    `<button class="btn btn-disconnect" onclick="toggleShare('${dev.busId}', 'unshare')">Disconnect</button>` : 
+                    `<button class="btn" onclick="toggleShare('${dev.busId}', 'share')">Share Device</button>`;
+
+                tableBody.innerHTML += `
+                    <tr>
+                        <td><strong>${dev.busId}</strong></td>
+                        <td>${dev.name}</td>
+                        <td><code>${dev.hwId}</code></td>
+                        <td>${badge}</td>
+                        <td>${actionBtn}</td>
+                    </tr>
+                `;
+            });
+            writeLog("Daftar USB berhasil diperbarui.");
+
+        } catch (error) {
+            writeLog(`Gagal mengambil data: ${error.message}`);
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger-color);">Gagal berkomunikasi dengan Agent Service!</td></tr>`;
+        }
+    }
+
+    // 2. Fungsi POST untuk eksekusi Share/Unshare
+    async function toggleShare(busId, action) {
+        writeLog(`Mengirim permintaan ${action.toUpperCase()} untuk Bus ID: ${busId}...`);
         
-        <div class="bg-[#101524] border border-slate-900 rounded-2xl p-4 flex flex-col items-start space-y-3.5 shadow-xl">
-            <div class="flex items-center space-x-2.5 text-xs text-slate-400 font-medium">
-                <span id="status-dot" class="w-2 h-2 bg-slate-600 rounded-full inline-block"></span>
-                <span id="status-text" class="tracking-wide">No device connected</span>
-            </div>
-            <button id="btn-connect" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl transition duration-200 flex items-center justify-center space-x-2 text-xs shadow-md shadow-blue-900/20 cursor-pointer">
-                <span>➔ Connect ADB</span>
-            </button>
-        </div>
+        try {
+            // Skema integrasi API nyata
+            /*
+            const response = await fetch(`${API_BASE_URL}/${action}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ busId: busId })
+            });
+            const result = await response.json();
+            writeLog(`Respon Server: ${result.message}`);
+            */
 
-        <div class="bg-[#101524] border border-slate-900 rounded-2xl p-4 space-y-4 shadow-xl">
-            <h3 class="text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-2">
-                📄 Read Info
-            </h3>
+            // Simulasi Frontend Berhasil
+            alert(`Aksi ${action} untuk perangkat ${busId} berhasil dieksekusi!`);
+            writeLog(`Perangkat ${busId} status berubah.`);
             
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-[#151c30] p-3 rounded-xl border border-slate-900/60">
-                    <label class="text-[10px] text-slate-500 block font-bold tracking-wider mb-1">CODENAME</label>
-                    <span id="info-codename" class="text-xs font-mono font-bold text-slate-400">-</span>
-                </div>
-                <div class="bg-[#151c30] p-3 rounded-xl border border-slate-900/60">
-                    <label class="text-[10px] text-slate-500 block font-bold tracking-wider mb-1">SERIAL NUMBER</label>
-                    <span id="info-serial" class="text-xs font-mono font-bold text-slate-400">-</span>
-                </div>
-                <div class="bg-[#151c30] p-3 rounded-xl border border-slate-900/60">
-                    <label class="text-[10px] text-slate-500 block font-bold tracking-wider mb-1">REGION</label>
-                    <span id="info-region" class="text-xs font-mono font-bold text-slate-400">-</span>
-                </div>
-                <div class="bg-[#151c30] p-3 rounded-xl border border-slate-900/60">
-                    <label class="text-[10px] text-slate-500 block font-bold tracking-wider mb-1">ROM ZONE</label>
-                    <span id="info-rom" class="text-xs font-mono font-bold text-slate-400">-</span>
-                </div>
-                <div class="bg-[#151c30] p-3 rounded-xl border border-slate-900/60">
-                    <label class="text-[10px] text-slate-500 block font-bold tracking-wider mb-1">LANGUAGE</label>
-                    <span id="info-lang" class="text-xs font-mono font-bold text-slate-400">-</span>
-                </div>
-                <div class="bg-[#151c30] p-3 rounded-xl border border-slate-900/60">
-                    <label class="text-[10px] text-slate-500 block font-bold tracking-wider mb-1">CODEBASE</label>
-                    <span id="info-base" class="text-xs font-mono font-bold text-slate-400">-</span>
-                </div>
-                <div class="bg-[#151c30] p-3 rounded-xl border border-slate-900/60 col-span-2">
-                    <label class="text-[10px] text-slate-500 block font-bold tracking-wider mb-1">VERSION</label>
-                    <span id="info-version" class="text-xs font-mono font-bold text-slate-400">-</span>
-                </div>
-                <div class="bg-[#151c30] p-3 rounded-xl border border-slate-900/60 col-span-2">
-                    <label class="text-[10px] text-slate-500 block font-bold tracking-wider mb-1">MI TOKEN</label>
-                    <span id="info-token" class="text-xs font-mono font-bold text-slate-400/80 break-all">-</span>
-                </div>
-            </div>
+            // Reload tabel setelah aksi
+            loadUsbDevices();
             
-            <div class="grid grid-cols-2 gap-3 pt-1">
-                <button id="btn-read-info" disabled class="bg-[#182038] hover:bg-[#202b4d] text-slate-300 disabled:opacity-20 disabled:hover:bg-[#182038] font-semibold py-2 rounded-xl text-xs transition border border-slate-800 cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-1.5 shadow-sm">
-                    📄 Read Info
-                </button>
-                <button id="btn-reboot" disabled class="bg-[#182038] hover:bg-[#202b4d] text-slate-300 disabled:opacity-20 disabled:hover:bg-[#182038] font-semibold py-2 rounded-xl text-xs transition border border-slate-800 cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-1.5 shadow-sm">
-                    🔄 Reboot
-                </button>
-            </div>
-            
-            <button id="btn-system" disabled class="w-full bg-[#131a2e] hover:bg-[#19223d] text-emerald-400 border border-emerald-500/10 disabled:opacity-20 font-semibold py-2 rounded-xl text-xs transition tracking-wide cursor-pointer disabled:cursor-not-allowed">
-                ⚙️ System
-            </button>
-        </div>
-
-        <div class="bg-[#101524] border border-slate-900 rounded-2xl p-4 space-y-4 shadow-xl">
-            <h3 class="text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-2">
-                🔓 FRP Unlock
-            </h3>
-
-            <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-3 flex items-start space-x-2.5 text-amber-500 text-xs">
-                <span class="text-sm mt-0.5">⚠️</span>
-                <p class="font-medium leading-relaxed">Only use on devices you legally own.</p>
-            </div>
-
-            <div class="space-y-2 text-xs">
-                <div class="flex items-center space-x-3 bg-[#131a2e]/40 border border-slate-900/60 px-3 py-2.5 rounded-xl opacity-40">
-                    <span class="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center font-bold font-mono text-[10px] text-slate-400">1</span>
-                    <span class="font-medium">Read device info & token</span>
-                </div>
-                <div class="flex items-center space-x-3 bg-[#131a2e]/40 border border-slate-900/60 px-3 py-2.5 rounded-xl opacity-40">
-                    <span class="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center font-bold font-mono text-[10px] text-slate-400">2</span>
-                    <span class="font-medium">Build config & Base64</span>
-                </div>
-                <div class="flex items-center space-x-3 bg-[#131a2e]/40 border border-slate-900/60 px-3 py-2.5 rounded-xl opacity-40">
-                    <span class="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center font-bold font-mono text-[10px] text-slate-400">3</span>
-                    <span class="font-medium">Auth request to server</span>
-                </div>
-                <div class="flex items-center space-x-3 bg-[#131a2e]/40 border border-slate-900/60 px-3 py-2.5 rounded-xl opacity-40">
-                    <span class="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center font-bold font-mono text-[10px] text-slate-400">4</span>
-                    <span class="font-medium">format-frp unlock</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="space-y-1.5">
-            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider pl-1">Live Console Log</label>
-            <div id="log-output" class="w-full h-24 bg-[#0a0d16] border border-slate-900 rounded-xl p-2.5 font-mono text-[11px] text-green-400/90 overflow-y-auto whitespace-pre-wrap shadow-inner">System ready... Silakan klik "Connect ADB".</div>
-        </div>
-
-    </main>
-
-    <script type="module">
-        import { AdbWebUsbBackend } from 'https://unpkg.com/@yume-chan/adb-backend-webusb@0.0.23/dist/index.js';
-        import { Adb, AdbWebCredentialStore } from 'https://unpkg.com/@yume-chan/adb@0.0.23/dist/index.js';
-
-        const CredentialStore = new AdbWebCredentialStore('web-adb-panel-v4');
-        let currentAdbInstance = null;
-
-        const btnConnect = document.getElementById('btn-connect');
-        const btnReadInfo = document.getElementById('btn-read-info');
-        const btnReboot = document.getElementById('btn-reboot');
-        const btnSystem = document.getElementById('btn-system');
-        
-        const statusDot = document.getElementById('status-dot');
-        const statusText = document.getElementById('status-text');
-        const logOutput = document.getElementById('log-output');
-
-        function writeLog(text) {
-            logOutput.innerText += `\n> ${text}`;
-            logOutput.scrollTop = logOutput.scrollHeight;
+        } catch (error) {
+            writeLog(`Eror saat eksekusi aksi: ${error.message}`);
         }
-
-        function updateUIConnected(isConnected, deviceName = "") {
-            if (isConnected) {
-                statusDot.className = "w-2 h-2 bg-emerald-500 rounded-full inline-block animate-pulse";
-                statusText.innerText = `Connected: ${deviceName}`;
-                statusText.className = "text-emerald-400 font-medium tracking-wide";
-                
-                btnReadInfo.removeAttribute('disabled');
-                btnReboot.removeAttribute('disabled');
-                btnSystem.removeAttribute('disabled');
-                
-                btnConnect.innerHTML = '<span>➔ Disconnect Device</span>';
-                btnConnect.className = "w-full bg-gradient-to-r from-red-600/80 to-rose-600/80 hover:from-red-700 hover:to-rose-700 text-white font-semibold py-2.5 px-4 rounded-xl transition duration-200 flex items-center justify-center space-x-2 text-xs shadow-md cursor-pointer";
-            } else {
-                statusDot.className = "w-2 h-2 bg-slate-600 rounded-full inline-block";
-                statusText.innerText = 'No device connected';
-                statusText.className = "text-slate-400 font-medium tracking-wide";
-                
-                btnReadInfo.setAttribute('disabled', 'true');
-                btnReboot.setAttribute('disabled', 'true');
-                btnSystem.setAttribute('disabled', 'true');
-                
-                btnConnect.innerHTML = '<span>➔ Connect ADB</span>';
-                btnConnect.className = "w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl transition duration-200 flex items-center justify-center space-x-2 text-xs shadow-md cursor-pointer";
-                
-                // Reset kolom data info
-                document.getElementById('info-codename').innerText = '-';
-                document.getElementById('info-serial').innerText = '-';
-                document.getElementById('info-region').innerText = '-';
-                document.getElementById('info-rom').innerText = '-';
-                document.getElementById('info-lang').innerText = '-';
-                document.getElementById('info-base').innerText = '-';
-                document.getElementById('info-version').innerText = '-';
-                document.getElementById('info-token').innerText = '-';
-            }
-        }
-
-        // AKSI TOMBOL UTAMA CONNECT ADB (FILTER DIHAPUS TOTAL AGAR POP-UP PASTI MUNCUL)
-        btnConnect.addEventListener('click', async () => {
-            if (currentAdbInstance) {
-                currentAdbInstance = null;
-                updateUIConnected(false);
-                writeLog("Koneksi diputus.");
-                return;
-            }
-
-            try {
-                writeLog("Membuka dialog pencarian USB browser...");
-                
-                // Kosongkan parameter filter [] agar Chrome mendeteksi seluruh hardware USB tanpa pilih-pilih
-                const usbDevice = await navigator.usb.requestDevice({ filters: [] });
-
-                if (!usbDevice) {
-                    writeLog("Pemilihan perangkat dibatalkan.");
-                    return;
-                }
-
-                writeLog(`Membuka jalur komunikasi USB ke: ${usbDevice.productName || 'Perangkat USB'}`);
-                const backend = new AdbWebUsbBackend(usbDevice);
-                await backend.connect();
-
-                writeLog("Memulai otentikasi kunci RSA ADB... Silakan izinkan konfirmasi pop-up pada layar HP Anda.");
-                
-                const adb = await Adb.authenticate({
-                    backend,
-                    credentialStore: CredentialStore,
-                });
-
-                currentAdbInstance = adb;
-                updateUIConnected(true, usbDevice.productName || "Android Perangkat");
-                writeLog("Sukses Terhubung! Perangkat siap menerima instruksi.");
-                
-                // Otomatis jalankan fungsi pembacaan data
-                readDeviceInformation();
-
-            } catch (err) {
-                writeLog(`Gagal memicu pop-up: ${err.message}`);
-                console.error(err);
-                updateUIConnected(false);
-            }
-        });
-
-        // FUNGSI MEMBACA DATA GETPROP INTERNAL DEVICE
-        async function readDeviceInformation() {
-            if (!currentAdbInstance) return;
-            try {
-                writeLog("Mengambil properti perangkat...");
-                
-                const codename = await currentAdbInstance.getprop("ro.product.name");
-                const serial = await currentAdbInstance.getprop("ro.serialno");
-                const version = await currentAdbInstance.getprop("ro.build.version.release");
-                const base = await currentAdbInstance.getprop("ro.build.version.sdk");
-                const lang = await currentAdbInstance.getprop("ro.product.locale");
-                
-                let region = await currentAdbInstance.getprop("ro.miui.region");
-                if(!region) region = await currentAdbInstance.getprop("ro.product.locale.region");
-
-                let romZone = await currentAdbInstance.getprop("ro.rom.zone");
-                if(!romZone) romZone = "Global/Unknown";
-
-                // Membaca token identifikasi khusus (misal Mi Token jika tersedia di shell)
-                let miToken = await currentAdbInstance.getprop("ro.boot.flash.locked.key");
-                if(!miToken) miToken = "NOT_FOUND_OR_SECURED";
-
-                // Masukkan data ke komponen HTML
-                document.getElementById('info-codename').innerText = codename.toUpperCase();
-                document.getElementById('info-serial').innerText = serial.toUpperCase();
-                document.getElementById('info-region').innerText = region ? region.toUpperCase() : "UNKNOWN";
-                document.getElementById('info-rom').innerText = romZone;
-                document.getElementById('info-lang').innerText = lang.toUpperCase();
-                document.getElementById('info-base').innerText = `API ${base}`;
-                document.getElementById('info-version').innerText = `Android ${version}`;
-                document.getElementById('info-token').innerText = miToken;
-
-                writeLog("Proses Read Info sukses diselesaikan.");
-            } catch (err) {
-                writeLog(`Gagal membaca informasi properti: ${err.message}`);
-            }
-        }
-
-        btnReadInfo.addEventListener('click', readDeviceInformation);
-
-        btnReboot.addEventListener('click', async () => {
-            if (!currentAdbInstance) return;
-            try {
-                writeLog("Mengirim instruksi: adb reboot");
-                await currentAdbInstance.reboot();
-                writeLog("Sinyal reboot terkirim.");
-            } catch (err) {
-                writeLog(`Gagal melakukan reboot: ${err.message}`);
-            }
-        });
-    </script>
+    }
+</script>
 </body>
 </html>
