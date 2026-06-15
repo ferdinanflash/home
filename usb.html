@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>USB Share to Remote Server</title>
+    <button class="btn" onclick="requestUsbChrome()">🔌 Pilih USB Lewat Chrome</button>
+
     <style>
         :root {
             --primary-color: #0078d4;
@@ -352,6 +354,37 @@
         
         loadLocalUsbDevices();
     }
+    async function requestUsbChrome() {
+    try {
+        // Memicu jendela pop-up bawaan Chrome untuk memilih USB
+        const device = await navigator.usb.requestDevice({ filters: [] });
+        
+        writeLog(`User memilih perangkat: ${device.productName}`);
+        writeLog(`Vendor ID: ${device.vendorId}, Product ID: ${device.productId}`);
+
+        // Kirim data USB yang dipilih ini ke Agent lokal untuk di-forward lewat IP
+        sendToAgent(device.vendorId, device.productId);
+
+    } catch (error) {
+        writeLog(`Gagal/Batal memilih perangkat: ${error.message}`);
+    }
+}
+
+async function sendToAgent(vendorId, productId) {
+    const targetIp = document.getElementById('target-ip').value.trim();
+    
+    // Kirim ID perangkat ke agent lokal agar agent yang mengeksekusi penguncian tingkat sistem
+    fetch(`http://localhost:8080/api/forward-by-id`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            vendorId: vendorId,
+            productId: productId,
+            serverIp: targetIp
+        })
+    });
+}
+
 </script>
 </body>
 </html>
