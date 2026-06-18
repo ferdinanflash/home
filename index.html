@@ -974,6 +974,8 @@ document.addEventListener("DOMContentLoaded", function () {
     statusRows.forEach(row => {
         const ledSpan = row.querySelector('.led');
         const textSpan = row.querySelector('.status-text');
+        // Mencari elemen price di dalam card yang sama
+        const priceDiv = row.closest('.card').querySelector('.price');
         
         if (ledSpan && textSpan) {
             // Mengambil teks status, membersihkan spasi kosong, dan mengubah ke huruf besar
@@ -986,14 +988,25 @@ document.addEventListener("DOMContentLoaded", function () {
             if (statusValue === "ONLINE") {
                 ledSpan.classList.add('online');
                 textSpan.classList.add('online');
+                
+                // Jika online, pastikan harga tetap tampil normal
+                if (priceDiv) {
+                    priceDiv.style.display = 'block'; 
+                }
             } else if (statusValue === "OFFLINE") {
                 ledSpan.classList.add('offline');
                 textSpan.classList.add('offline');
+                
+                // JIKA OFFLINE: Sembunyikan element harga
+                if (priceDiv) {
+                    priceDiv.style.display = 'none'; 
+                }
             }
         }
     });
 });
 </script>
+
 
 </body>
 </html>
