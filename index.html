@@ -913,17 +913,43 @@ setInterval(createSnowflake, 600);
         });
     }
 
-    function onPlayerReady(event) {
-        // Set volume rendah khas latar belakang (20 dari skala 100) agar nyaman di telinga
+        function onPlayerReady(event) {
+        // Mute terlebih dahulu agar browser mengizinkan autoplay video jalan di latar belakang
+        player.mute();
+        player.setVolume(20);
+        player.playVideo();
+        
+        // Begitu user melakukan klik pertama di mana saja pada website, suara akan otomatis menyala (unmute)
+        window.addEventListener('click', function() {
+            if (player && typeof player.unMute === 'function') {
+                player.unMute();
+                player.playVideo(); // Memastikan video tetap berjalan
+            }
+        }, { once: true });
+    }
+        function onPlayerReady(event) {
         player.setVolume(20);
         
-        // Trik Autoplay: Musik akan mulai berputar begitu user mengklik APA PUN di dalam website pertama kali
-        window.addEventListener('click', function() {
+        // Fungsi pemicu putar musik
+        function triggerMusic() {
             if (player && typeof player.playVideo === 'function') {
                 player.playVideo();
             }
-        }, { once: true }); // '{ once: true }' menjamin event listener ini terhapus setelah klik pertama dilakukan
+            // Hapus event listener agar tidak berjalan berulang-ulang
+            window.removeEventListener('click', triggerMusic);
+            window.removeEventListener('touchstart', triggerMusic);
+        }
+
+        // Jalankan musik baik lewat klik (PC) maupun sentuhan pertama (HP)
+        window.addEventListener('click', triggerMusic, { once: true });
+        window.addEventListener('touchstart', triggerMusic, { once: true });
     }
+
+
+
+
+
+    
 </script>
 
 </body>
