@@ -287,10 +287,18 @@ body {
         right: 10px;
     }
 }
+
+/* SEKSI PLAYER HIDDEN */
+#yt-background-player {
+    display: none;
+}
 </style>
 </head>
 
 <body>
+
+<!-- Wadah Player YouTube (Disembunyikan) -->
+<div id="yt-background-player"></div>
 
 <img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/FB_IMG_1781070367755.jpg" alt="Logo Ferdinan" class="fixed-logo">
 
@@ -875,6 +883,48 @@ setInterval(createSnowflake, 600);
 <a href="https://wa.me/+6287846414300" target="_blank" class="floating-wa-btn" title="Chat via WhatsApp">
     <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
 </a>
+
+
+<!-- SCRIPT UTK INTEGRASI BACKGROUND MUSIC YOUTUBE -->
+<script>
+    // Memuat YouTube Player API secara async
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    var player;
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('yt-background-player', {
+            height: '0',
+            width: '0',
+            videoId: 'bv42PtcwA3Y', // ID Video Musik Hacker pilihanmu
+            playerVars: {
+                'autoplay': 1,
+                'controls': 0,
+                'disablekb': 1,
+                'hl': 'id',
+                'loop': 1,
+                'playlist': 'bv42PtcwA3Y' // Diperlukan agar fungsi loop aktif
+            },
+            events: {
+                'onReady': onPlayerReady
+            }
+        });
+    }
+
+    function onPlayerReady(event) {
+        // Set volume rendah khas latar belakang (20 dari skala 100) agar nyaman di telinga
+        player.setVolume(20);
+        
+        // Trik Autoplay: Musik akan mulai berputar begitu user mengklik APA PUN di dalam website pertama kali
+        window.addEventListener('click', function() {
+            if (player && typeof player.playVideo === 'function') {
+                player.playVideo();
+            }
+        }, { once: true }); // '{ once: true }' menjamin event listener ini terhapus setelah klik pertama dilakukan
+    }
+</script>
 
 </body>
 </html>
