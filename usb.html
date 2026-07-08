@@ -322,35 +322,41 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
         }
 
         async function cekKoneksiServer() {
-            const ip = document.getElementById('target-ip').value.trim();
-            const port = document.getElementById('target-port').value.trim();
+    const ip = document.getElementById('target-ip').value.trim();
+    const port = document.getElementById('target-port').value.trim();
 
-            if (!ip) {
-                alert("Harap masukkan IP Server terlebih dahulu!");
-                return;
-            }
+    if (!ip) {
+        alert("Harap masukkan IP Server terlebih dahulu!");
+        return;
+    }
 
-            writeLog("PING", `Mencoba mendeteksi handshake ke server http://${ip}:${port}...`);
-            
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 3500);
+    writeLog("PING", `Mencoba mendeteksi handshake ke server http://${ip}:${port}...`);
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3500); // Batas tunggu 3.5 detik
 
-            try {
-                await fetch(`http://${ip}:${port}`, { mode: 'no-cors', signal: controller.signal });
-                clearTimeout(timeoutId);
-                writeLog("SUCCESS", `Berhasil terhubung! Jalur komunikasi ke ${ip}:${port} aktif.`);
-                alert(`Koneksi Sukses! Server ${ip} merespon.`);
-            } catch (error) {
-                clearTimeout(timeoutId);
-                if (error.name === 'AbortError') {
-                    writeLog("ERROR", `RTO (Request Timeout). Server ${ip}:${port} tidak merespon.`);
-                    alert(`Gagal terhubung! Waktu tunggu habis. Periksa kembali IP atau firewall PC Anda.`);
-                } else {
-                    writeLog("SUCCESS", `Handshake selesai dengan respons khusus. Jalur ke ${ip}:${port} terbuka.`);
-                    alert(`OK ${ip}:${port}`);
-                }
-            }
+    try {
+        await fetch(`http://${ip}:${port}`, { 
+            mode: 'no-cors', 
+            signal: controller.signal 
+        });
+        
+        clearTimeout(timeoutId);
+        writeLog("SUCCESS", `Berhasil terhubung! Jalur komunikasi ke ${ip}:${port} aktif.`);
+        alert(`Koneksi Sukses! Server ${ip} merespon.`);
+    } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+            writeLog("ERROR", `RTO (Request Timeout). Server ${ip}:${port} tidak merespon.`);
+            alert(`Gagal terhubung! Waktu tunggu habis.`);
+        } else {
+            // MEMPERBAIKI LOGIKA: Laporkan sebagai ERROR jika diblokir/gagal total
+            writeLog("ERROR", `Koneksi gagal atau diblokir browser (Mixed Content/CORS).`);
+            alert(`Gagal terhubung ke ${ip}:${port}. Periksa kembali jaringan Anda atau jalankan web di localhost (HTTP).`);
         }
+    }
+}
+
 
         async function pilihDeviceChrome() {
             try {
