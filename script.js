@@ -83,22 +83,22 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ==========================================
-// 5. GOOGLE YOUTUBE IFRAME PLAYER (ANTI-DELAY OPTIMIZED)
+// 5. GOOGLE YOUTUBE IFRAME PLAYER (URUTAN ANTI-RACE CONDITION)
 // ==========================================
 var player;
 var hasInteractedEarly = false;
 
-// Fungsi pemicu putar video
+// Fungsi pemicu paksa putar video
 function forcePlayVideo() {
     if (player && typeof player.playVideo === 'function') {
         player.playVideo();
-        // Hapus detektor interaksi jika musik sukses menyala
+        // Bersihkan detektor klik jika musik sukses mengudara
         window.removeEventListener('click', recordInteraction);
         window.removeEventListener('touchstart', recordInteraction);
     }
 }
 
-// Rekam jika pengguna sudah menyentuh layar dari awal halaman terbuka
+// Rekam jika pengguna sudah mengetuk layar sejak awal halaman terbuka
 function recordInteraction() {
     hasInteractedEarly = true;
     forcePlayVideo();
@@ -108,13 +108,7 @@ function recordInteraction() {
 window.addEventListener('click', recordInteraction, { once: true });
 window.addEventListener('touchstart', recordInteraction, { once: true });
 
-// Memuat Script SDK Iframe API milik Google YouTube
-var tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-var firstScriptTag = document.getElementsByTagName('script')[0];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-// Tempelkan langsung ke objek window browser agar terbaca 100% dari file eksternal
+// WAJIB 1: Daftarkan fungsinya ke objek Window TERLEBIH DAHULU agar siap dipanggil kapan saja
 window.onYouTubeIframeAPIReady = function() {
     player = new YT.Player('yt-background-player', {
         height: '1',
@@ -136,8 +130,14 @@ window.onYouTubeIframeAPIReady = function() {
 
 function onPlayerReady(event) {
     player.setVolume(20);
-    // Jika user sudah terlanjur melakukan klik sebelum player siap, langsung jalankan musiknya sekarang!
+    // Jika sebelum player siap user sudah terlanjur ketuk layar, langsung gas musiknya!
     if (hasInteractedEarly) {
         forcePlayVideo();
     }
 }
+
+// WAJIB 2: Baru suntik Script SDK Iframe API milik Google YouTube ke HTML di bagian paling akhir
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
