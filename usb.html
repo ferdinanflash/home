@@ -282,25 +282,45 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
     </script>
 
     <script>
-        // Fungsi terpisah untuk memisahkan logika Realtime
         function initSupabaseRealtime() {
-            supabase
-                .channel('public:usb_commands')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'usb_commands' }, (payload) => {
-                    const updatedRow = payload.new;
-                    const oldRow = payload.old;
+    // Listener untuk perintah forwarding USB (Kirim USB)
+    supabase
+        .channel('public:usb_commands')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'usb_commands' }, (payload) => {
+            const updatedRow = payload.new;
+            const index = selectedDevices.findIndex(d => d.vendorId === updatedRow.vendor_id && d.productId === updatedRow.product_id);
+            if (index !== -1) {
+                selectedDevices[index].status = updatedRow.status;
+                selectedDevices[index].dbId = updatedRow.id;
+                writeLog("INFO", `[CLOUD] Perangkat ${selectedDevices[index].name} -> ${updatedRow.status.toUpperCase()}`);
+                renderTable();
+            }
+        })
+        .subscribe();
 
-                    if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
-                        // Cari baris perangkat di array lokal berdasarkan VID dan PID
-                        const index = selectedDevices.findIndex(d => d.vendorId === updatedRow.vendor_id && d.productId === updatedRow.product_id);
-                        if (index !== -1) {
-                            selectedDevices[index].status = updatedRow.status;
-                            selectedDevices[index].dbId = updatedRow.id; // Simpan ID database-nya
-                            writeLog("INFO", `[CLOUD] Status perangkat ${selectedDevices[index].name} berubah menjadi: ${updatedRow.status.toUpperCase()}`);
-                            renderTable();
-                        }
-                    }
-                })
+    // BARU: Listener untuk hasil pengecekan jaringan dari Agent Lokal
+    supabase
+        .channel('public:network_checks')
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'network_checks' }, (payload) => {
+            const updatedCheck = payload.new;
+            
+            if (updatedCheck.status === 'success') {
+                writeLog("SUCCESS", `[AGENT] Jalur ke ${updatedCheck.target_ip}:${updatedCheck.target_port} aktif! (${updatedCheck.message})`);
+                alert(`Koneksi Sukses! Server ${updatedCheck.target_ip} merespon.`);
+            } else if (updatedCheck.status === 'error') {
+                writeLog("ERROR", `[AGENT] Jalur ke ${updatedCheck.target_ip}:${updatedCheck.target_port} DOWN! Alasan: ${updatedCheck.message}`);
+                alert(`Gagal Terhubung: ${updatedCheck.message}`);
+            }
+            
+            // Kembalikan teks tombol ke semula
+            document.getElementById('btn-cek-jaringan').innerText = "⚡ Cek Jaringan";
+            document.getElementById('btn-cek-jaringan').disabled = false;
+        })
+        .subscribe();
+        
+    writeLog("INFO", "Supabase Realtime (USB & Network) diaktifkan.");
+}
+
                 .subscribe();
                 
             writeLog("INFO", "Supabase Realtime Channel diaktifkan.");
@@ -324,36 +344,30 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
         async function cekKoneksiServer() {
     const ip = document.getElementById('target-ip').value.trim();
     const port = document.getElementById('target-port').value.trim();
+    const btnCek = document.getElementById('btn-cek-jaringan');
 
-    if (!ip) {
-        alert("Harap masukkan IP Server terlebih dahulu!");
+    if (!ip || !port) {
+        alert("Harap masukkan IP dan Port Server terlebih dahulu!");
         return;
     }
 
-    writeLog("PING", `Mencoba mendeteksi handshake ke server http://${ip}:${port}...`);
-    
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500); // Batas tunggu 3.5 detik
+    // Ubah status tombol menjadi loading
+    btnCek.innerText = "⏳ Memeriksa...";
+    btnCek.disabled = true;
 
-    try {
-        await fetch(`http://${ip}:${port}`, { 
-            mode: 'no-cors', 
-            signal: controller.signal 
-        });
-        
-        clearTimeout(timeoutId);
-        writeLog("SUCCESS", `Berhasil terhubung! Jalur komunikasi ke ${ip}:${port} aktif.`);
-        alert(`Koneksi Sukses! Server ${ip} merespon.`);
-    } catch (error) {
-        clearTimeout(timeoutId);
-        if (error.name === 'AbortError') {
-            writeLog("ERROR", `RTO (Request Timeout). Server ${ip}:${port} tidak merespon.`);
-            alert(`Gagal terhubung! Waktu tunggu habis.`);
-        } else {
-            // MEMPERBAIKI LOGIKA: Laporkan sebagai ERROR jika diblokir/gagal total
-            writeLog("ERROR", `Koneksi gagal atau diblokir browser (Mixed Content/CORS).`);
-            alert(`Gagal terhubung ke ${ip}:${port}. Periksa kembali jaringan Anda atau jalankan web di localhost (HTTP).`);
-        }
+    writeLog("PING", `Mengirim permintaan cek jaringan ${ip}:${port} ke Cloud Supabase...`);
+
+    // Masukkan data ke Supabase, biarkan Agent Lokal yang mengeceknya
+    const { data, error } = await supabase
+        .from('network_checks')
+        .insert([
+            { target_ip: ip, target_port: port, status: 'pending' }
+        ]);
+
+    if (error) {
+        writeLog("ERROR", `Gagal mengirim permintaan cek ke cloud: ${error.message}`);
+        btnCek.innerText = "⚡ Cek Jaringan";
+        btnCek.disabled = false;
     }
 }
 
