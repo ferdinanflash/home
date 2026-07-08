@@ -83,36 +83,27 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ==========================================
-// 5. GOOGLE YOUTUBE IFRAME PLAYER (URUTAN ANTI-RACE CONDITION)
+// 5. GOOGLE YOUTUBE IFRAME PLAYER (ANTI-MOGOK ENGINE)
 // ==========================================
 var player;
-var hasInteractedEarly = false;
+var musicSuccessfullyPlaying = false;
 
-// Fungsi pemicu paksa putar video
-function forcePlayVideo() {
-    if (player && typeof player.playVideo === 'function') {
+// Fungsi pemicu utama (Akan terus dicoba di setiap klik sampai musik benar-benar berputar)
+function triggerBackgroundMusic() {
+    if (player && typeof player.playVideo === 'function' && !musicSuccessfullyPlaying) {
         player.playVideo();
-        // Bersihkan detektor klik jika musik sukses mengudara
-        window.removeEventListener('click', recordInteraction);
-        window.removeEventListener('touchstart', recordInteraction);
     }
 }
 
-// Rekam jika pengguna sudah mengetuk layar sejak awal halaman terbuka
-function recordInteraction() {
-    hasInteractedEarly = true;
-    forcePlayVideo();
-}
+// Daftarkan pendengar interaksi secara agresif tanpa batas sekali klik
+window.addEventListener('click', triggerBackgroundMusic);
+window.addEventListener('touchstart', triggerBackgroundMusic);
 
-// Daftarkan interaksi klik/sentuhan secara global langsung sejak awal file dimuat
-window.addEventListener('click', recordInteraction, { once: true });
-window.addEventListener('touchstart', recordInteraction, { once: true });
-
-// WAJIB 1: Daftarkan fungsinya ke objek Window TERLEBIH DAHULU agar siap dipanggil kapan saja
+// Daftarkan cetakan fungsi ke memori global window terlebih dahulu
 window.onYouTubeIframeAPIReady = function() {
     player = new YT.Player('yt-background-player', {
-        height: '1',
-        width: '1',
+        height: '100%',
+        width: '100%',
         videoId: 'bv42PtcwA3Y', 
         playerVars: {
             'autoplay': 1,
@@ -123,20 +114,30 @@ window.onYouTubeIframeAPIReady = function() {
             'playlist': 'bv42PtcwA3Y' 
         },
         events: {
-            'onReady': onPlayerReady
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
         }
     });
 }
 
 function onPlayerReady(event) {
     player.setVolume(20);
-    // Jika sebelum player siap user sudah terlanjur ketuk layar, langsung gas musiknya!
-    if (hasInteractedEarly) {
-        forcePlayVideo();
+    // Coba tembak langsung pas siap, kalau diizinkan browser dia langsung jalan
+    player.playVideo();
+}
+
+// Sistem pemantau status putar YouTube
+function onPlayerStateChange(event) {
+    // Angka 1 artinya video berstatus "PLAYING" (Sedang Berputar Lancar)
+    if (event.data === 1) {
+        musicSuccessfullyPlaying = true;
+        // Bersihkan semua event listener global karena misi telah sukses berputar
+        window.removeEventListener('click', triggerBackgroundMusic);
+        window.removeEventListener('touchstart', triggerBackgroundMusic);
     }
 }
 
-// WAJIB 2: Baru suntik Script SDK Iframe API milik Google YouTube ke HTML di bagian paling akhir
+// Terakhir, suntik naskah resmi SDK Iframe API milik Google YouTube
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
