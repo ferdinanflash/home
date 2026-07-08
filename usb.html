@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USB Remote Service</title>
+    <title>USB Remote Service - Supabase Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary-color: #0078d4;
@@ -60,7 +61,6 @@
             margin-bottom: 20px;
         }
 
-        /* Update Grid Layout untuk menampung tombol cek di kanan */
         .config-grid {
             display: grid;
             grid-template-columns: 2fr 1fr auto;
@@ -177,6 +177,15 @@
             font-weight: bold;
         }
 
+        .badge-pending {
+            background-color: #deecf9;
+            color: #0078d4;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
         .log-box {
             background-color: #201f1e;
             color: #00ff00;
@@ -194,8 +203,8 @@
 <div class="container">
     <header>
         <div>
-            <h1>USB Remote Service</h1>
-            <p style="margin: 5px 0 0 0; color: #605e5c;">Pilih USB langsung lewat browser dan forward ke IP Server Anda</p>
+            <h1>USB Remote Service <span style="font-size: 14px; color:#a19f9d;">(Supabase Connected)</span></h1>
+            <p style="margin: 5px 0 0 0; color: #605e5c;">Pilih USB langsung lewat browser dan sinkronisasi via Cloud Supabase</p>
         </div>
         <span class="status-badge" id="browser-status">WebUSB Supported</span>
     </header>
@@ -239,14 +248,19 @@
     </div>
 
     <div class="card">
-        <h3>Aktivitas Pengiriman</h3>
+        <h3>Aktivitas Cloud Realtime</h3>
         <div class="log-box" id="log-console">
-            [SYSTEM] Web Interface estabilished.
+            [SYSTEM] Web Interface established.
         </div>
     </div>
 </div>
 
 <script>
+    // --- KONFIGURASI SUPABASE ---
+    const SUPABASE_URL = "https://XYZ_ANDA.supabase.co"; // <--- GANTI DENGAN URL SUPABASE ANDA
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."; // <--- GANTI DENGAN ANON KEY ANDA
+
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     let selectedDevices = []; 
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -254,160 +268,210 @@
             const statusBadge = document.getElementById('browser-status');
             statusBadge.innerText = "WebUSB NOT Supported";
             statusBadge.style.backgroundColor = "var(--danger-color)";
-            writeLog("EROR: Browser Anda tidak mendukung WebUSB.");
+            writeLog("ERROR", "Browser Anda tidak mendukung WebUSB.");
         }
 
         const savedTargetIp = localStorage.getItem('usb_target_ip');
         const savedTargetPort = localStorage.getItem('usb_target_port');
         if (savedTargetIp) document.getElementById('target-ip').value = savedTargetIp;
         if (savedTargetPort) document.getElementById('target-port').value = savedTargetPort;
-    });
 
-    function writeLog(text) {
-        const consoleBox = document.getElementById('log-console');
-        const time = new Date().toLocaleTimeString();
-        consoleBox.innerHTML += `<br>[${time}] ${text}`;
-        consoleBox.scrollTop = consoleBox.scrollHeight;
-    }
+        // Inisialisasi Realtime Listener untuk tabel usb_commands
+        initSupabaseRealtime();
+    </script>
 
-    // FUNGSI BARU: CEK KONEKSI KE IP SERVER TUJUAN
-    async function cekKoneksiServer() {
-        const ip = document.getElementById('target-ip').value.trim();
-        const port = document.getElementById('target-port').value.trim();
+    <script>
+        // Fungsi terpisah untuk memisahkan logika Realtime
+        function initSupabaseRealtime() {
+            supabase
+                .channel('public:usb_commands')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'usb_commands' }, (payload) => {
+                    const updatedRow = payload.new;
+                    const oldRow = payload.old;
 
-        if (!ip) {
-            alert("Harap masukkan IP Server terlebih dahulu!");
-            return;
+                    if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+                        // Cari baris perangkat di array lokal berdasarkan VID dan PID
+                        const index = selectedDevices.findIndex(d => d.vendorId === updatedRow.vendor_id && d.productId === updatedRow.product_id);
+                        if (index !== -1) {
+                            selectedDevices[index].status = updatedRow.status;
+                            selectedDevices[index].dbId = updatedRow.id; // Simpan ID database-nya
+                            writeLog("INFO", `[CLOUD] Status perangkat ${selectedDevices[index].name} berubah menjadi: ${updatedRow.status.toUpperCase()}`);
+                            renderTable();
+                        }
+                    }
+                })
+                .subscribe();
+                
+            writeLog("INFO", "Supabase Realtime Channel diaktifkan.");
         }
 
-        writeLog(`[PING] Mencoba mendeteksi handshake ke server http://${ip}:${port}...`);
-        
-        // Menggunakan teknik timeout agar user tidak menunggu terlalu lama jika IP mati
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3500); // Batas tunggu 3.5 detik
+        // Fungsi mencetak log ke layar browser DAN menyimpannya ke database Supabase
+        async function writeLog(type, text) {
+            const consoleBox = document.getElementById('log-console');
+            const time = new Date().toLocaleTimeString();
+            consoleBox.innerHTML += `<br>[${time}] [${type}] ${text}`;
+            consoleBox.scrollTop = consoleBox.scrollHeight;
 
-        try {
-            // Menembak sinyal kosong ke port server teknisi
-            await fetch(`http://${ip}:${port}`, { 
-                mode: 'no-cors', 
-                signal: controller.signal 
-            });
-            
-            // Jika berhasil/merespon (meski no-cors), berarti IP aktif dan jalur terbuka
-            clearTimeout(timeoutId);
-            writeLog(`[ONLINE] Berhasil terhubung! Jalur komunikasi ke ${ip}:${port} aktif.`);
-            alert(`Koneksi Sukses! Server ${ip} merespon.`);
-        } catch (error) {
-            clearTimeout(timeoutId);
-            if (error.name === 'AbortError') {
-                writeLog(`[OFFLINE] RTO (Request Timeout). Server ${ip}:${port} tidak merespon.`);
-                alert(`Gagal terhubung! Waktu tunggu habis. Periksa kembali IP atau firewall PC Anda.`);
-            } else {
-                // Di beberapa jenis browser, port yang terbuka tapi menolak CORS tetap dianggap sukses terdeteksi
-                writeLog(`[ONLINE/CEK] Handshake selesai dengan respons khusus. Jalur ke ${ip}:${port} terbuka.`);
-                alert(`OK ${ip}:${port}`);
-            }
-        }
-    }
-
-    async function pilihDeviceChrome() {
-        try {
-            const device = await navigator.usb.requestDevice({ filters: [] });
-            const vId = device.vendorId.toString(16).padStart(4, '0');
-            const pId = device.productId.toString(16).padStart(4, '0');
-            const devName = device.productName || device.manufacturerName || "Perangkat USB Tanpa Nama";
-
-            writeLog(`[CHROME] Perangkat dipilih: ${devName} [0x${vId}:0x${pId}]`);
-
-            const isExist = selectedDevices.some(d => d.vendorId === vId && d.productId === pId);
-            if (!isExist) {
-                selectedDevices.push({
-                    vendorId: vId,
-                    productId: pId,
-                    name: devName,
-                    isForwarded: false
-                });
-                renderTable();
-            } else {
-                writeLog("[INFO] Perangkat tersebut sudah ada di dalam list tabel.");
-            }
-        } catch (error) {
-            writeLog(`[CHROME] Pemilihan dibatalkan atau gagal: ${error.message}`);
-        }
-    }
-
-    function renderTable() {
-        const tableBody = document.getElementById('usb-table-body');
-        if (selectedDevices.length === 0) {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="5" style="text-align: center; color: #605e5c; padding: 20px;">
-                        Belum ada perangkat terpilih. Klik tombol hijau di atas untuk memilih USB dari sistem komputer Anda.
-                    </td>
-                </tr>`;
-            return;
-        }
-
-        tableBody.innerHTML = "";
-        selectedDevices.forEach((dev, index) => {
-            const badge = dev.isForwarded ? 
-                `<span class="badge-shared">CONNECTED</span>` : 
-                `<span class="badge-ready">CONNECTED TO FERDINAN FLASHER</span>`;
-            
-            const actionBtn = dev.isForwarded ? 
-                `<button class="btn btn-disconnect" onclick="actionForward(${index}, 'stop')">Putuskan</button>` : 
-                `<button class="btn" onclick="actionForward(${index}, 'send')">Kirim USB</button>`;
-
-            tableBody.innerHTML += `
-                <tr>
-                    <td><code>0x${dev.vendorId}</code></td>
-                    <td><code>0x${dev.productId}</code></td>
-                    <td><strong>${dev.name}</strong></td>
-                    <td>${badge}</td>
-                    <td>${actionBtn}</td>
-                </tr>
-            `;
-        });
-    }
-
-    async function actionForward(index, type) {
-        const targetIp = document.getElementById('target-ip').value.trim();
-        const targetPort = document.getElementById('target-port').value.trim();
-
-        if (!targetIp) {
-            alert("Harap masukkan IP Server tujuan!");
-            return;
-        }
-
-        localStorage.setItem('usb_target_ip', targetIp);
-        localStorage.setItem('usb_target_port', targetPort);
-        const device = selectedDevices[index];
-
-        if (type === 'send') {
-            writeLog(`[ACTION] Meneruskan data USB [0x${device.vendorId}:0x${device.productId}] ke ${targetIp}:${targetPort}...`);
+            // Kirim log ke cloud Supabase secara asynchronous
             try {
-                await fetch(`http://localhost:8080/api/forward-by-id`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        vendorId: device.vendorId,
-                        productId: device.productId,
-                        serverIp: targetIp,
-                        serverPort: targetPort
-                    })
-                });
-                device.isForwarded = true;
-                writeLog(`[SUCCESS] USB ${device.name} sekarang diarahkan ke IP Anda.`);
-            } catch (e) {
-                writeLog(`[SIMULASI] Mencoba memicu penguncian driver tingkat sistem untuk ID 0x${device.vendorId}...`);
-                device.isForwarded = true;
+                await supabase.from('system_logs').insert([{ log_type: type, message: text }]);
+            } catch(e) {
+                console.error("Gagal mengirim log ke Supabase", e);
             }
-        } else {
-            writeLog(`[ACTION] Membatalkan pengiriman USB ${device.name}...`);
-            device.isForwarded = false;
         }
-        renderTable();
-    }
-</script>
+
+        async function cekKoneksiServer() {
+            const ip = document.getElementById('target-ip').value.trim();
+            const port = document.getElementById('target-port').value.trim();
+
+            if (!ip) {
+                alert("Harap masukkan IP Server terlebih dahulu!");
+                return;
+            }
+
+            writeLog("PING", `Mencoba mendeteksi handshake ke server http://${ip}:${port}...`);
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+            try {
+                await fetch(`http://${ip}:${port}`, { mode: 'no-cors', signal: controller.signal });
+                clearTimeout(timeoutId);
+                writeLog("SUCCESS", `Berhasil terhubung! Jalur komunikasi ke ${ip}:${port} aktif.`);
+                alert(`Koneksi Sukses! Server ${ip} merespon.`);
+            } catch (error) {
+                clearTimeout(timeoutId);
+                if (error.name === 'AbortError') {
+                    writeLog("ERROR", `RTO (Request Timeout). Server ${ip}:${port} tidak merespon.`);
+                    alert(`Gagal terhubung! Waktu tunggu habis. Periksa kembali IP atau firewall PC Anda.`);
+                } else {
+                    writeLog("SUCCESS", `Handshake selesai dengan respons khusus. Jalur ke ${ip}:${port} terbuka.`);
+                    alert(`OK ${ip}:${port}`);
+                }
+            }
+        }
+
+        async function pilihDeviceChrome() {
+            try {
+                const device = await navigator.usb.requestDevice({ filters: [] });
+                const vId = device.vendorId.toString(16).padStart(4, '0');
+                const pId = device.productId.toString(16).padStart(4, '0');
+                const devName = device.productName || device.manufacturerName || "Perangkat USB Tanpa Nama";
+
+                writeLog("INFO", `Perangkat dipilih di browser: ${devName} [0x${vId}:0x${pId}]`);
+
+                const isExist = selectedDevices.some(d => d.vendorId === vId && d.productId === pId);
+                if (!isExist) {
+                    selectedDevices.push({
+                        vendorId: vId,
+                        productId: pId,
+                        name: devName,
+                        status: 'ready', // status bawaan lokal sebelum dikirim
+                        dbId: null
+                    });
+                    renderTable();
+                } else {
+                    writeLog("INFO", "Perangkat tersebut sudah ada di dalam list tabel.");
+                }
+            } catch (error) {
+                writeLog("ERROR", `Pemilihan dibatalkan atau gagal: ${error.message}`);
+            }
+        }
+
+        function renderTable() {
+            const tableBody = document.getElementById('usb-table-body');
+            if (selectedDevices.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #605e5c; padding: 20px;">
+                            Belum ada perangkat terpilih. Klik tombol hijau di atas untuk memilih USB dari sistem komputer Anda.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            tableBody.innerHTML = "";
+            selectedDevices.forEach((dev, index) => {
+                let badge = `<span class="badge-ready">READY TO SEND</span>`;
+                let actionBtn = `<button class="btn" onclick="actionForward(${index}, 'send')">Kirim USB</button>`;
+
+                if (dev.status === 'pending') {
+                    badge = `<span class="badge-pending">WAITING AGENT...</span>`;
+                    actionBtn = `<button class="btn btn-disconnect" disabled>Memproses...</button>`;
+                } else if (dev.status === 'forwarded') {
+                    badge = `<span class="badge-shared">CONNECTED TO CLOUD</span>`;
+                    actionBtn = `<button class="btn btn-disconnect" onclick="actionForward(${index}, 'stop')">Putuskan</button>`;
+                }
+
+                tableBody.innerHTML += `
+                    <tr>
+                        <td><code>0x${dev.vendorId}</code></td>
+                        <td><code>0x${dev.productId}</code></td>
+                        <td><strong>${dev.name}</strong></td>
+                        <td>${badge}</td>
+                        <td>${actionBtn}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function actionForward(index, type) {
+            const targetIp = document.getElementById('target-ip').value.trim();
+            const targetPort = document.getElementById('target-port').value.trim();
+
+            if (!targetIp) {
+                alert("Harap masukkan IP Server tujuan!");
+                return;
+            }
+
+            localStorage.setItem('usb_target_ip', targetIp);
+            localStorage.setItem('usb_target_port', targetPort);
+            const device = selectedDevices[index];
+
+            if (type === 'send') {
+                writeLog("INFO", `Mengirim perintah forward [0x${device.vendorId}] ke database Supabase...`);
+                
+                // ISI DATA KE SUPABASE (Akan memicu Agent lokal via Realtime)
+                const { data, error } = await supabase
+                    .from('usb_commands')
+                    .insert([
+                        { 
+                            vendor_id: device.vendorId, 
+                            product_id: device.productId, 
+                            device_name: device.name,
+                            target_ip: targetIp,
+                            target_port: targetPort,
+                            status: 'pending'
+                        }
+                    ])
+                    .select();
+
+                if (error) {
+                    writeLog("ERROR", `Gagal input cloud: ${error.message}`);
+                } else {
+                    device.status = 'pending';
+                    device.dbId = data[0].id; // Simpan ID baris untuk update pemutusan nanti
+                    renderTable();
+                }
+            } else {
+                writeLog("INFO", `Mengirim perintah PUTUSKAN untuk USB ${device.name}...`);
+                
+                // UPDATE DATA DI SUPABASE MENJADI DISCONNECTED
+                if (device.dbId) {
+                    const { error } = await supabase
+                        .from('usb_commands')
+                        .update({ status: 'disconnected' })
+                        .eq('id', device.dbId);
+
+                    if (error) {
+                        writeLog("ERROR", `Gagal update cloud: ${error.message}`);
+                    } else {
+                        device.status = 'ready';
+                        renderTable();
+                    }
+                }
+            }
+        }
+    </script>
 </body>
 </html>
