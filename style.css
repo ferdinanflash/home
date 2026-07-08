@@ -200,12 +200,13 @@ body {
     border-radius: 12px;
     padding: 15px; 
     box-shadow: 0 0 20px rgba(56,189,248,.15);
-    animation: fadeUp .6s ease forwards;
+    animation: fadeUp .6s ease both; /* Diubah dari forwards menjadi both */
     transition: .3s;
     position: relative;
     overflow: hidden;
-    opacity: 0;
+    opacity: 1; /* Diubah dari 0 menjadi 1 agar kartu tidak hilang saat di-klik */
 }
+
 
 @keyframes fadeUp {
     from { opacity:0; transform: translateY(25px); }
