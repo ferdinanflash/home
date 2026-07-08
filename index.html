@@ -1,338 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Ferdinan Flasher</title>
-
-<style>
-/* Kontainer Utama Salju */
-.snow-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 9999; 
-    pointer-events: none; 
-    overflow: hidden;
-}
-
-/* Style untuk setiap butiran salju */
-.snowflake {
-    position: absolute;
-    top: -10px;
-    color: #fff;
-    font-family: Arial, sans-serif;
-    user-select: none;
-    pointer-events: none;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); 
-    animation: fall linear infinite;
-}
-
-/* Animasi Jatuh dan Goyang Menyamping */
-@keyframes fall {
-    0% {
-        transform: translateY(0) translateX(0);
-        opacity: 0;
-    }
-    10% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(105vh) translateX(50px);
-        opacity: 0;
-    }
-}
-
-/* CSS UNTUK LOGO DI POJOK KIRI ATAS */
-.fixed-logo {
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    z-index: 10000;
-    width: 60px; 
-    height: 60px;
-    object-fit: cover;
-    border-radius: 50%; 
-    border: 2px solid #38bdf8;
-    box-shadow: 0 0 10px rgba(56,189,248,.5);
-}
-
-/* CSS TOMBOL LOGIN DI POJOK KANAN ATAS */
-.fixed-login-btn {
-    position: fixed;
-    top: 15px;
-    right: 15px;
-    z-index: 10000;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: linear-gradient(145deg, #0f172a, #1e293b);
-    color: #38bdf8;
-    border: 2px solid #334155;
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: bold;
-    text-decoration: none;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(56,189,248,.15);
-    transition: all 0.3s ease;
-}
-
-.fixed-login-btn:hover {
-    color: #fff;
-    background: #0f172a;
-    border-color: #38bdf8;
-    transform: translateY(-2px);
-    box-shadow: 0 0 20px rgba(56,189,248,.4);
-}
-
-.fixed-login-btn:active {
-    transform: translateY(0);
-}
-
-/* CSS TOMBOL PAYMENT PAGE BARU */
-.payment-page-container {
-    text-align: center;
-    margin: 40px auto;
-    padding: 0 20px;
-}
-
-.btn-payment-page {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: linear-gradient(145deg, #0f172a, #1e293b);
-    color: #38bdf8;
-    border: 2px solid #334155;
-    padding: 15px 35px;
-    font-size: 16px;
-    font-weight: bold;
-    text-decoration: none;
-    border-radius: 12px;
-    box-shadow: 0 0 20px rgba(56,189,248,.15);
-    transition: all 0.3s ease;
-}
-
-.btn-payment-page:hover {
-    color: #fff;
-    background: #0f172a;
-    border-color: #38bdf8;
-    transform: translateY(-3px);
-    box-shadow: 0 0 25px rgba(56,189,248,.5);
-}
-
-.btn-payment-page:active {
-    transform: translateY(-1px);
-}
-  
-/* CSS ASLI WEBSITE (DIPERTAHANKAN) */
-@keyframes glow {
-    0% { text-shadow: 0 0 5px #0ea5e9; }
-    50% { text-shadow: 0 0 20px #38bdf8; }
-    100% { text-shadow: 0 0 5px #0ea5e9; }
-}
-@keyframes fadeUp {
-    from { opacity:0; transform: translateY(25px); }
-    to { opacity:1; transform: translateY(0); }
-}
-body {
-    background: radial-gradient(circle at top, #0b1220, #05070c);
-    color: #d1d5db;
-    font-family: 'Segoe UI', monospace;
-    margin: 0;
-}
-.header {
-    text-align: center;
-    padding: 40px 20px;
-    background: linear-gradient(180deg, #020617, #020617cc);
-    border-bottom: 1px solid #1e293b;
-}
-.header h1 {
-    font-size: 28px;
-    color: #38bdf8;
-    animation: glow 3s infinite;
-}
-.header p {
-    color: #94a3b8;
-    font-size: 14px;
-}
-.header a {
-    color: #60a5fa;
-    text-decoration: none;
-}
-
-/* UKURAN KOLOM RAPAT */
-.container {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 0 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); 
-    gap: 15px; 
-}
-.card {
-    background: linear-gradient(145deg, #0b1220, #020617);
-    border: 1px solid #1e293b;
-    border-radius: 12px;
-    padding: 15px; 
-    box-shadow: 0 0 20px rgba(56,189,248,.15);
-    animation: fadeUp .6s ease forwards;
-    transition: .3s;
-    position: relative;
-    overflow: hidden;
-}
-.card:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 0 30px rgba(56,189,248,.4);
-    animation: breathe 1.6s infinite;
-}
-.card h3 {
-    font-size: 14px; 
-    color: #7dd3fc;
-    margin-bottom: 10px;
-    line-height: 1.4;
-}
-.price {
-    margin-top: 12px;
-    padding-top: 8px;
-    border-top: 1px dashed #334155;
-    font-size: 13px;
-}
-.price span {
-    color: #60a5fa;
-}
-
-/* ANIMASI LED & STATUS MANUAL SEKARANG DIKONTROL OTOMATIS OLEH JS */
-@keyframes ledPulseGreen {
-    0% { box-shadow: 0 0 5px #22c55e; }
-    50% { box-shadow: 0 0 15px #22c55e, 0 0 30px #22c55e; }
-    100% { box-shadow: 0 0 5px #22c55e; }
-}
-@keyframes ledPulseRed {
-    0% { box-shadow: 0 0 5px #ef4444; }
-    50% { box-shadow: 0 0 15px #ef4444, 0 0 30px #ef4444; }
-    100% { box-shadow: 0 0 5px #ef4444; }
-}
-.status-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 6px;
-}
-.led {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #64748b; /* Warna default abu-abu jika text kosong / salah ketik */
-}
-.status-text {
-    font-size: 13px;
-}
-
-/* Class style dinamis yang akan disuntikkan otomatis oleh JavaScript */
-.led.online {
-    background: #22c55e;
-    animation: ledPulseGreen 1.5s infinite;
-}
-.status-text.online { color: #22c55e; }
-
-.led.offline {
-    background: #ef4444; 
-    animation: ledPulseRed 1.5s infinite;
-}
-.status-text.offline { color: #ef4444; }
-
-
-/* EFFECT CARD ASLI */
-.card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(120deg, transparent, rgba(56,189,248,0.15), transparent);
-    transform: translateX(-100%);
-    transition: 0.6s;
-}
-.card:hover::before {
-    transform: translateX(100%);
-}
-@keyframes breathe {
-    0% { box-shadow: 0 0 15px rgba(56,189,248,.25); }
-    50% { box-shadow: 0 0 35px rgba(56,189,248,.6); }
-    100% { box-shadow: 0 0 15px rgba(56,189,248,.25); }
-}
-
-/* FOOTER ASLI */
-.footer {
-    margin-top: 50px;
-    padding: 20px;
-    text-align: center;
-    border-top: 1px solid #1e293b;
-    background: #020617;
-    color: #64748b;
-    font-size: 13px;
-}
-
-/* RESPONSIVITAS TOMBOL ATAS DI LAYAR HP */
-@media (max-width: 480px) {
-    .fixed-logo {
-        width: 45px;
-        height: 45px;
-        top: 10px;
-        left: 10px;
-    }
-    .fixed-login-btn {
-        padding: 6px 14px;
-        font-size: 12px;
-        top: 10px;
-        right: 10px;
-    }
-}
-
-/* SEKSI PLAYER HIDDEN */
-#yt-background-player {
-    display: none;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferdinan Flasher</title>
+    <!-- Menghubungkan file CSS Eksternal -->
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div id="yt-background-player"></div>
+    <!-- Background Player YouTube -->
+    <div id="yt-background-player"></div>
 
-<img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/FB_IMG_1781070367755.jpg" alt="Logo Ferdinan" class="fixed-logo">
+    <!-- Logo Pojok Kiri Atas -->
+    <img src="https://raw.githubusercontent.com/ferdinanflash/home/refs/heads/main/FB_IMG_1781070367755.jpg" alt="Logo Ferdinan" class="fixed-logo">
 
-<a href="https://ferdinanflash.github.io/home/library" target="_blank" class="fixed-login-btn">
-    🔑 Login
-</a>
+    <!-- Tombol Login Pojok Kanan Atas -->
+    <a href="https://ferdinanflash.github.io/home/library" target="_blank" class="fixed-login-btn">
+        🔑 Login
+    </a>
 
-<div class="header">
-<div class="header">
-    <div class="fire-wrapper">
-        <h1 class="running-rgb-fire">Ferdinan Flasher Batam</h1>
-    </div>
-    <p>Server Price & Server Status Monitoring</p>
-    <p>Contact me on :</p>
-    
-    <div style="margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 5px;">
-        <div style="display: flex; justify-content: center; gap: 20px;">
-            <!-- Tombol Facebook Aktif Kembali - Ganti tanda # dengan link FB kamu -->
-            <a href="https://facebook.com/GANTI_DENGAN_LINK_FB_KAMU" target="_blank" title="Facebook Ferdinan Flasher" style="transition: transform 0.2s; display: inline-block;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/2023_Facebook_icon.svg" alt="Facebook" style="width: 35px; height: 35px; vertical-align: middle;">
-            </a>
+    <!-- Header Section -->
+    <div class="header">
+        <div class="fire-wrapper">
+            <h1 class="running-rgb-fire">Ferdinan Flasher Batam</h1>
+        </div>
+        <p>Server Price & Server Status Monitoring</p>
+        <p>Contact me on :</p>
+        
+        <div class="social-media-container">
+            <div class="social-media-row">
+                <!-- Tombol Facebook -->
+                <a href="https://facebook.com/GANTI_DENGAN_LINK_FB_KAMU" target="_blank" title="Facebook Ferdinan Flasher" class="social-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/2023_Facebook_icon.svg" alt="Facebook">
+                </a>
 
-            <a href="https://wa.me/+6287846414300" target="_blank" title="WhatsApp Ferdinan Flasher" style="transition: transform 0.2s; display: inline-block;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 35px; height: 35px; vertical-align: middle;">
-            </a>
+                <!-- Tombol WhatsApp -->
+                <a href="https://wa.me/+6287846414300" target="_blank" title="WhatsApp Ferdinan Flasher" class="social-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+                </a>
+            </div>
         </div>
     </div>
-</div>
 
-
-
+    <!-- Teks Berjalan (Marquee) -->
     <div class="marquee-container">
         <div class="marquee-content">
             ALL SERVICES ANDROID & IOS - FRP, MDM, UNLOCK BOOTLOADER, ID LOCK, IMEI REPAIR, AUTH FLASH, ROOTING, CUSTOM ROM, UNLOCK NETWORK, ICLOUD BYPASS     &nbsp;&bull;&nbsp; 
@@ -340,703 +51,249 @@ body {
         </div>
     </div>
 
-<style>
-/* CSS UNTUK NOTIFIKASI FACEBOOK OFFLINE */
-.fb-notice {
-    background: rgba(239, 68, 68, 0.15);
-    border: 1px solid #ef4444;
-    color: #fca5a5;
-    font-size: 13px;
-    font-weight: bold;
-    padding: 6px 15px;
-    border-radius: 20px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 15px;
-    box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
-    animation: pulseNotice 2s infinite;
-}
-
-@keyframes pulseNotice {
-    0% { opacity: 0.8; box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
-    50% { opacity: 1; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
-    100% { opacity: 0.8; box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
-}
-
-    
-/* CSS UNTUK TULISAN BERJALAN (MARQUEE) */
-.marquee-container {
-    width: 100%;
-    overflow: hidden;
-    white-space: nowrap;
-    margin-top: 25px;
-    background: rgba(30, 41, 59, 0.4); 
-    border-y: 1px solid #1e293b;
-    padding: 10px 0;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-.marquee-content {
-    display: inline-block;
-    font-size: 14px;
-    font-weight: bold;
-    color: #38bdf8; 
-    letter-spacing: 1px;
-    animation: marquee 25s linear infinite;
-    text-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
-}
-
-@keyframes marquee {
-    0% { transform: translateX(0%); }
-    100% { transform: translateX(-50%); }
-}
-
-.fire-wrapper {
-    padding: 20px 0;
-    display: inline-block;
-}
-
-.running-rgb-fire {
-    font-size: 35px; 
-    margin: 0;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    position: relative;
-    
-    background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff, #ff0000);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-    
-    animation: runningLED 4s linear infinite, fireFlicker 1.5s ease-in-out infinite alternate;
-}
-
-@keyframes runningLED {
-    0% { background-position: 0% center; }
-    100% { background-position: 200% center; }
-}
-
-@keyframes fireFlicker {
-    0% {
-        text-shadow: 
-            0 -2px 4px rgba(255, 80, 0, 0.6), 
-            0 -4px 10px rgba(255, 150, 0, 0.4), 
-            0 -10px 20px rgba(255, 200, 0, 0.2), 
-            0 -16px 35px rgba(255, 0, 0, 0.4);
-    }
-    50% {
-        text-shadow: 
-            0 -3px 5px rgba(255, 80, 0, 0.7), 
-            2px -6px 12px rgba(255, 130, 0, 0.5), 
-            -2px -12px 25px rgba(255, 220, 0, 0.3), 
-            0 -22px 45px rgba(255, 50, 0, 0.5);
-    }
-    100% {
-        text-shadow: 
-            0 -1px 3px rgba(255, 80, 0, 0.6), 
-            -1px -5px 9px rgba(255, 160, 0, 0.4), 
-            1px -8px 18px rgba(255, 180, 0, 0.2), 
-            0 -14px 30px rgba(255, 0, 0, 0.3);
-    }
-}
-</style>
-
-
-<div class="container">
-    <!-- === GRUP XIAOMI === -->
-    <div class="card" style="animation-delay:0s">
-        <h3>Xiaomi QC Auth Global</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">OFFLINE</span></div>
-        <div class="price">Price : 10$/180k IDR</div>
-    </div>
-    <div class="card" style="animation-delay:0.08s">
-        <h3>Xiaomi MediaTek V5 Auth Global</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 7$/125k IDR</div>
-    </div>
-    <div class="card" style="animation-delay:0.16s">
-        <h3>Xiaomi MediaTek V6 Auth SPFT</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 8$/135k IDR</div>
-    </div>
-    <div class="card" style="animation-delay:0.24s">
-        <h3>Xiaomi MediaTek V6 Auth New Security</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 6$/110k IDR</div>
-    </div>
-    <div class="card" style="animation-delay:0.32s">
-        <h3>Xiaomi FRP - Mi Assistant</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 8$/125k IDR</div>
-    </div>
-    <div class="card" style="animation-delay:0.4s">
-        <h3>Xiaomi - Fastboot To EDL</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 1$/20k IDR</div>
-    </div>
-    <div class="card" style="animation-delay:0.48s">
-        <h3>Xiaomi UBL India Device Only</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">OFFLINE</span></div>
-        <div class="price">Price : 7$</div>
-    </div>
-    <div class="card" style="animation-delay:0.56s">
-        <h3>Xiaomi UBL Global Device</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 25$/450k IDR</div>
-    </div>
-    <div class="card" style="animation-delay:0.64s">
-        <h3>Xiaomi Account Clean Indo</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 8$/130k IDR</div>
-    </div>
-
-    <!-- === GRUP APPLE === -->
-    <div class="card" style="animation-delay:0.72s">
-        <h3>Apple A5-A6 Wifi only</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 8$/150k IDR</div>
-    </div>
-    <div class="card" style="animation-delay:0.8s">
-        <h3>Apple A7-A11 Wifi Only</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 6$/100k IDR</div>
-    </div>
-    <div class="card" style="animation-delay:0.88s; cursor: pointer;" onclick="alert('Keterangan Apple A12+ Wifi:\n\n✔️ Only Support Hello Screen up to 18.7.2/26.1\n❌ Passcode Tidak Didukung')">
-        <h3>Apple A12+ Wifi only</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 20$/350k IDR</div>
-    </div>
-    <div class="card" style="animation-delay:0.96s">
-        <h3>IPAD (Wifi) & Iwatch Clean Icloud</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : Start from $90</div>
-    </div>
-
-    <!-- === GRUP INFINIX / ITEL / TECNO === -->
-    <div class="card" style="animation-delay:1.04s">
-        <h3>Infinix/Itel/Tecno FRP</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 6$/100k IDR</div>
-    </div>
-    <div class="card" style="animation-delay:1.12s">
-        <h3>Infinix/Itel/Tecno Auth</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 13$/225k</div>
-    </div>
-    <div class="card" style="animation-delay:1.2s">
-        <h3>Infinix/Itel/Tecno Anticrack</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 14$/250k IDR</div>
-    </div>
-
-    <!-- === GRUP OPPO & REALME === -->
-    <div class="card" style="animation-delay:1.28s">
-        <h3>Realme FRP/Auth</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 6$/100k IDR</div>
-    </div>
-    <div class="card" style="animation-delay:1.36s">
-        <h3>OPPO MDM</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 10$/180k IDR</div>
-    </div>
-    <div class="card" style="animation-delay:1.44s">
-        <h3>OPPO Auth</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">OFFLINE</span></div>
-        <div class="price">Price : 60$</div>
-    </div>
-
-    <!-- === GRUP VIVO === -->
-    <div class="card" style="animation-delay:1.52s">
-        <h3>Vivo QC/MTK/SPD Demo/FRP/Auth</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 25$/450k IDR</div>
-    </div>
-
-    <!-- === GRUP SAMSUNG === -->
-    <div class="card" style="animation-delay:1.6s">
-        <h3>Samsung FRP</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : By model</div>
-    </div>
-    <div class="card" style="animation-delay:1.68s">
-        <h3>Samsung MDM/IT Admin</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 12$/200k IDR</div>
-    </div>
-
-    <!-- === BRAND LAIN & SERVICES UMUM === -->
-    <div class="card" style="animation-delay:1.76s">
-        <h3>Oneplus Auth</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">OFFLINE</span></div>
-        <div class="price">Price : By model</div>
-    </div>
-    <div class="card" style="animation-delay:1.84s">
-        <h3>Huawei ID Remove (Indo)</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : 45$/900k IDR</div>
-    </div>
-    <div class="card" style="animation-delay:1.92s">
-        <h3>IMEI REPAIR</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : by model</div>
-    </div>
-    <div class="card" style="animation-delay:2s">
-        <h3>ENG ROM FILES</h3>
-        <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
-        <div class="price">Price : by model</div>
-    </div>
-</div> 
-
-
-<div style="text-align: center; margin: 20px 0;">
-    <a href="https://wa.me/+6287846414300" target="_blank">
-        <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWU4ajhjNzJ3ZTUwMXQ1ZGpicXI4NWhmcGw2NDlpZXA4bmI4ZnlrdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/f7BCWwgz5KaiY0tgpz/giphy.gif" alt="order now" width="200" style="opacity: 0.5; display: inline-block;">
-    </a>
-</div>
-
-<div class="payment-page-container">
-    <a href="https://ferdinanflash.github.io/home/Payment" target="_blank" class="btn-payment-page">
-        💳 Payment Page
-    </a>
-    <div style="margin-top: 15px; font-size: 14px; font-weight: bold; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 0 5px rgba(148, 163, 184, 0.2);">
-        Brand Supported
-    </div>
-</div>
-<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
-
-<div class="brand-carousel-container">
-    <div class="brand-carousel-inner" id="brandCarousel">
-        <div class="brand-group active">
-            <div class="brand-item"><iconify-icon icon="simple-icons:xiaomi" style="color: #FF6700;"></iconify-icon><span>Xiaomi</span></div>
-            <div class="brand-item"><iconify-icon icon="simple-icons:samsung" style="color: #1428A0;"></iconify-icon><span>Samsung</span></div>
-            <div class="brand-item"><iconify-icon icon="simple-icons:oppo" style="color: #00925A;"></iconify-icon><span>OPPO</span></div>
+    <!-- Kontainer Utama List Layanan / Card -->
+    <div class="container">
+        <!-- === GRUP XIAOMI === -->
+        <div class="card" style="animation-delay:0s">
+            <h3>Xiaomi QC Auth Global</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">OFFLINE</span></div>
+            <div class="price">Price : 10$/180k IDR</div>
         </div>
-        <div class="brand-group">
-            <div class="brand-item"><iconify-icon icon="simple-icons:oneplus" style="color: #F50514;"></iconify-icon><span>OnePlus</span></div>
-            <div class="brand-item"><iconify-icon icon="simple-icons:realme" style="color: #FFC915;"></iconify-icon><span>Realme</span></div>
-            <div class="brand-item"><iconify-icon icon="simple-icons:vivo" style="color: #415FFF;"></iconify-icon><span>Vivo</span></div>
+        <div class="card" style="animation-delay:0.08s">
+            <h3>Xiaomi MediaTek V5 Auth Global</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 7$/125k IDR</div>
         </div>
-        
-        <div class="brand-group">
-            <div class="brand-item"><div class="logo-infinix-custom">Infinix</div></div>
-            <div class="brand-item">
-                <div class="logo-itel-box">
-                    <svg class="itel-curve curve-top" viewBox="0 0 100 20">
-                        <path d="M 5,18 Q 45,2 95,12" fill="none" stroke="#D61C23" stroke-width="2.5" stroke-linecap="round"/>
-                    </svg>
-                    <div class="logo-itel-text">itel</div>
-                    <svg class="itel-curve curve-bottom" viewBox="0 0 100 25">
-                        <path d="M 5,5 Q 55,22 80,10 L 50,22 L 40,12" fill="none" stroke="#D61C23" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+        <div class="card" style="animation-delay:0.16s">
+            <h3>Xiaomi MediaTek V6 Auth SPFT</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 8$/135k IDR</div>
+        </div>
+        <div class="card" style="animation-delay:0.24s">
+            <h3>Xiaomi MediaTek V6 Auth New Security</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 6$/110k IDR</div>
+        </div>
+        <div class="card" style="animation-delay:0.32s">
+            <h3>Xiaomi FRP - Mi Assistant</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 8$/125k IDR</div>
+        </div>
+        <div class="card" style="animation-delay:0.4s">
+            <h3>Xiaomi - Fastboot To EDL</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 1$/20k IDR</div>
+        </div>
+        <div class="card" style="animation-delay:0.48s">
+            <h3>Xiaomi UBL India Device Only</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">OFFLINE</span></div>
+            <div class="price">Price : 7$</div>
+        </div>
+        <div class="card" style="animation-delay:0.56s">
+            <h3>Xiaomi UBL Global Device</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 25$/450k IDR</div>
+        </div>
+        <div class="card" style="animation-delay:0.64s">
+            <h3>Xiaomi Account Clean Indo</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 8$/130k IDR</div>
+        </div>
+
+        <!-- === GRUP APPLE === -->
+        <div class="card" style="animation-delay:0.72s">
+            <h3>Apple A5-A6 Wifi only</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 8$/150k IDR</div>
+        </div>
+        <div class="card" style="animation-delay:0.8s">
+            <h3>Apple A7-A11 Wifi Only</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 6$/100k IDR</div>
+        </div>
+        <div class="card" style="animation-delay:0.88s; cursor: pointer;" onclick="alert('Keterangan Apple A12+ Wifi:\n\n✔️ Only Support Hello Screen up to 18.7.2/26.1\n❌ Passcode Tidak Didukung')">
+            <h3>Apple A12+ Wifi only</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 20$/350k IDR</div>
+        </div>
+        <div class="card" style="animation-delay:0.96s">
+            <h3>IPAD (Wifi) & Iwatch Clean Icloud</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : Start from $90</div>
+        </div>
+
+        <!-- === GRUP INFINIX / ITEL / TECNO === -->
+        <div class="card" style="animation-delay:1.04s">
+            <h3>Infinix/Itel/Tecno FRP</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 6$/100k IDR</div>
+        </div>
+        <div class="card" style="animation-delay:1.12s">
+            <h3>Infinix/Itel/Tecno Auth</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 13$/225k</div>
+        </div>
+        <div class="card" style="animation-delay:1.2s">
+            <h3>Infinix/Itel/Tecno Anticrack</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 14$/250k IDR</div>
+        </div>
+
+        <!-- === GRUP OPPO & REALME === -->
+        <div class="card" style="animation-delay:1.28s">
+            <h3>Realme FRP/Auth</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 6$/100k IDR</div>
+        </div>
+        <div class="card" style="animation-delay:1.36s">
+            <h3>OPPO MDM</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 10$/180k IDR</div>
+        </div>
+        <div class="card" style="animation-delay:1.44s">
+            <h3>OPPO Auth</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">OFFLINE</span></div>
+            <div class="price">Price : 60$</div>
+        </div>
+
+        <!-- === GRUP VIVO === -->
+        <div class="card" style="animation-delay:1.52s">
+            <h3>Vivo QC/MTK/SPD Demo/FRP/Auth</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 25$/450k IDR</div>
+        </div>
+
+        <!-- === GRUP SAMSUNG === -->
+        <div class="card" style="animation-delay:1.6s">
+            <h3>Samsung FRP</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : By model</div>
+        </div>
+        <div class="card" style="animation-delay:1.68s">
+            <h3>Samsung MDM/IT Admin</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 12$/200k IDR</div>
+        </div>
+
+        <!-- === BRAND LAIN & SERVICES UMUM === -->
+        <div class="card" style="animation-delay:1.76s">
+            <h3>Oneplus Auth</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">OFFLINE</span></div>
+            <div class="price">Price : By model</div>
+        </div>
+        <div class="card" style="animation-delay:1.84s">
+            <h3>Huawei ID Remove (Indo)</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : 45$/900k IDR</div>
+        </div>
+        <div class="card" style="animation-delay:1.92s">
+            <h3>IMEI REPAIR</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : by model</div>
+        </div>
+        <div class="card" style="animation-delay:2s">
+            <h3>ENG ROM FILES</h3>
+            <div class="status-row"><span class="led"></span><span class="status-text">ONLINE</span></div>
+            <div class="price">Price : by model</div>
+        </div>
+    </div> 
+
+    <!-- CTA Order GIF Banner -->
+    <div class="order-banner-container">
+        <a href="https://wa.me/+6287846414300" target="_blank">
+            <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWU4ajhjNzJ3ZTUwMXQ1ZGpicXI4NWhmcGw2NDlpZXA4bmI4ZnlrdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/f7BCWwgz5KaiY0tgpz/giphy.gif" alt="order now" class="order-now-gif">
+        </a>
+    </div>
+
+    <!-- Bagian Pembayaran & Carousel Brand -->
+    <div class="payment-page-container">
+        <a href="https://ferdinanflash.github.io/home/Payment" target="_blank" class="btn-payment-page">
+            💳 Payment Page
+        </a>
+        <div class="brand-title">
+            Brand Supported
+        </div>
+    </div>
+
+    <!-- Brand Carousel -->
+    <div class="brand-carousel-container">
+        <div class="brand-carousel-inner" id="brandCarousel">
+            <div class="brand-group active">
+                <div class="brand-item"><iconify-icon icon="simple-icons:xiaomi" style="color: #FF6700;"></iconify-icon><span>Xiaomi</span></div>
+                <div class="brand-item"><iconify-icon icon="simple-icons:samsung" style="color: #1428A0;"></iconify-icon><span>Samsung</span></div>
+                <div class="brand-item"><iconify-icon icon="simple-icons:oppo" style="color: #00925A;"></iconify-icon><span>OPPO</span></div>
+            </div>
+            <div class="brand-group">
+                <div class="brand-item"><iconify-icon icon="simple-icons:oneplus" style="color: #F50514;"></iconify-icon><span>OnePlus</span></div>
+                <div class="brand-item"><iconify-icon icon="simple-icons:realme" style="color: #FFC915;"></iconify-icon><span>Realme</span></div>
+                <div class="brand-item"><iconify-icon icon="simple-icons:vivo" style="color: #415FFF;"></iconify-icon><span>Vivo</span></div>
+            </div>
+            <div class="brand-group">
+                <div class="brand-item"><div class="logo-infinix-custom">Infinix</div></div>
+                <div class="brand-item">
+                    <div class="logo-itel-box">
+                        <svg class="itel-curve curve-top" viewBox="0 0 100 20">
+                            <path d="M 5,18 Q 45,2 95,12" fill="none" stroke="#D61C23" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                        <div class="logo-itel-text">itel</div>
+                        <svg class="itel-curve curve-bottom" viewBox="0 0 100 25">
+                            <path d="M 5,5 Q 55,22 80,10 L 50,22 L 40,12" fill="none" stroke="#D61C23" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="brand-item">
+                    <div class="logo-tecno-custom">
+                        <svg viewBox="0 0 420 80" width="105" height="24">
+                            <path d="M0,0 H50 V18 H34 V80 H16 V18 H0 Z M65,0 H115 V15 H83 V32 H110 V47 H83 V65 H115 V80 H65 Z M175,15 C160,15 148,25 148,40 C148,55 160,65 175,65 C188,65 195,58 198,52 L212,61 C205,73 192,80 174,80 C142,80 130,58 130,40 C130,22 145,0 175,0 C194,0 207,8 213,20 L198,30 C194,22 186,15 175,15 Z M228,0 H246 L278,46 V0 H296 V80 H280 L246,32 V80 H228 Z M320,40 C320,15 338,0 365,0 C392,0 410,15 410,40 C410,65 392,80 365,80 C338,80 320,65 320,40 Z M338,40 C338,55 348,65 365,65 C382,65 392,55 392,40 C392,25 382,15 365,15 C348,15 338,25 338,40 Z" fill="#0076E3"/>
+                        </svg>
+                    </div>
                 </div>
             </div>
-            <div class="brand-item">
-                <div class="logo-tecno-custom">
-                    <svg viewBox="0 0 420 80" width="105" height="24">
-                        <path d="M0,0 H50 V18 H34 V80 H16 V18 H0 Z M65,0 H115 V15 H83 V32 H110 V47 H83 V65 H115 V80 H65 Z M175,15 C160,15 148,25 148,40 C148,55 160,65 175,65 C188,65 195,58 198,52 L212,61 C205,73 192,80 174,80 C142,80 130,58 130,40 C130,22 145,0 175,0 C194,0 207,8 213,20 L198,30 C194,22 186,15 175,15 Z M228,0 H246 L278,46 V0 H296 V80 H280 L246,32 V80 H228 Z M320,40 C320,15 338,0 365,0 C392,0 410,15 410,40 C410,65 392,80 365,80 C338,80 320,65 320,40 Z M338,40 C338,55 348,65 365,65 C382,65 392,55 392,40 C392,25 382,15 365,15 C348,15 338,25 338,40 Z" fill="#0076E3"/>
-                    </svg>
-                </div>
+            <div class="brand-group">
+                <div class="brand-item"><iconify-icon icon="simple-icons:asus" style="color: #00539B;"></iconify-icon><span>ASUS</span></div>
+                <div class="brand-item"><iconify-icon icon="simple-icons:nothing" style="color: #FFFFFF;"></iconify-icon><span>Nothing</span></div>
+                <div class="brand-item"><iconify-icon icon="simple-icons:lg" style="color: #A50034;"></iconify-icon><span>LG</span></div>
+            </div>
+            <div class="brand-group">
+                <div class="brand-item"><iconify-icon icon="simple-icons:nokia" style="color: #1241C6;"></iconify-icon><span>Nokia</span></div>
+                <div class="brand-item"><iconify-icon icon="simple-icons:huawei" style="color: #FF0000;"></iconify-icon><span>Huawei</span></div>
+                <div class="brand-item"><iconify-icon icon="simple-icons:honor" style="color: #FFFFFF;"></iconify-icon><span>Honor</span></div>
+            </div>
+            <div class="brand-group">
+                <div class="brand-item"><iconify-icon icon="simple-icons:sony" style="color: #FFFFFF;"></iconify-icon><span>Xperia</span></div>
+                <div class="brand-item"><iconify-icon icon="simple-icons:zte" style="color: #005AA5;"></iconify-icon><span>ZTE</span></div>
+                <div class="brand-item"><iconify-icon icon="simple-icons:apple" style="color: #D1D5DB;"></iconify-icon><span>Apple</span></div>
+            </div>
+            <div class="brand-group">
+                <div class="brand-item"><iconify-icon icon="flat-color-icons:google" style="font-size: 38px;"></iconify-icon><span>Pixel</span></div>
+                <div class="brand-item"><iconify-icon icon="simple-icons:motorola" style="color: #00AEEF;"></iconify-icon><span>Moto</span></div>
+                <div class="brand-item"><iconify-icon icon="simple-icons:tcl" style="color: #E21919;"></iconify-icon><span>TCL</span></div>
             </div>
         </div>
-
-        <div class="brand-group">
-            <div class="brand-item"><iconify-icon icon="simple-icons:asus" style="color: #00539B;"></iconify-icon><span>ASUS</span></div>
-            <div class="brand-item"><iconify-icon icon="simple-icons:nothing" style="color: #FFFFFF;"></iconify-icon><span>Nothing</span></div>
-            <div class="brand-item"><iconify-icon icon="simple-icons:lg" style="color: #A50034;"></iconify-icon><span>LG</span></div>
-        </div>
-        <div class="brand-group">
-            <div class="brand-item"><iconify-icon icon="simple-icons:nokia" style="color: #1241C6;"></iconify-icon><span>Nokia</span></div>
-            <div class="brand-item"><iconify-icon icon="simple-icons:huawei" style="color: #FF0000;"></iconify-icon><span>Huawei</span></div>
-            <div class="brand-item"><iconify-icon icon="simple-icons:honor" style="color: #FFFFFF;"></iconify-icon><span>Honor</span></div>
-        </div>
-        <div class="brand-group">
-            <div class="brand-item"><iconify-icon icon="simple-icons:sony" style="color: #FFFFFF;"></iconify-icon><span>Xperia</span></div>
-            <div class="brand-item"><iconify-icon icon="simple-icons:zte" style="color: #005AA5;"></iconify-icon><span>ZTE</span></div>
-            <div class="brand-item"><iconify-icon icon="simple-icons:apple" style="color: #D1D5DB;"></iconify-icon><span>Apple</span></div>
-        </div>
-        <div class="brand-group">
-            <div class="brand-item"><iconify-icon icon="flat-color-icons:google" style="font-size: 38px;"></iconify-icon><span>Pixel</span></div>
-            <div class="brand-item"><iconify-icon icon="simple-icons:motorola" style="color: #00AEEF;"></iconify-icon><span>Moto</span></div>
-            <div class="brand-item"><iconify-icon icon="simple-icons:tcl" style="color: #E21919;"></iconify-icon><span>TCL</span></div>
-        </div>
     </div>
-</div>
 
-  <a href="https://www.hitwebcounter.com/" target="_blank" rel="noopener" title="https://www.hitwebcounter.com/">
-<img src="https://www.hitwebcounter.com/counter/counter.php?page=21504287&amp;style=0019&amp;nbdigits=5&amp;type=page" alt="https://www.hitwebcounter.com/" decoding="async" style="border:0;max-width:100%;height:auto;" />
-</a>
-<style>
-/* CSS TAMBAHAN UTK LOGO CUSTOM INFINIX, ITEL, TECNO */
-.logo-infinix-custom {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 28px;
-    font-weight: bold;
-    color: #000000;
-    letter-spacing: -0.5px;
-    background: #ffffff;
-    padding: 2px 14px;
-    border-radius: 4px;
-    box-shadow: 0 0 8px rgba(255,255,255,0.2);
-}
+    <!-- Visitor Counter -->
+    <div class="counter-wrapper">
+        <a href="https://www.hitwebcounter.com/" target="_blank" rel="noopener">
+            <img src="https://www.hitwebcounter.com/counter/counter.php?page=21504287&amp;style=0019&amp;nbdigits=5&amp;type=page" alt="Visitor Counter" decoding="async" class="counter-img" />
+        </a>
+    </div>
 
-.logo-itel-box {
-    position: relative;
-    width: 90px;
-    height: 52px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: #ffffff;
-    border-radius: 6px;
-    padding: 0 8px;
-    box-shadow: 0 0 8px rgba(255,255,255,0.2);
-}
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/+6287846414300" target="_blank" class="floating-wa-btn" title="Chat via WhatsApp">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+    </a>
 
-.logo-itel-text {
-    font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif;
-    font-size: 24px;
-    font-weight: bold;
-    font-style: italic;
-    color: #D61C23;
-    letter-spacing: -1px;
-    line-height: 1;
-    margin-top: -2px;
-}
+    <!-- Footer -->
+    <div class="footer">
+        © 2026 Ferdinan Flasher Batam — All Rights Reserved
+    </div>
 
-.itel-curve {
-    position: absolute;
-    width: 85%;
-    left: 7.5%;
-}
+    <!-- Element Wadah Salju JQuery/Vanila alternatif -->
+    <div class="snow-container" id="snow"></div>
 
-.curve-top {
-    top: 4px;
-    height: 12px;
-}
-
-.curve-bottom {
-    bottom: -1px;
-    height: 16px;
-}
-
-.logo-tecno-custom {
-    background: #ffffff;
-    padding: 8px 12px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 8px rgba(255,255,255,0.2);
-}
-
-/* CSS CAROUSEL LOGO MERK HP */
-.brand-carousel-container {
-    max-width: 500px;
-    margin: 25px auto 30px auto;
-    overflow: hidden;
-    position: relative;
-    height: 90px;
-}
-
-.brand-carousel-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-.brand-group {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 40px;
-    opacity: 0;
-    transform: scale(0.95);
-    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
-    pointer-events: none;
-}
-
-.brand-group.active {
-    opacity: 1;
-    transform: scale(1);
-    pointer-events: auto;
-}
-
-.brand-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s;
-}
-
-.brand-item:hover {
-    transform: translateY(-5px);
-}
-
-.brand-item iconify-icon {
-    font-size: 38px;
-    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.15)); 
-}
-
-.brand-item span {
-    color: #94a3b8;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    margin-top: 8px;
-}
-
-/* Responsivitas Layar HP */
-@media (max-width: 480px) {
-    .brand-carousel-container {
-        max-width: 100%;
-    }
-    .brand-group {
-        gap: 20px;
-    }
-    .brand-item iconify-icon {
-        font-size: 32px;
-    }
-    .brand-item span {
-        font-size: 10px;
-    }
-    .logo-infinix-custom { font-size: 22px; padding: 2px 8px; }
-    .logo-itel-box { width: 75px; height: 42px; }
-    .logo-itel-text { font-size: 18px; }
-    .logo-tecno-custom { padding: 6px 8px; }
-    .logo-tecno-custom svg { width: 80px; height: 18px; }
-}
-    /* CSS TOMBOL WHATSAPP MENGAMBANG */
-.floating-wa-btn {
-    position: fixed;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10005; /* Di atas salju dan elemen lainnya */
-    background-color: #25d366;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-    transition: all 0.3s ease;
-    animation: waBreathe 2s infinite;
-}
-
-.floating-wa-btn img {
-    width: 35px;
-    height: 35px;
-}
-
-.floating-wa-btn:hover {
-    background-color: #20ba5a;
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 4px 25px rgba(37, 211, 102, 0.7);
-}
-
-.floating-wa-btn:active {
-    transform: translateY(-50%) scale(0.95);
-}
-
-/* Animasi Denyut Lembut */
-@keyframes waBreathe {
-    0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); }
-    70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-}
-
-/* Penyesuaian Ukuran untuk Layar HP */
-@media (max-width: 480px) {
-    .floating-wa-btn {
-        right: 15px;
-        width: 50px;
-        height: 50px;
-    }
-    .floating-wa-btn img {
-        width: 28px;
-        height: 28px;
-    }
-}
-
-</style>
-
-<script>
-/* SCRIPT ROTASI OTOMATIS SETIAP 2 DETIK */
-document.addEventListener("DOMContentLoaded", function () {
-    const groups = document.querySelectorAll('.brand-group');
-    let currentGroupIndex = 0;
-
-    setInterval(() => {
-        groups[currentGroupIndex].classList.remove('active');
-        currentGroupIndex = (currentGroupIndex + 1) % groups.length;
-        groups[currentGroupIndex].classList.add('active');
-    }, 2000);
-});
-</script>
-
-<div class="footer">
-    © 2026 Ferdinan Flasher Batam — All Rights Reserved
-</div>
-
-<script>
-// Mematikan Klik Kanan
-document.addEventListener('contextmenu', event => event.preventDefault());
-
-// Mematikan F12, Ctrl+Shift+I, Ctrl+Shift+C, Ctrl+U
-document.onkeydown = function(e) {
-    if (e.keyCode == 123) { return false; } 
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
-    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } 
-};
-</script>
-
-<div class="snow-container" id="snow"></div>
-
-<script>
-function createSnowflake() {
-    const snowContainer = document.getElementById('snow');
-    const snowflake = document.createElement('div');
-    
-    snowflake.innerHTML = '❄'; 
-    snowflake.classList.add('snowflake');
-    
-    snowflake.style.left = Math.random() * 100 + 'vw';
-    snowflake.style.fontSize = Math.random() * 15 + 10 + 'px';
-    
-    const duration = Math.random() * 5 + 5;
-    snowflake.style.animationDuration = duration + 's';
-    snowflake.style.opacity = Math.random() * 0.7 + 0.3;
-    
-    snowContainer.appendChild(snowflake);
-    
-    setTimeout(() => {
-        snowflake.remove();
-    }, duration * 500);
-}
-
-setInterval(createSnowflake, 600);
-</script>
-<a href="https://wa.me/+6287846414300" target="_blank" class="floating-wa-btn" title="Chat via WhatsApp">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
-</a>
-
-
-<script>
-    // Memuat YouTube Player API secara async
-    var tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    var firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-    var player;
-    function onYouTubeIframeAPIReady() {
-        player = new YT.Player('yt-background-player', {
-            height: '0',
-            width: '0',
-            videoId: 'bv42PtcwA3Y', // ID Video Musik Hacker pilihanmu
-            playerVars: {
-                'autoplay': 1,
-                'controls': 0,
-                'disablekb': 1,
-                'hl': 'id',
-                'loop': 1,
-                'playlist': 'bv42PtcwA3Y' // Diperlukan agar fungsi loop aktif
-            },
-            events: {
-                'onReady': onPlayerReady
-            }
-        });
-    }
-
-    function onPlayerReady(event) {
-        // Mute terlebih dahulu agar browser mengizinkan autoplay video jalan di latar belakang
-        player.mute();
-        player.setVolume(20);
-        player.playVideo();
-        
-        // Begitu user melakukan klik pertama di mana saja pada website, suara akan otomatis menyala (unmute)
-        window.addEventListener('click', function() {
-            if (player && typeof player.unMute === 'function') {
-                player.unMute();
-                player.playVideo(); // Memastikan video tetap berjalan
-            }
-        }, { once: true });
-    }
-    function onPlayerReady(event) {
-        player.setVolume(20);
-        
-        // Fungsi pemicu putar musik
-        function triggerMusic() {
-            if (player && typeof player.playVideo === 'function') {
-                player.playVideo();
-            }
-            // Hapus event listener agar tidak berjalan berulang-ulang
-            window.removeEventListener('click', triggerMusic);
-            window.removeEventListener('touchstart', triggerMusic);
-        }
-
-        // Jalankan musik baik lewat klik (PC) maupun sentuhan pertama (HP)
-        window.addEventListener('click', triggerMusic, { once: true });
-        window.addEventListener('touchstart', triggerMusic, { once: true });
-    }
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    // Membaca semua baris status di dalam card
-    const statusRows = document.querySelectorAll('.status-row');
-
-    statusRows.forEach(row => {
-        const ledSpan = row.querySelector('.led');
-        const textSpan = row.querySelector('.status-text');
-        // Mencari elemen price di dalam card yang sama
-        const priceDiv = row.closest('.card').querySelector('.price');
-        
-        if (ledSpan && textSpan) {
-            // Mengambil teks status, membersihkan spasi kosong, dan mengubah ke huruf besar
-            const statusValue = textSpan.textContent.trim().toUpperCase();
-
-            // Reset class bawaan agar tidak bentrok saat teks diganti
-            ledSpan.className = 'led';
-            textSpan.className = 'status-text';
-
-            if (statusValue === "ONLINE") {
-                ledSpan.classList.add('online');
-                textSpan.classList.add('online');
-                
-                // Jika online, pastikan harga tetap tampil normal
-                if (priceDiv) {
-                    priceDiv.style.display = 'block'; 
-                }
-            } else if (statusValue === "OFFLINE") {
-                ledSpan.classList.add('offline');
-                textSpan.classList.add('offline');
-                
-                // JIKA OFFLINE: Sembunyikan element harga
-                if (priceDiv) {
-                    priceDiv.style.display = 'none'; 
-                }
-            }
-        }
-    });
-});
-</script>
-
-
+    <!-- Load CDN Icons & Logika Aplikasi JS -->
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
