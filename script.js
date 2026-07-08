@@ -83,18 +83,41 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ==========================================
-// 5. GOOGLE YOUTUBE IFRAME PLAYER (KODE ASLI)
+// 5. GOOGLE YOUTUBE IFRAME PLAYER (BULET-PROOF OPTIMIZED)
 // ==========================================
+var player;
+var userHasInteracted = false;
+
+// Fungsi utama untuk memerintahkan YouTube berputar
+function playMusic() {
+    if (player && typeof player.playVideo === 'function') {
+        player.playVideo();
+        // Bersihkan event listener jika musik sukses berputar
+        window.removeEventListener('click', triggerMusicEarly);
+        window.removeEventListener('touchstart', triggerMusicEarly);
+    }
+}
+
+// Rekam interaksi ketukan user sejak detik pertama halaman dimuat
+function triggerMusicEarly() {
+    userHasInteracted = true;
+    playMusic();
+}
+
+// Pasang pendengar interaksi global (Langsung aktif tanpa nunggu YouTube siap)
+window.addEventListener('click', triggerMusicEarly, { once: true });
+window.addEventListener('touchstart', triggerMusicEarly, { once: true });
+
+// Memuat Script SDK YouTube Iframe API
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-var player;
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('yt-background-player', {
-        height: '0',
-        width: '0',
+        height: '1',
+        width: '1',
         videoId: 'bv42PtcwA3Y', 
         playerVars: {
             'autoplay': 1,
@@ -112,17 +135,8 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerReady(event) {
     player.setVolume(20);
-    
-    // Fungsi pemicu putar musik asli
-    function triggerMusic() {
-        if (player && typeof player.playVideo === 'function') {
-            player.playVideo();
-        }
-        window.removeEventListener('click', triggerMusic);
-        window.removeEventListener('touchstart', triggerMusic);
+    // Jika sebelum player ini siap user sudah terlanjur klik/menyentuh layar, langsung gas putar musiknya!
+    if (userHasInteracted) {
+        playMusic();
     }
-
-    // Jalankan musik begitu ada klik (PC) atau sentuhan pertama (HP)
-    window.addEventListener('click', triggerMusic, { once: true });
-    window.addEventListener('touchstart', triggerMusic, { once: true });
 }
