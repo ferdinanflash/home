@@ -83,38 +83,39 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ==========================================
-// 5. GOOGLE YOUTUBE IFRAME PLAYER (BULET-PROOF OPTIMIZED)
+// 5. GOOGLE YOUTUBE IFRAME PLAYER (ANTI-DELAY OPTIMIZED)
 // ==========================================
 var player;
-var userHasInteracted = false;
+var hasInteractedEarly = false;
 
-// Fungsi utama untuk memerintahkan YouTube berputar
-function playMusic() {
+// Fungsi pemicu putar video
+function forcePlayVideo() {
     if (player && typeof player.playVideo === 'function') {
         player.playVideo();
-        // Bersihkan event listener jika musik sukses berputar
-        window.removeEventListener('click', triggerMusicEarly);
-        window.removeEventListener('touchstart', triggerMusicEarly);
+        // Hapus detektor interaksi jika musik sukses menyala
+        window.removeEventListener('click', recordInteraction);
+        window.removeEventListener('touchstart', recordInteraction);
     }
 }
 
-// Rekam interaksi ketukan user sejak detik pertama halaman dimuat
-function triggerMusicEarly() {
-    userHasInteracted = true;
-    playMusic();
+// Rekam jika pengguna sudah menyentuh layar dari awal halaman terbuka
+function recordInteraction() {
+    hasInteractedEarly = true;
+    forcePlayVideo();
 }
 
-// Pasang pendengar interaksi global (Langsung aktif tanpa nunggu YouTube siap)
-window.addEventListener('click', triggerMusicEarly, { once: true });
-window.addEventListener('touchstart', triggerMusicEarly, { once: true });
+// Daftarkan interaksi klik/sentuhan secara global langsung sejak awal file dimuat
+window.addEventListener('click', recordInteraction, { once: true });
+window.addEventListener('touchstart', recordInteraction, { once: true });
 
-// Memuat Script SDK YouTube Iframe API
+// Memuat Script SDK Iframe API milik Google YouTube
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-function onYouTubeIframeAPIReady() {
+// Tempelkan langsung ke objek window browser agar terbaca 100% dari file eksternal
+window.onYouTubeIframeAPIReady = function() {
     player = new YT.Player('yt-background-player', {
         height: '1',
         width: '1',
@@ -135,8 +136,8 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerReady(event) {
     player.setVolume(20);
-    // Jika sebelum player ini siap user sudah terlanjur klik/menyentuh layar, langsung gas putar musiknya!
-    if (userHasInteracted) {
-        playMusic();
+    // Jika user sudah terlanjur melakukan klik sebelum player siap, langsung jalankan musiknya sekarang!
+    if (hasInteractedEarly) {
+        forcePlayVideo();
     }
 }
