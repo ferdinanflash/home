@@ -27,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (ledSpan && textSpan) {
             const statusValue = textSpan.textContent.trim().toUpperCase();
 
-            // Reset class untuk berjaga-jaga
             ledSpan.className = 'led';
             textSpan.className = 'status-text';
 
@@ -38,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
             } else if (statusValue === "OFFLINE") {
                 ledSpan.classList.add('offline');
                 textSpan.classList.add('offline');
-                if (priceDiv) priceDiv.style.display = 'none'; // Sembunyikan harga jika offline
+                if (priceDiv) priceDiv.style.display = 'none'; 
             }
         }
     });
@@ -76,19 +75,15 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener('contextmenu', event => event.preventDefault());
 
     document.onkeydown = function(e) {
-        // Blokir F12
         if (e.keyCode == 123) { return false; } 
-        // Blokir Ctrl+Shift+I
         if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
-        // Blokir Ctrl+Shift+C
         if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
-        // Blokir Ctrl+U (View Source)
         if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } 
     };
 });
 
 // ==========================================
-// 5. GOOGLE YOUTUBE IFRAME BACKGROUND PLAYER
+// 5. GOOGLE YOUTUBE IFRAME PLAYER (KODE ASLI)
 // ==========================================
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
@@ -116,21 +111,18 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerReady(event) {
-    // Mute awal biar autoplay disetujui browser
-    player.mute();
     player.setVolume(20);
-    player.playVideo();
     
-    // Begitu user melakukan click / sentuhan pertama di layar, musik di-unmute otomatis
+    // Fungsi pemicu putar musik asli
     function triggerMusic() {
-        if (player && typeof player.unMute === 'function') {
-            player.unMute();
-            player.playVideo(); 
+        if (player && typeof player.playVideo === 'function') {
+            player.playVideo();
         }
         window.removeEventListener('click', triggerMusic);
         window.removeEventListener('touchstart', triggerMusic);
     }
 
+    // Jalankan musik begitu ada klik (PC) atau sentuhan pertama (HP)
     window.addEventListener('click', triggerMusic, { once: true });
     window.addEventListener('touchstart', triggerMusic, { once: true });
 }
