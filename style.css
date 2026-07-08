@@ -1,0 +1,504 @@
+/* ==========================================
+   GLOBAL STYLE & RESET
+   ========================================== */
+body {
+    background: radial-gradient(circle at top, #0b1220, #05070c);
+    color: #d1d5db;
+    font-family: 'Segoe UI', monospace;
+    margin: 0;
+}
+
+/* Kontainer Utama Salju */
+.snow-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999; 
+    pointer-events: none; 
+    overflow: hidden;
+}
+
+/* Butiran salju */
+.snowflake {
+    position: absolute;
+    top: -10px;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    user-select: none;
+    pointer-events: none;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); 
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    0% { transform: translateY(0) translateX(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(105vh) translateX(50px); opacity: 0; }
+}
+
+/* ==========================================
+   HEADER & FLOATING BUTTONS
+   ========================================== */
+.fixed-logo {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 10000;
+    width: 60px; 
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%; 
+    border: 2px solid #38bdf8;
+    box-shadow: 0 0 10px rgba(56,189,248,.5);
+}
+
+.fixed-login-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 10000;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(145deg, #0f172a, #1e293b);
+    color: #38bdf8;
+    border: 2px solid #334155;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(56,189,248,.15);
+    transition: all 0.3s ease;
+}
+
+.fixed-login-btn:hover {
+    color: #fff;
+    background: #0f172a;
+    border-color: #38bdf8;
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(56,189,248,.4);
+}
+
+.fixed-login-btn:active { transform: translateY(0); }
+
+.header {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(180deg, #020617, #020617cc);
+    border-bottom: 1px solid #1e293b;
+}
+
+.social-media-container {
+    margin-top: 15px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 5px;
+}
+
+.social-media-row {
+    display: flex; 
+    justify-content: center; 
+    gap: 20px;
+}
+
+.social-btn {
+    transition: transform 0.2s; 
+    display: inline-block;
+}
+
+.social-btn:hover {
+    transform: scale(1.1);
+}
+
+.social-btn img {
+    width: 35px; 
+    height: 35px; 
+    vertical-align: middle;
+}
+
+/* RGB FIRE EFFECT */
+.fire-wrapper {
+    padding: 20px 0;
+    display: inline-block;
+}
+
+.running-rgb-fire {
+    font-size: 35px; 
+    margin: 0;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff, #ff0000);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    animation: runningLED 4s linear infinite, fireFlicker 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes runningLED {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+@keyframes fireFlicker {
+    0% { text-shadow: 0 -2px 4px rgba(255, 80, 0, 0.6), 0 -4px 10px rgba(255, 150, 0, 0.4), 0 -10px 20px rgba(255, 200, 0, 0.2), 0 -16px 35px rgba(255, 0, 0, 0.4); }
+    50% { text-shadow: 0 -3px 5px rgba(255, 80, 0, 0.7), 2px -6px 12px rgba(255, 130, 0, 0.5), -2px -12px 25px rgba(255, 220, 0, 0.3), 0 -22px 45px rgba(255, 50, 0, 0.5); }
+    100% { text-shadow: 0 -1px 3px rgba(255, 80, 0, 0.6), -1px -5px 9px rgba(255, 160, 0, 0.4), 1px -8px 18px rgba(255, 180, 0, 0.2), 0 -14px 30px rgba(255, 0, 0, 0.3); }
+}
+
+/* MARQUEE RUNNING TEXT */
+.marquee-container {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-top: 25px;
+    background: rgba(30, 41, 59, 0.4); 
+    border-top: 1px solid #1e293b;
+    border-bottom: 1px solid #1e293b;
+    padding: 10px 0;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.marquee-content {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bold;
+    color: #38bdf8; 
+    letter-spacing: 1px;
+    animation: marquee 25s linear infinite;
+    text-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+}
+
+@keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+}
+
+/* ==========================================
+   CONTAINER & CARDS LAYOUT
+   ========================================== */
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); 
+    gap: 15px; 
+}
+
+.card {
+    background: linear-gradient(145deg, #0b1220, #020617);
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    padding: 15px; 
+    box-shadow: 0 0 20px rgba(56,189,248,.15);
+    animation: fadeUp .6s ease forwards;
+    transition: .3s;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+}
+
+@keyframes fadeUp {
+    from { opacity:0; transform: translateY(25px); }
+    to { opacity:1; transform: translateY(0); }
+}
+
+.card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 0 30px rgba(56,189,248,.4);
+    animation: breathe 1.6s infinite;
+}
+
+@keyframes breathe {
+    0% { box-shadow: 0 0 15px rgba(56,189,248,.25); }
+    50% { box-shadow: 0 0 35px rgba(56,189,248,.6); }
+    100% { box-shadow: 0 0 15px rgba(56,189,248,.25); }
+}
+
+.card h3 {
+    font-size: 14px; 
+    color: #7dd3fc;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.price {
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px dashed #334155;
+    font-size: 13px;
+}
+
+.price span { color: #60a5fa; }
+
+/* Refleksi Cahaya Card */
+.card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent, rgba(56,189,248,0.15), transparent);
+    transform: translateX(-100%);
+    transition: 0.6s;
+}
+.card:hover::before { transform: translateX(100%); }
+
+/* ==========================================
+   STATUS INDICATOR (LED AUTOMATION)
+   ========================================== */
+.status-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.led {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #64748b; 
+}
+
+.status-text { font-size: 13px; }
+
+/* Dynamic Injected LED status via JS */
+.led.online { background: #22c55e; animation: ledPulseGreen 1.5s infinite; }
+.status-text.online { color: #22c55e; }
+
+.led.offline { background: #ef4444; animation: ledPulseRed 1.5s infinite; }
+.status-text.offline { color: #ef4444; }
+
+@keyframes ledPulseGreen {
+    0% { box-shadow: 0 0 5px #22c55e; }
+    50% { box-shadow: 0 0 15px #22c55e, 0 0 30px #22c55e; }
+    100% { box-shadow: 0 0 5px #22c55e; }
+}
+@keyframes ledPulseRed {
+    0% { box-shadow: 0 0 5px #ef4444; }
+    50% { box-shadow: 0 0 15px #ef4444, 0 0 30px #ef4444; }
+    100% { box-shadow: 0 0 5px #ef4444; }
+}
+
+/* ==========================================
+   PAYMENT & ORDER SECTION
+   ========================================== */
+.order-banner-container {
+    text-align: center; 
+    margin: 20px 0;
+}
+
+.order-now-gif {
+    opacity: 0.5; 
+    display: inline-block; 
+    width: 200px;
+}
+
+.payment-page-container {
+    text-align: center;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.btn-payment-page {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(145deg, #0f172a, #1e293b);
+    color: #38bdf8;
+    border: 2px solid #334155;
+    padding: 15px 35px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(56,189,248,.15);
+    transition: all 0.3s ease;
+}
+
+.btn-payment-page:hover {
+    color: #fff;
+    background: #0f172a;
+    border-color: #38bdf8;
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px rgba(56,189,248,.5);
+}
+
+.btn-payment-page:active { transform: translateY(-1px); }
+
+.brand-title {
+    margin-top: 15px; 
+    font-size: 14px; 
+    font-weight: bold; 
+    color: #94a3b8; 
+    letter-spacing: 1px; 
+    text-transform: uppercase; 
+    text-shadow: 0 0 5px rgba(148, 163, 184, 0.2);
+}
+
+/* ==========================================
+   BRAND LOGO CUSTOMS & CAROUSEL
+   ========================================== */
+.logo-infinix-custom {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 28px;
+    font-weight: bold;
+    color: #000000;
+    letter-spacing: -0.5px;
+    background: #ffffff;
+    padding: 2px 14px;
+    border-radius: 4px;
+    box-shadow: 0 0 8px rgba(255,255,255,0.2);
+}
+
+.logo-itel-box {
+    position: relative;
+    width: 90px;
+    height: 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 0 8px;
+    box-shadow: 0 0 8px rgba(255,255,255,0.2);
+}
+
+.logo-itel-text {
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    font-style: italic;
+    color: #D61C23;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-top: -2px;
+}
+
+.itel-curve { position: absolute; width: 85%; left: 7.5%; }
+.curve-top { top: 4px; height: 12px; }
+.curve-bottom { bottom: -1px; height: 16px; }
+
+.logo-tecno-custom {
+    background: #ffffff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 8px rgba(255,255,255,0.2);
+}
+
+.brand-carousel-container {
+    max-width: 500px;
+    margin: 25px auto 30px auto;
+    overflow: hidden;
+    position: relative;
+    height: 90px;
+}
+
+.brand-carousel-inner { position: relative; width: 100%; height: 100%; }
+
+.brand-group {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+    pointer-events: none;
+}
+
+.brand-group.active { opacity: 1; transform: scale(1); pointer-events: auto; }
+.brand-item { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 0.3s; }
+.brand-item:hover { transform: translateY(-5px); }
+.brand-item iconify-icon { font-size: 38px; filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.15)); }
+.brand-item span { color: #94a3b8; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 8px; }
+
+/* Counter styling */
+.counter-wrapper {
+    text-align: center;
+    margin: 15px auto;
+}
+.counter-img {
+    border: 0;
+    max-width: 100%;
+    height: auto;
+}
+
+/* ==========================================
+   FLOATING WHATSAPP BUTTON (MENGAMBANG)
+   ========================================== */
+.floating-wa-btn {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10005; 
+    background-color: #25d366;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+    transition: all 0.3s ease;
+    animation: waBreathe 2s infinite;
+}
+
+.floating-wa-btn img { width: 35px; height: 35px; }
+.floating-wa-btn:hover { background-color: #20ba5a; transform: translateY(-50%) scale(1.1); box-shadow: 0 4px 25px rgba(37, 211, 102, 0.7); }
+.floating-wa-btn:active { transform: translateY(-50%) scale(0.95); }
+
+@keyframes waBreathe {
+    0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); }
+    70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+.footer {
+    margin-top: 50px;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #1e293b;
+    background: #020617;
+    color: #64748b;
+    font-size: 13px;
+}
+
+#yt-background-player { display: none; }
+
+/* ==========================================
+   RESPONSIVE MEDIA QUERIES (MOBILE SCREEN)
+   ========================================== */
+@media (max-width: 480px) {
+    .fixed-logo { width: 45px; height: 45px; top: 10px; left: 10px; }
+    .fixed-login-btn { padding: 6px 14px; font-size: 12px; top: 10px; right: 10px; }
+    .brand-carousel-container { max-width: 100%; }
+    .brand-group { gap: 20px; }
+    .brand-item iconify-icon { font-size: 32px; }
+    .brand-item span { font-size: 10px; }
+    .logo-infinix-custom { font-size: 22px; padding: 2px 8px; }
+    .logo-itel-box { width: 75px; height: 42px; }
+    .logo-itel-text { font-size: 18px; }
+    .logo-tecno-custom { padding: 6px 8px; }
+    .logo-tecno-custom svg { width: 80px; height: 18px; }
+    .floating-wa-btn { right: 15px; width: 50px; height: 50px; }
+    .floating-wa-btn img { width: 28px; height: 28px; }
+}
