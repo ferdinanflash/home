@@ -6,19 +6,29 @@ const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 document.addEventListener("DOMContentLoaded", loadData);
 
 async function loadData() {
+    // PENTING: Ganti 'access_tokens' di bawah ini jika nama tabel di Supabase Anda berbeda
     const { data, error } = await supabase.from('access_tokens').select('*');
     
+    if (error) {
+        // Memunculkan pesan error langsung di layar HP untuk debug
+        alert("DATABASE ERR: " + error.message);
+        return;
+    }
+
     const tbody = document.getElementById('admin-table-body');
     tbody.innerHTML = "";
 
-    if (error) return console.error(error);
+    if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#435c4b; padding:20px;">Tabel kosong / RLS belum di-set.</td></tr>`;
+        return;
+    }
 
     data.forEach(row => {
         tbody.innerHTML += `
             <tr>
-                <td>${row.token_key}</td>
-                <td>${row.technician_ip}</td>
-                <td>${row.port_number}</td>
+                <td>${row.token_key || '-'}</td>
+                <td>${row.technician_ip || '-'}</td>
+                <td>${row.port_number || '-'}</td>
                 <td><button class="btn btn-disconnect" onclick="hapusData('${row.id}')">[X]</button></td>
             </tr>
         `;
@@ -26,18 +36,28 @@ async function loadData() {
 }
 
 async function tambahData() {
-    const token = document.getElementById('new-token').value;
-    const ip = document.getElementById('new-ip').value;
-    const port = document.getElementById('new-port').value;
+    const token = document.getElementById('new-token').value.trim();
+    const ip = document.getElementById('new-ip').value.trim();
+    const port = document.getElementById('new-port').value.trim();
+
+    if (!token || !ip || !port) {
+        alert("Semua kolom input wajib diisi!");
+        return;
+    }
 
     const { error } = await supabase
         .from('access_tokens')
-        .insert([{ token_key: token, technician_ip: ip, port_number: port }]);
+        .insert([{ token_key: token, technician_ip: ip, port_number: parseInt(port) || port }]);
 
-    if (error) alert("Gagal menambah data!");
-    else {
+    if (error) {
+        alert("Gagal menambah data: " + error.message);
+    } else {
         alert("Data tersimpan!");
         loadData();
+        // Reset input form
+        document.getElementById('new-token').value = "";
+        document.getElementById('new-ip').value = "";
+        document.getElementById('new-port').value = "";
     }
 }
 
@@ -45,6 +65,9 @@ async function hapusData(id) {
     if (!confirm("Yakin ingin menghapus node ini?")) return;
     
     const { error } = await supabase.from('access_tokens').delete().eq('id', id);
-    if (error) alert("Gagal hapus!");
-    else loadData();
+    if (error) {
+        alert("Gagal hapus: " + error.message);
+    } else {
+        loadData();
+    }
 }
