@@ -8,12 +8,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         .admin-section { margin-top: 30px; }
-        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .port-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
-        .main-admin-layout { display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; }
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         #login-panel { max-width: 400px; margin: 80px auto; display: block; }
         #main-content { display: none; }
-        @media (max-width: 950px) { .main-admin-layout { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .input-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -36,59 +34,45 @@
         </div>
     </div>
 
-    <!-- INTERFACE 02: KONTEN UTAMA (DISEMBUNYIKAN SEBELUM LOGIN) -->
-    <div id="main-content" class="main-admin-layout">
-        
-        <!-- KOLOM KIRI: KELOLA TOKEN & IP -->
-        <div>
-            <div class="card">
-                <h3>[+] ADD NEW TECHNICIAN TOKEN</h3>
-                <div class="input-grid">
-                    <div class="form-group">
-                        <label>// TOKEN KEY</label>
-                        <input type="text" id="new-token" class="form-control" placeholder="Contoh: TOK-2026-XYZ">
-                    </div>
-                    <div class="form-group">
-                        <label>// TECHNICIAN IP</label>
-                        <input type="text" id="new-ip" class="form-control" placeholder="Contoh: 123.45.67.89">
-                    </div>
+    <!-- INTERFACE 02: KONTEN UTAMA -->
+    <div id="main-content">
+        <div class="card">
+            <h3>[+] ADD NEW TECHNICIAN NODE</h3>
+            <div class="input-grid">
+                <div class="form-group">
+                    <label>// TOKEN KEY</label>
+                    <input type="text" id="new-token" class="form-control" placeholder="Contoh: TOK-2026-XYZ">
                 </div>
-                <button class="btn" onclick="tambahToken()">[+] INJECT NEW TOKEN</button>
-            </div>
-
-            <div class="card admin-section">
-                <h3>[=] ACTIVE TOKEN LIST</h3>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>TOKEN KEY</th>
-                                <th>TECHNICIAN IP</th>
-                                <th>ACTION</th>
-                            </tr>
-                        </thead>
-                        <tbody id="token-table-body">
-                            <!-- Data Token Load Disini -->
-                        </tbody>
-                    </table>
+                <div class="form-group">
+                    <label>// TECHNICIAN IP</label>
+                    <input type="text" id="new-ip" class="form-control" placeholder="Contoh: 123.45.67.89">
+                </div>
+                <div class="form-group">
+                    <label>// PORT NUMBER</label>
+                    <input type="number" id="new-port" class="form-control" placeholder="Contoh: 32032">
                 </div>
             </div>
+            <button class="btn" onclick="tambahToken()">[+] INJECT NEW NODE</button>
         </div>
 
-        <!-- KOLOM KANAN: KELOLA PORT -->
-        <div>
-            <div class="card">
-                <h3>[⚙] REMOTE PORT CONFIG (usb_remote)</h3>
-                <div class="port-grid">
-                    <div class="form-group">
-                        <label>// CURRENT PORT NUMBER</label>
-                        <input type="number" id="current-port-value" class="form-control" placeholder="Loading port...">
-                    </div>
-                </div>
-                <button class="btn btn-check" onclick="updatePort()">[⚡] UPDATE PORT VALUE</button>
+        <div class="card admin-section">
+            <h3>[=] ACTIVE NODE CONFIGURATIONS</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>TOKEN KEY</th>
+                            <th>TECHNICIAN IP</th>
+                            <th>PORT</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="token-table-body">
+                        <!-- Data Token Load Disini -->
+                    </tbody>
+                </table>
             </div>
         </div>
-
     </div>
 </div>
 
