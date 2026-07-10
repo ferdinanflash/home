@@ -1,7 +1,7 @@
 const SUPABASE_URL = 'https://pwqkpeykjyujhnreleax.supabase.co'; 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3cWtwZXlranl1amhucmVsZWF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMzgxNDgsImV4cCI6MjA5ODgxNDE0OH0.6u2CKOPHcMtVeA2ph0QWTqgtvs-4BQJpsz6v2kCyOEY'; 
 
-// .Inisialisasi Klien Supabase Cloud
+// Inisialisasi Klien Supabase Cloud
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let selectedDevices = []; 
 
@@ -42,20 +42,12 @@ async function verifikasiTokenWeb() {
             return false;
         }
 
-        const { data: portData, error: portError } = await supabaseClient
-            .from('ports')
-            .select('port_number')
-            .eq('port_name', 'usb_remote')
-            .single();
-
-        let activePort = 32032; 
-        if (!portError && portData) {
-            activePort = portData.port_number;
-        }
-
-        let rawIp = tokenData[0].technician_ip;
+        // OK: Tarik IP dan Port spesifik secara berpasangan langsung dari baris data token teknisi
+        let rawIp = tokenData[0].technician_ip || "";
+        let activePort = tokenData[0].port_number || 32032; // Gunakan default 32032 jika kolom port di database kosong
         let ip = rawIp;
 
+        // Fallback: Jika di database kolom IP sengaja ditulis manual pakai format "ip:port" (Contoh: 123.4.5.6:8080)
         if (rawIp.includes(':')) {
             const parts = rawIp.split(':');
             ip = parts[0];
@@ -229,7 +221,6 @@ async function actionForward(index, type) {
     if (type === 'send') {
         writeLog("SEND", `Injecting stream data parameters into the cloud matrix...`);
         
-        // AMAN: Mengirim langsung mengambil dari memori, terbebas dari manipulasi DOM HTML pihak ketiga
         const { data, error } = await supabaseClient
             .from('usb_commands')
             .insert([
