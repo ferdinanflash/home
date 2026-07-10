@@ -1,8 +1,8 @@
 const SUPABASE_URL = 'https://pwqkpeykjyujhnreleax.supabase.co'; 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3cWtwZXlranl1amhucmVsZWF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMzgxNDgsImV4cCI6MjA5ODgxNDE0OH0.6u2CKOPHcMtVeA2ph0QWTqgtvs-4BQJpsz6v2kCyOEY'; 
 
-// ⚠️ ISI NAMA TABEL TOKEN ANDA DI SINI (Tabel yang dipakai di dalam fungsi panggil_validasi_token)
-const NAMA_TABEL_TOKEN_ANDA = 'GANTI_DENGAN_NAMA_TABEL_TOKEN_ANDA'; 
+// Sudah disesuaikan langsung dengan tabel di Supabase Anda
+const NAMA_TABEL_TOKEN_ANDA = 'tokens'; 
 
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -13,12 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ================= LOGIKA TABEL TOKEN =================
 async function loadTokens() {
-    if (NAMA_TABEL_TOKEN_ANDA === 'GANTI_DENGAN_NAMA_TABEL_TOKEN_ANDA') {
-        const tbody = document.getElementById('token-table-body');
-        tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--danger-neon);">Silahkan isi NAMA_TABEL_TOKEN_ANDA di file admin.js baris ke-5!</td></tr>`;
-        return;
-    }
-
     const { data, error } = await supabase.from(NAMA_TABEL_TOKEN_ANDA).select('*');
     
     if (error) {
@@ -35,14 +29,10 @@ async function loadTokens() {
     }
 
     data.forEach(row => {
-        // Otomatis mencocokkan kolom token_key/token dan technician_ip dari halaman utama Anda
-        const tokenVal = row.token_key || row.token || '-';
-        const ipVal = row.technician_ip || '-';
-        
         tbody.innerHTML += `
             <tr>
-                <td><code>${tokenVal}</code></td>
-                <td><code>${ipVal}</code></td>
+                <td><code>${row.token_key || '-'}</code></td>
+                <td><code>${row.technician_ip || '-'}</code></td>
                 <td><button class="btn btn-disconnect" onclick="hapusToken('${row.id}')">[X]</button></td>
             </tr>
         `;
@@ -58,7 +48,6 @@ async function tambahToken() {
         return;
     }
 
-    // Menyesuaikan struktur data insert halaman utama
     const { error } = await supabase
         .from(NAMA_TABEL_TOKEN_ANDA)
         .insert([{ token_key: token, technician_ip: ip }]);
