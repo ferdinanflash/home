@@ -1,0 +1,296 @@
+:root {
+    --bg-dark: #050806;
+    --panel-bg: #0c130f;
+    --primary-neon: #00ff66;
+    --primary-glow: rgba(0, 255, 102, 0.2);
+    --danger-neon: #ff0055;
+    --danger-glow: rgba(255, 0, 85, 0.25);
+    --warning-neon: #ffaa00;
+    --info-neon: #00bfff;
+    --text-main: #adbaa9;
+    --text-bright: #ffffff;
+    --border-cyber: #162e20;
+}
+
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    margin: 0;
+    padding: 20px;
+    overflow-x: hidden;
+}
+
+/* Scanline effect for hacker theme */
+body::before {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 99999;
+    opacity: 0.4;
+    pointer-events: none;
+    background-size: 100% 4px, 6px 100%;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--primary-neon);
+    padding-bottom: 15px;
+    box-shadow: 0 5px 15px rgba(0, 255, 102, 0.05);
+}
+
+h1 {
+    margin: 0;
+    font-size: 26px;
+    color: var(--primary-neon);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+
+header p {
+    margin: 5px 0 0 0;
+    color: #55725b;
+    font-size: 13px;
+}
+
+.danger-zone-alert {
+    background-color: rgba(255, 0, 85, 0.1);
+    border: 1px solid var(--danger-neon);
+    color: var(--danger-neon);
+    padding: 15px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 13px;
+    border-radius: 2px;
+    display: none; 
+    line-height: 1.6;
+    text-shadow: 0 0 8px var(--danger-glow);
+    box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.1);
+}
+
+.blink-animation {
+    animation: blinker 1.2s steps(2, start) infinite;
+}
+
+@keyframes blinker {
+    to { visibility: hidden; }
+}
+
+.workspace-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+@media (max-width: 950px) {
+    .workspace-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.panel-left, .panel-right {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-cyber);
+    border-radius: 4px;
+    padding: 20px;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 8px; height: 8px;
+    border-top: 2px solid var(--primary-neon);
+    border-left: 2px solid var(--primary-neon);
+}
+
+.card h3 {
+    margin-top: 0;
+    color: var(--primary-neon);
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px dashed var(--border-cyber);
+    padding-bottom: 8px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 12px;
+    color: #61876e;
+    text-transform: uppercase;
+}
+
+.form-control {
+    background-color: #050a07;
+    padding: 10px 12px;
+    border: 1px solid var(--border-cyber);
+    border-radius: 2px;
+    font-size: 14px;
+    color: var(--primary-neon);
+    font-family: 'Courier New', Courier, monospace;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.3s;
+}
+
+.form-control:focus {
+    border-color: var(--primary-neon);
+    box-shadow: 0 0 8px var(--primary-glow);
+}
+
+.btn {
+    background-color: transparent;
+    color: var(--primary-neon);
+    border: 1px solid var(--primary-neon);
+    padding: 10px 20px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    transition: all 0.2s;
+    box-shadow: 0 0 5px var(--primary-glow);
+    text-transform: uppercase;
+}
+
+.btn:hover {
+    background-color: var(--primary-neon);
+    color: #000;
+    box-shadow: 0 0 15px var(--primary-neon);
+}
+
+.btn-check {
+    border-color: #a3e635;
+    color: #a3e635;
+    box-shadow: 0 0 5px rgba(163, 230, 53, 0.2);
+}
+.btn-check:hover {
+    background-color: #a3e635;
+    color: #000;
+    box-shadow: 0 0 15px #a3e635;
+}
+
+.btn-chrome {
+    border-color: #4b6b55;
+    color: #4b6b55;
+    width: 100%;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.btn-disconnect {
+    border-color: var(--danger-neon);
+    color: var(--danger-neon);
+    box-shadow: 0 0 5px var(--danger-glow);
+}
+.btn-disconnect:hover {
+    background-color: var(--danger-neon);
+    color: #fff;
+    box-shadow: 0 0 15px var(--danger-neon);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th, td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid var(--border-cyber);
+}
+
+th {
+    background-color: rgba(22, 46, 32, 0.3);
+    color: #61876e;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+tr:hover {
+    background-color: rgba(0, 255, 102, 0.02);
+}
+
+.badge-ready {
+    color: var(--warning-neon);
+    border: 1px solid var(--warning-neon);
+    padding: 2px 6px;
+    font-size: 11px;
+    background: rgba(255, 170, 0, 0.05);
+}
+
+.badge-pending {
+    color: var(--info-neon);
+    border: 1px solid var(--info-neon);
+    padding: 2px 6px;
+    font-size: 11px;
+    background: rgba(0, 191, 255, 0.05);
+}
+
+.badge-processing {
+    color: var(--danger-neon);
+    border: 1px solid var(--danger-neon);
+    padding: 2px 6px;
+    font-size: 11px;
+    background: rgba(255, 0, 85, 0.05);
+    text-shadow: 0 0 5px var(--danger-neon);
+}
+
+.badge-done {
+    color: var(--primary-neon);
+    border: 1px solid var(--primary-neon);
+    padding: 2px 6px;
+    font-size: 11px;
+    background: rgba(0, 255, 102, 0.05);
+    text-shadow: 0 0 5px var(--primary-neon);
+}
+
+.row-warning {
+    color: var(--danger-neon);
+    font-size: 10px;
+    margin-top: 4px;
+    font-weight: bold;
+}
+
+.log-box {
+    background-color: #030504;
+    color: #33ff33;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 15px;
+    border-radius: 2px;
+    height: 480px; 
+    overflow-y: auto;
+    font-size: 12px;
+    line-height: 1.5;
+    border: 1px solid var(--border-cyber);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+}
+
+code {
+    color: #00ffaa;
+}
