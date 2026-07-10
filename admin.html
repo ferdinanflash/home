@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>ADMIN DASHBOARD // CONTROL PANEL</title>
+    <link rel="stylesheet" href="usb.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .admin-section { margin-top: 30px; }
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>⚡ ADMIN OVERRIDE PANEL ⚡</h1>
+    </header>
+
+    <div class="card">
+        <h3>[+] ADD NEW TOKEN/ROUTE</h3>
+        <div class="input-grid">
+            <input type="text" id="new-token" class="form-control" placeholder="TOKEN KEY">
+            <input type="text" id="new-ip" class="form-control" placeholder="IP ADDRESS">
+            <input type="text" id="new-port" class="form-control" placeholder="PORT">
+        </div>
+        <button class="btn" onclick="tambahData()">[+] SAVE ENTRY</button>
+    </div>
+
+    <div class="card admin-section">
+        <h3>[=] DATABASE RECORDS</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>TOKEN</th>
+                    <th>IP</th>
+                    <th>PORT</th>
+                    <th>ACTION</th>
+                </tr>
+            </thead>
+            <tbody id="admin-table-body">
+                <!-- Data akan di-load via JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>
