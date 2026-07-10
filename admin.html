@@ -11,6 +11,8 @@
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .port-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
         .main-admin-layout { display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; }
+        #login-panel { max-width: 400px; margin: 80px auto; display: block; }
+        #main-content { display: none; }
         @media (max-width: 950px) { .main-admin-layout { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -19,10 +21,23 @@
 <div class="container">
     <header>
         <h1>⚡ ADMIN OVERRIDE PANEL: DATABASE MANAGER ⚡</h1>
-        <p>[ System Terminal Status: MASTER ACCESS ]</p>
+        <p>[ System Terminal Status: SECURED BY ENCRYPTION LAYER ]</p>
     </header>
 
-    <div class="main-admin-layout">
+    <!-- INTERFACE 01: PANEL LOGIN ADMIN -->
+    <div id="login-panel">
+        <div class="card">
+            <h3>[⚙] ADMIN SECURITY CHECK</h3>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>// ENTER MASTER PASSWORD</label>
+                <input type="password" id="admin-password" class="form-control" placeholder="ENTER SECRET PASSWORD...">
+            </div>
+            <button class="btn btn-check" onclick="loginAdmin()" style="width: 100%;">[▶] DECRYPT ACCESS</button>
+        </div>
+    </div>
+
+    <!-- INTERFACE 02: KONTEN UTAMA (DISEMBUNYIKAN SEBELUM LOGIN) -->
+    <div id="main-content" class="main-admin-layout">
         
         <!-- KOLOM KIRI: KELOLA TOKEN & IP -->
         <div>
@@ -77,6 +92,6 @@
     </div>
 </div>
 
-<script src="admin.js?v=5"></script>
+<script src="admin.js?v=6"></script>
 </body>
 </html>
