@@ -14,6 +14,31 @@ document.addEventListener("DOMContentLoaded", () => {
         writeLog("CRIT", "Browser does not support WebUSB core protocols.");
     }
     initSupabaseRealtime();
+
+    // ================= FITUR AUTO RECONNECT SYSTEMS =================
+    // Deteksi otomatis saat perangkat USB terhubung kembali (Selesai Reboot / Dicolok ulang)
+    navigator.usb.addEventListener('connect', async (event) => {
+        const device = event.device;
+        const vId = device.vendorId.toString(16).padStart(4, '0');
+        const pId = device.productId.toString(16).padStart(4, '0');
+        
+        // Cari apakah device yang baru masuk ini terdaftar di list antrean selectedDevices
+        const index = selectedDevices.findIndex(d => d.vendorId === vId && d.productId === pId);
+        
+        if (index !== -1) {
+            writeLog("RECON", `Device online after restart: [0x${vId}:0x${pId}]. Re-injecting tunnel sequence...`);
+            
+            // Otomatis picu penerusan parameter (Auto-Forward) ke server tujuan
+            await actionForward(index, 'send');
+        }
+    });
+
+    // Logger otomatis saat perangkat USB terputus (Proses awal restart / dicabut)
+    navigator.usb.addEventListener('disconnect', (event) => {
+        const vId = event.device.vendorId.toString(16).padStart(4, '0');
+        const pId = event.device.productId.toString(16).padStart(4, '0');
+        writeLog("WARN", `Device state offline (restarting/unplugged): [0x${vId}:0x${pId}]`);
+    });
 });
 
 async function verifikasiTokenWeb() {
@@ -42,19 +67,18 @@ async function verifikasiTokenWeb() {
             return false;
         }
 
-        // OK: Tarik IP dan Port spesifik secara berpasangan langsung dari baris data token teknisi
+        // Tarik data IP dan Port spesifik berpasangan dari record token teknisi
         let rawIp = tokenData[0].technician_ip || "";
-        let activePort = tokenData[0].port_number || 32032; // Gunakan default 32032 jika kolom port di database kosong
+        let activePort = tokenData[0].port_number || 32032; 
         let ip = rawIp;
 
-        // Fallback: Jika di database kolom IP sengaja ditulis manual pakai format "ip:port" (Contoh: 123.4.5.6:8080)
         if (rawIp.includes(':')) {
             const parts = rawIp.split(':');
             ip = parts[0];
             activePort = parts[1];
         }
 
-        // AMAN: Disimpan dalam lingkup memori runtime internal skrip
+        // Simpan aman dalam runtime memory internal
         currentTargetIp = ip;
         currentTargetPort = activePort;
         
@@ -99,6 +123,8 @@ function initSupabaseRealtime() {
 
 async function writeLog(type, text) {
     const consoleBox = document.getElementById('log-console');
+    if (!consoleBox) return;
+    
     const time = new Date().toLocaleTimeString();
     consoleBox.innerHTML += `<br>>> [${time}] [${type}] ${text}`;
     consoleBox.scrollTop = consoleBox.scrollHeight;
@@ -153,6 +179,7 @@ async function pilihDeviceChrome() {
 function renderTable() {
     const tableBody = document.getElementById('usb-table-body');
     const globalAlert = document.getElementById('global-danger-alert');
+    if (!tableBody) return;
     
     if (selectedDevices.length === 0) {
         tableBody.innerHTML = `
@@ -161,7 +188,7 @@ function renderTable() {
                     NO NODE ATTACHED. VERIFY AUTH TOKEN AND LINK USB TO START.
                 </td>
             </tr>`;
-        globalAlert.style.display = "none";
+        if (globalAlert) globalAlert.style.display = "none";
         return;
     }
 
@@ -202,10 +229,8 @@ function renderTable() {
         `;
     });
 
-    if (adakahYangSedangDieksekusi) {
-        globalAlert.style.display = "block";
-    } else {
-        globalAlert.style.display = "none";
+    if (globalAlert) {
+        globalAlert.style.display = adakahYangSedangDieksekusi ? "block" : "none";
     }
 }
 
