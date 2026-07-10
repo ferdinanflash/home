@@ -1,5 +1,5 @@
 const SUPABASE_URL = 'https://pwqkpeykjyujhnreleax.supabase.co'; 
-const SUPABASE_ANON_KEY = 'GANTI_DENGAN_KEY_ANDA'; // Gunakan Service Role Key jika butuh akses penuh (tapi simpan baik-baik!)
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3cWtwZXlranl1amhucmVsZWF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMzgxNDgsImV4cCI6MjA5ODg'; // Gunakan Service Role Key jika butuh akses penuh (tapi simpan baik-baik!)
 
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
