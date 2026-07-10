@@ -36,12 +36,17 @@
 
     <!-- INTERFACE 02: KONTEN UTAMA -->
     <div id="main-content">
+                <!-- INTERFACE 02: KONTEN UTAMA -->
         <div class="card">
             <h3>[+] ADD NEW TECHNICIAN NODE</h3>
             <div class="input-grid">
                 <div class="form-group">
                     <label>// TOKEN KEY</label>
                     <input type="text" id="new-token" class="form-control" placeholder="Contoh: TOK-2026-XYZ">
+                    <!-- Tombol Generate Token Baru -->
+                    <button type="button" class="btn" onclick="generateRandomToken()" style="margin-top: 8px; padding: 5px 10px; font-size: 11px; border-color: #61876e; color: #61876e; width: 100%;">
+                        [🎲 GENERATE RANDOM TOKEN]
+                    </button>
                 </div>
                 <div class="form-group">
                     <label>// TECHNICIAN IP</label>
@@ -51,6 +56,10 @@
                     <label>// PORT NUMBER</label>
                     <input type="number" id="new-port" class="form-control" placeholder="Contoh: 32032">
                 </div>
+            </div>
+            <button class="btn" onclick="tambahToken()">[+] INJECT NEW NODE</button>
+        </div>
+
             </div>
             <button class="btn" onclick="tambahToken()">[+] INJECT NEW NODE</button>
         </div>
