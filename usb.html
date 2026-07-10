@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USB Remote Service - Dynamic Ports</title>
+    <title>USB Remote Service - Advanced Status Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary-color: #0078d4;
             --success-color: #107c41;
             --danger-color: #a80000;
+            --warning-color: #d83b01;
             --bg-color: #f3f2f1;
             --card-bg: #ffffff;
             --text-color: #323130;
@@ -59,6 +60,29 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             padding: 20px;
             margin-bottom: 20px;
+        }
+
+        /* BARU: Banner Peringatan Kritis Global */
+        .danger-zone-alert {
+            background-color: #fde7e9;
+            border-left: 5px solid var(--danger-color);
+            color: var(--danger-color);
+            padding: 15px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            border-radius: 4px;
+            display: none; 
+            line-height: 1.5;
+            box-shadow: 0 2px 8px rgba(168, 0, 0, 0.15);
+        }
+
+        .blink-animation {
+            animation: blinker 1.5s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0.4; }
         }
 
         .config-grid {
@@ -157,6 +181,7 @@
             background-color: #f3f2f1;
         }
 
+        /* BADGE STATUS */
         .badge-shared {
             background-color: #dff6dd;
             color: #107c41;
@@ -184,6 +209,37 @@
             font-weight: bold;
         }
 
+        /* BARU: Style untuk Status Eksekusi */
+        .badge-processing {
+            background-color: #fde7e9;
+            color: var(--danger-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid rgba(168, 0, 0, 0.2);
+        }
+
+        /* BARU: Style untuk Status Selesai (DONE) */
+        .badge-done {
+            background-color: #dff6dd;
+            color: var(--success-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid rgba(16, 124, 65, 0.2);
+        }
+
+        /* BARU: Teks peringatan per baris tabel */
+        .row-warning {
+            color: var(--danger-color);
+            font-size: 11px;
+            margin-top: 5px;
+            font-weight: bold;
+            letter-spacing: 0.3px;
+        }
+
         .log-box {
             background-color: #201f1e;
             color: #00ff00;
@@ -207,6 +263,11 @@
         <span class="status-badge" id="browser-status">WebUSB Supported</span>
     </header>
 
+    <!-- BARU: Container Alert Bahaya Global (Dinyalakan otomatis via JS) -->
+    <div class="danger-zone-alert blink-animation" id="global-danger-alert">
+        ⚠️ PERINGATAN KRITIS: Perangkat Anda saat ini SEDANG DIEKSEKUSI oleh teknisi! Mohon JANGAN mencabut kabel USB, JANGAN mematikan HP/perangkat, dan JANGAN menutup halaman browser ini sampai status berubah menjadi "DONE".
+    </div>
+
     <div class="card">
         <h3 style="margin-top:0; color: var(--primary-color);">Langkah 1: Validasi Akses Token Anda</h3>
         
@@ -219,7 +280,6 @@
             <span id="token-status" style="font-size: 13px; margin-top: 5px; display: block; font-weight: 500;"></span>
         </div>
 
-        <!-- Port Config Section (Dibuat otomatis dan dinamis dari DB) -->
         <div class="config-grid" id="ip-config-section" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
             <div class="form-group">
                 <label for="target-ip">IP Address Server (Terisi Otomatis)</label>
@@ -227,7 +287,6 @@
             </div>
             <div class="form-group">
                 <label for="target-port">Port Jaringan (Dinamis Cloud)</label>
-                <!-- MODIFIKASI: Dikunci total karena nilainya dikendalikan penuh oleh database ports -->
                 <input type="number" id="target-port" class="form-control" readonly style="background-color: #f3f2f1; color: #555;">
             </div>
             <button class="btn btn-check" onclick="cekKoneksiServer()">⚡ Cek Jaringan</button>
@@ -299,7 +358,6 @@
         statusEl.style.color = "#605e5c";
 
         try {
-            // 1. Ambil data Teknisi berdasarkan Token
             const { data: tokenData, error: tokenError } = await supabaseClient.rpc('panggil_validasi_token', { input_token: tokenInput });
 
             if (tokenError || !tokenData || tokenData.length === 0) {
@@ -313,14 +371,13 @@
                 return false;
             }
 
-            // 2. MODIFIKASI: Tarik data port aktif secara dinamis langsung dari tabel 'ports'
             const { data: portData, error: portError } = await supabaseClient
                 .from('ports')
                 .select('port_number')
                 .eq('port_name', 'usb_remote')
                 .single();
 
-            let activePort = 32032; // Fallback jika DB bermasalah
+            let activePort = 32032; 
             if (!portError && portData) {
                 activePort = portData.port_number;
             }
@@ -328,14 +385,12 @@
             let rawIp = tokenData[0].technician_ip;
             let ip = rawIp;
 
-            // Jika teknisi sengaja mengoveride IP dengan format IP:PORT di data tokennya
             if (rawIp.includes(':')) {
                 const parts = rawIp.split(':');
                 ip = parts[0];
                 activePort = parts[1];
             }
 
-            // Pasang data ke UI input
             document.getElementById('target-ip').value = ip;
             document.getElementById('target-port').value = activePort;
             
@@ -369,7 +424,7 @@
                     if (index !== -1) {
                         selectedDevices[index].status = updatedRow.status;
                         selectedDevices[index].dbId = updatedRow.id; 
-                        writeLog("INFO", `[CLOUD] Status perangkat ${selectedDevices[index].name} -> ${updatedRow.status.toUpperCase()}`);
+                        writeLog("INFO", `[CLOUD] Perubahan status perangkat ${selectedDevices[index].name} -> ${updatedRow.status.toUpperCase()}`);
                         renderTable();
                     }
                 }
@@ -386,7 +441,7 @@
         try {
             await supabaseClient.from('system_logs').insert([{ log_type: type, message: text }]);
         } catch(e) {
-            console.error("Gagal mengirim log ke Supabase", e);
+            console.error("Gagal mengirim log", e);
         }
     }
 
@@ -435,8 +490,11 @@
         }
     }
 
+    // MODIFIKASI UTAMA: Manajemen Alur Status Baru (Pending, Processing/Forwarded, Done)
     function renderTable() {
         const tableBody = document.getElementById('usb-table-body');
+        const globalAlert = document.getElementById('global-danger-alert');
+        
         if (selectedDevices.length === 0) {
             tableBody.innerHTML = `
                 <tr>
@@ -444,32 +502,62 @@
                         Belum ada perangkat terpilih. Klik tombol hijau di atas untuk memilih USB.
                     </td>
                 </tr>`;
+            globalAlert.style.display = "none";
             return;
         }
 
         tableBody.innerHTML = "";
+        let adakahYangSedangDieksekusi = false;
+
         selectedDevices.forEach((dev, index) => {
             let badge = `<span class="badge-ready">READY TO SEND</span>`;
             let actionBtn = `<button class="btn" onclick="actionForward(${index}, 'send')">Kirim USB</button>`;
+            let warningRowText = "";
 
+            // Pengkondisian status berdasarkan feedback database Supabase
             if (dev.status === 'pending') {
-                badge = `<span class="badge-pending">WAITING AGENT...</span>`;
-                actionBtn = `<button class="btn btn-disconnect" disabled>Memproses...</button>`;
-            } else if (dev.status === 'forwarded') {
-                badge = `<span class="badge-shared">CONNECTED TO CLOUD</span>`;
+                badge = `<span class="badge-pending">⌛ MENUNGGU TEKNISI...</span>`;
+                actionBtn = `<button class="btn btn-disconnect" style="background-color:#a19f9d; cursor:not-allowed;" disabled>Antrean...</button>`;
+            } 
+            // Status saat alat sedang dieksekusi / diproses oleh tool teknisi
+            else if (dev.status === 'processing' || dev.status === 'forwarded') {
+                adakahYangSedangDieksekusi = true;
+                badge = `<span class="badge-processing blink-animation">⚡ SEDANG DIEKSEKUSI</span>`;
+                warningRowText = `<div class="row-warning">⚠️ CRITICAL: JANGAN CABUT PERANGKAT / KABEL DATA!</div>`;
                 actionBtn = `<button class="btn btn-disconnect" onclick="actionForward(${index}, 'stop')">Putuskan</button>`;
+            } 
+            // MODIFIKASI: Status Selesai (DONE) saat teknisi memutus interaksi dengan aman
+            else if (dev.status === 'done' || dev.status === 'disconnected') {
+                badge = `<span class="badge-done">✅ DONE / SELESAI</span>`;
+                actionBtn = `<button class="btn" style="background-color: #605e5c;" onclick="hapusBarisTabel(${index})">Hapus Baris</button>`;
             }
 
             tableBody.innerHTML += `
                 <tr>
                     <td><code>0x${dev.vendorId}</code></td>
                     <td><code>0x${dev.productId}</code></td>
-                    <td><strong>${dev.name}</strong></td>
+                    <td>
+                        <strong>${dev.name}</strong>
+                        ${warningRowText}
+                    </td>
                     <td>${badge}</td>
                     <td>${actionBtn}</td>
                 </tr>
             `;
         });
+
+        // Kontrol tampilan banner bahaya global di bagian atas halaman
+        if (adakahYangSedangDieksekusi) {
+            globalAlert.style.display = "block";
+        } else {
+            globalAlert.style.display = "none";
+        }
+    }
+
+    // Fungsi pembantu untuk membersihkan riwayat pengerjaan yang sudah selesai (DONE) dari tabel web
+    function hapusBarisTabel(index) {
+        selectedDevices.splice(index, 1);
+        renderTable();
     }
 
     async function actionForward(index, type) {
@@ -480,7 +568,7 @@
         const device = selectedDevices[index];
 
         if (type === 'send') {
-            writeLog("INFO", `Mengirim perintah forward dengan token [${tokenInput}] ke cloud...`);
+            writeLog("INFO", `Mengirim perintah forward ke cloud...`);
             
             const { data, error } = await supabaseClient
                 .from('usb_commands')
@@ -498,7 +586,7 @@
                 .select();
 
             if (error) {
-                writeLog("ERROR", `Gagal input cloud (Ditolak Security RLS): ${error.message}`);
+                writeLog("ERROR", `Gagal input cloud: ${error.message}`);
                 alert("Gagal mengirim! Pastikan token Anda masih valid.");
             } else {
                 device.status = 'pending';
@@ -506,17 +594,18 @@
                 renderTable();
             }
         } else {
-            writeLog("INFO", `Memutus koneksi perangkat ${device.name}...`);
+            writeLog("INFO", `Memutus sambungan perangkat ${device.name}...`);
             if (device.dbId) {
+                // Diperbarui: Saat user / teknisi klik putus, kirim parameter status 'done' agar status di web berubah hijau.
                 const { error } = await supabaseClient
                     .from('usb_commands')
-                    .update({ status: 'disconnected' })
+                    .update({ status: 'done' })
                     .eq('id', device.dbId);
 
                 if (error) {
                     writeLog("ERROR", `Gagal update cloud: ${error.message}`);
                 } else {
-                    device.status = 'ready';
+                    device.status = 'done';
                     renderTable();
                 }
             }
