@@ -67,14 +67,36 @@ async function loadTokens() {
     data.forEach(row => {
         tbody.innerHTML += `
             <tr>
-                <td><code>${row.token_key || '-'}</code></td>
-                <td><code>${row.technician_ip || '-'}</code></td>
-                <td><code style="color:var(--info-neon);">${row.port_number || '-'}</code></td>
+                <td><code class="copy-click" title="Klik untuk salin" onclick="salinTeksKeClipboard(this)">${row.token_key || '-'}</code></td>
+                <td><code class="copy-click" title="Klik untuk salin" onclick="salinTeksKeClipboard(this)">${row.technician_ip || '-'}</code></td>
+                <td><code class="copy-click" style="color:var(--info-neon);" title="Klik untuk salin" onclick="salinTeksKeClipboard(this)">${row.port_number || '-'}</code></td>
                 <td><button class="btn btn-disconnect" onclick="hapusToken('${row.id}')">[X]</button></td>
             </tr>
         `;
     });
 }
+
+// ================= UTILITY: AUTO COPY TO CLIPBOARD =================
+function salinTeksKeClipboard(elemen) {
+    const teks = elemen.innerText;
+    if (teks === "-") return; // Abaikan jika kosong/strip
+
+    navigator.clipboard.writeText(teks).then(() => {
+        // Efek visual feedback kilat warna hijau terang saat berhasil disalin
+        const warnaAsli = elemen.style.color;
+        elemen.style.color = "#00ff00";
+        elemen.style.textShadow = "0 0 10px #00ff00";
+        
+        // Kembalikan ke tampilan normal setelah 500ms
+        setTimeout(() => {
+            elemen.style.color = warnaAsli;
+            elemen.style.textShadow = "none";
+        }, 500);
+    }).catch(err => {
+        console.error("Gagal menyalin teks: ", err);
+    });
+}
+
 
 async function tambahToken() {
     const token = document.getElementById('new-token').value.trim();
