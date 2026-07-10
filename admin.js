@@ -117,7 +117,7 @@ function generateRandomToken() {
     let hasilToken = 'BTM-';
     
     // Generate 8 karakter acak setelah prefix BTM-
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 15; i++) {
         const indexAcak = Math.floor(Math.random() * karakter.length);
         hasilToken += karakter.charAt(indexAcak);
     }
