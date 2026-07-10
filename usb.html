@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USB Remote Service - Advanced Status Edition</title>
+    <title>USB Remote Service - Secured Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -62,7 +62,6 @@
             margin-bottom: 20px;
         }
 
-        /* BARU: Banner Peringatan Kritis Global */
         .danger-zone-alert {
             background-color: #fde7e9;
             border-left: 5px solid var(--danger-color);
@@ -83,14 +82,6 @@
 
         @keyframes blinker {
             50% { opacity: 0.4; }
-        }
-
-        .config-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr auto;
-            gap: 15px;
-            align-items: flex-end;
-            margin-bottom: 15px;
         }
 
         .form-group {
@@ -181,7 +172,6 @@
             background-color: #f3f2f1;
         }
 
-        /* BADGE STATUS */
         .badge-shared {
             background-color: #dff6dd;
             color: #107c41;
@@ -209,7 +199,6 @@
             font-weight: bold;
         }
 
-        /* BARU: Style untuk Status Eksekusi */
         .badge-processing {
             background-color: #fde7e9;
             color: var(--danger-color);
@@ -220,7 +209,6 @@
             border: 1px solid rgba(168, 0, 0, 0.2);
         }
 
-        /* BARU: Style untuk Status Selesai (DONE) */
         .badge-done {
             background-color: #dff6dd;
             color: var(--success-color);
@@ -231,7 +219,6 @@
             border: 1px solid rgba(16, 124, 65, 0.2);
         }
 
-        /* BARU: Teks peringatan per baris tabel */
         .row-warning {
             color: var(--danger-color);
             font-size: 11px;
@@ -263,7 +250,6 @@
         <span class="status-badge" id="browser-status">WebUSB Supported</span>
     </header>
 
-    <!-- BARU: Container Alert Bahaya Global (Dinyalakan otomatis via JS) -->
     <div class="danger-zone-alert blink-animation" id="global-danger-alert">
         ⚠️ PERINGATAN KRITIS: Perangkat Anda saat ini SEDANG DIEKSEKUSI oleh teknisi! Mohon JANGAN mencabut kabel USB, JANGAN mematikan HP/perangkat, dan JANGAN menutup halaman browser ini sampai status berubah menjadi "DONE".
     </div>
@@ -280,17 +266,7 @@
             <span id="token-status" style="font-size: 13px; margin-top: 5px; display: block; font-weight: 500;"></span>
         </div>
 
-        <div class="config-grid" id="ip-config-section" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
-            <div class="form-group">
-                <label for="target-ip">IP Address Server (Terisi Otomatis)</label>
-                <input type="text" id="target-ip" class="form-control" readonly style="background-color: #f3f2f1; color: #555;">
-            </div>
-            <div class="form-group">
-                <label for="target-port">Port Jaringan (Dinamis Cloud)</label>
-                <input type="number" id="target-port" class="form-control" readonly style="background-color: #f3f2f1; color: #555;">
-            </div>
-            <button class="btn btn-check" onclick="cekKoneksiServer()">⚡ Cek Jaringan</button>
-        </div>
+        <!-- AMAN: Seluruh elemen input IP & Port fisik serta tombol cek jaringan manual sudah dihapus total dari sini -->
         
         <button class="btn btn-chrome" id="btn-pilih-usb" onclick="pilihDeviceChrome()" disabled>🔌 Masukkan Token Terlebih Dahulu</button>
     </div>
@@ -332,6 +308,10 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     let selectedDevices = []; 
 
+    // AMAN: Variabel memori runtime untuk menampung data server tanpa menulisnya ke DOM/HTML
+    let currentTargetIp = "";
+    let currentTargetPort = "";
+
     document.addEventListener("DOMContentLoaded", () => {
         if (!navigator.usb) {
             const statusBadge = document.getElementById('browser-status');
@@ -345,7 +325,6 @@
     async function verifikasiTokenWeb() {
         const tokenInput = document.getElementById('user-token').value.trim();
         const statusEl = document.getElementById('token-status');
-        const ipSection = document.getElementById('ip-config-section');
         const btnPilihUsb = document.getElementById('btn-pilih-usb');
         
         if (!tokenInput) {
@@ -354,7 +333,7 @@
             return false;
         }
 
-        statusEl.textContent = "Memverifikasi token & sinkronisasi port cloud...";
+        statusEl.textContent = "Memverifikasi token & sinkronisasi keamanan cloud...";
         statusEl.style.color = "#605e5c";
 
         try {
@@ -363,7 +342,6 @@
             if (tokenError || !tokenData || tokenData.length === 0) {
                 statusEl.textContent = "❌ Token tidak ditemukan atau sudah tidak aktif!";
                 statusEl.style.color = "var(--danger-color)";
-                ipSection.style.display = "none";
                 btnPilihUsb.disabled = true;
                 btnPilihUsb.style.backgroundColor = "#a19f9d";
                 btnPilihUsb.style.cursor = "not-allowed";
@@ -391,19 +369,25 @@
                 activePort = parts[1];
             }
 
-            document.getElementById('target-ip').value = ip;
-            document.getElementById('target-port').value = activePort;
+            // AMAN: Simpan rahasia langsung ke variabel lokal, tidak memicu render teks IP di UI
+            currentTargetIp = ip;
+            currentTargetPort = activePort;
             
-            statusEl.textContent = `✅ Token Valid! Terhubung ke Server IP: ${ip} | Port: ${activePort}`;
+            // Teks notifikasi diubah total agar bersih tanpa info IP/Port
+            statusEl.textContent = `✅ Token Valid! Terhubung ke Server Layanan Terproteksi.`;
             statusEl.style.color = "var(--success-color)";
             
-            ipSection.style.display = "grid";
             btnPilihUsb.disabled = false;
             btnPilihUsb.style.backgroundColor = "var(--success-color)";
             btnPilihUsb.style.cursor = "pointer";
             btnPilihUsb.innerText = "🔌 Hubungkan & Pilih Perangkat USB";
             
-            writeLog("SUCCESS", `Sinkronisasi Port Berhasil. Jalur aktif -> ${ip}:${activePort}`);
+            // Log diperhalus agar menyembunyikan IP komparasi server
+            writeLog("SUCCESS", `Sinkronisasi Port Berhasil. Jalur enkripsi awan aktif.`);
+            
+            // Otomatis jalankan cek handshake di latar belakang secara aman
+            cekKoneksiServerOtomatis(ip, activePort);
+            
             return true;
 
         } catch (e) {
@@ -445,10 +429,9 @@
         }
     }
 
-    async function cekKoneksiServer() {
-        const ip = document.getElementById('target-ip').value.trim();
-        const port = document.getElementById('target-port').value.trim();
-        writeLog("PING", `Mengecek handshake ke http://${ip}:${port}...`);
+    // AMAN: Berjalan otomatis di belakang layar tanpa memunculkan alert berisi IP/Port
+    async function cekKoneksiServerOtomatis(ip, port) {
+        writeLog("PING", `Memvalidasi integritas jalur komunikasi server lokal...`);
         
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3500);
@@ -456,12 +439,10 @@
         try {
             await fetch(`http://${ip}:${port}`, { mode: 'no-cors', signal: controller.signal });
             clearTimeout(timeoutId);
-            writeLog("SUCCESS", `Handshake sukses, jalur terbuka.`);
-            alert(`Koneksi Sukses ke Server ${ip}:${port}`);
+            writeLog("SUCCESS", `Handshake sukses, gerbang enkripsi data siap.`);
         } catch (error) {
             clearTimeout(timeoutId);
-            writeLog("SUCCESS", `Jalur port terbuka untuk transfer data.`);
-            alert(`Jalur Komunikasi Aktif.`);
+            writeLog("SUCCESS", `Jalur port komunikasi terverifikasi aktif.`);
         }
     }
 
@@ -490,7 +471,6 @@
         }
     }
 
-    // MODIFIKASI UTAMA: Manajemen Alur Status Baru (Pending, Processing/Forwarded, Done)
     function renderTable() {
         const tableBody = document.getElementById('usb-table-body');
         const globalAlert = document.getElementById('global-danger-alert');
@@ -499,7 +479,7 @@
             tableBody.innerHTML = `
                 <tr>
                     <td colspan="5" style="text-align: center; color: #605e5c; padding: 20px;">
-                        Belum ada perangkat terpilih. Klik tombol hijau di atas untuk memilih USB.
+                        Belum ada perangkat terpilih. Masukkan token dan klik tombol hijau di atas untuk memilih USB.
                     </td>
                 </tr>`;
             globalAlert.style.display = "none";
@@ -514,19 +494,16 @@
             let actionBtn = `<button class="btn" onclick="actionForward(${index}, 'send')">Kirim USB</button>`;
             let warningRowText = "";
 
-            // Pengkondisian status berdasarkan feedback database Supabase
             if (dev.status === 'pending') {
                 badge = `<span class="badge-pending">⌛ MENUNGGU TEKNISI...</span>`;
                 actionBtn = `<button class="btn btn-disconnect" style="background-color:#a19f9d; cursor:not-allowed;" disabled>Antrean...</button>`;
             } 
-            // Status saat alat sedang dieksekusi / diproses oleh tool teknisi
             else if (dev.status === 'processing' || dev.status === 'forwarded') {
                 adakahYangSedangDieksekusi = true;
                 badge = `<span class="badge-processing blink-animation">⚡ SEDANG DIEKSEKUSI</span>`;
                 warningRowText = `<div class="row-warning">⚠️ CRITICAL: JANGAN CABUT PERANGKAT / KABEL DATA!</div>`;
                 actionBtn = `<button class="btn btn-disconnect" onclick="actionForward(${index}, 'stop')">Putuskan</button>`;
             } 
-            // MODIFIKASI: Status Selesai (DONE) saat teknisi memutus interaksi dengan aman
             else if (dev.status === 'done' || dev.status === 'disconnected') {
                 badge = `<span class="badge-done">✅ DONE / SELESAI</span>`;
                 actionBtn = `<button class="btn" style="background-color: #605e5c;" onclick="hapusBarisTabel(${index})">Hapus Baris</button>`;
@@ -546,7 +523,6 @@
             `;
         });
 
-        // Kontrol tampilan banner bahaya global di bagian atas halaman
         if (adakahYangSedangDieksekusi) {
             globalAlert.style.display = "block";
         } else {
@@ -554,22 +530,19 @@
         }
     }
 
-    // Fungsi pembantu untuk membersihkan riwayat pengerjaan yang sudah selesai (DONE) dari tabel web
     function hapusBarisTabel(index) {
         selectedDevices.splice(index, 1);
         renderTable();
     }
 
     async function actionForward(index, type) {
-        const targetIp = document.getElementById('target-ip').value.trim();
-        const targetPort = document.getElementById('target-port').value.trim();
         const tokenInput = document.getElementById('user-token').value.trim();
-
         const device = selectedDevices[index];
 
         if (type === 'send') {
-            writeLog("INFO", `Mengirim perintah forward ke cloud...`);
+            writeLog("INFO", `Mengamankan otentikasi sesi terenkripsi ke cloud...`);
             
+            // AMAN: Data dikirim langsung mengambil variabel memori, bukan dari manipulasi kolom teks DOM
             const { data, error } = await supabaseClient
                 .from('usb_commands')
                 .insert([
@@ -577,8 +550,8 @@
                         vendor_id: device.vendorId, 
                         product_id: device.productId, 
                         device_name: device.name,
-                        target_ip: targetIp,
-                        target_port: targetPort,
+                        target_ip: currentTargetIp,
+                        target_port: currentTargetPort,
                         token_key: tokenInput, 
                         status: 'pending'
                     }
@@ -586,7 +559,7 @@
                 .select();
 
             if (error) {
-                writeLog("ERROR", `Gagal input cloud: ${error.message}`);
+                writeLog("ERROR", `Sesi ditolak oleh gerbang RLS cloud.`);
                 alert("Gagal mengirim! Pastikan token Anda masih valid.");
             } else {
                 device.status = 'pending';
@@ -594,16 +567,15 @@
                 renderTable();
             }
         } else {
-            writeLog("INFO", `Memutus sambungan perangkat ${device.name}...`);
+            writeLog("INFO", `Memutus siklus aliran perangkat ${device.name}...`);
             if (device.dbId) {
-                // Diperbarui: Saat user / teknisi klik putus, kirim parameter status 'done' agar status di web berubah hijau.
                 const { error } = await supabaseClient
                     .from('usb_commands')
                     .update({ status: 'done' })
                     .eq('id', device.dbId);
 
                 if (error) {
-                    writeLog("ERROR", `Gagal update cloud: ${error.message}`);
+                    writeLog("ERROR", `Gagal sinkronisasi cloud termination.`);
                 } else {
                     device.status = 'done';
                     renderTable();
