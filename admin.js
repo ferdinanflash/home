@@ -5,7 +5,6 @@ const NAMA_TABEL_TOKEN_ANDA = 'tokens';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Cek apakah admin sudah login sebelumnya di sesi ini
     if (sessionStorage.getItem("admin_logged_in") === "true") {
         bukaAksesAdmin();
     }
@@ -20,7 +19,6 @@ async function loginAdmin() {
         return;
     }
 
-    // Memeriksa langsung ke tabel admin_config apakah ada password yang cocok
     const { data, error } = await supabaseClient
         .from('admin_config')
         .select('id')
@@ -32,44 +30,37 @@ async function loginAdmin() {
     }
 
     if (data && data.length > 0) {
-        // Simpan status login di session browser
         sessionStorage.setItem("admin_logged_in", "true");
         bukaAksesAdmin();
     } else {
-        alert("[!] ACCESS DENIED: PASSWORD SALAH ATAU KUNCI DEKRIPSI INVALID.");
+        alert("[!] ACCESS DENIED: PASSWORD SALAH.");
     }
 }
 
 function bukaAksesAdmin() {
     document.getElementById('login-panel').style.display = 'none';
-    document.getElementById('main-content').style.display = 'grid';
+    document.getElementById('main-content').style.display = 'block';
     loadTokens();
-    loadPort();
 }
 
-// ================= LOGIKA TABEL TOKEN =================
+// ================= LOGIKA MANAGEMENT NODE (TOKEN, IP, PORT) =================
 async function loadTokens() {
     const tbody = document.getElementById('token-table-body');
     if (!tbody) return;
 
-    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--info-neon);">CONNECTING TO NODE...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--info-neon);">CONNECTING TO NODE...</td></tr>`;
 
-    const { data, error } = await supabaseClient.from(NAMA_TABEL_TOKEN_ANDA).select('*');
+    const { data, error } = await supabaseClient.from(NAMA_TABEL_TOKEN_ANDA).select('*').order('id', { ascending: true });
     
     if (error) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="3" style="text-align:center; color:var(--danger-neon); padding:20px;">
-                    [!] DATABASE ERROR: ${error.message.toUpperCase()}
-                </td>
-            </tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--danger-neon); padding:20px;">[!] DATABASE ERROR: ${error.message.toUpperCase()}</td></tr>`;
         return;
     }
 
     tbody.innerHTML = "";
 
     if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#435c4b; padding:20px;">Tidak ada token aktif di database.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#435c4b; padding:20px;">Tidak ada konfigurasi aktif.</td></tr>`;
         return;
     }
 
@@ -78,6 +69,7 @@ async function loadTokens() {
             <tr>
                 <td><code>${row.token_key || '-'}</code></td>
                 <td><code>${row.technician_ip || '-'}</code></td>
+                <td><code style="color:var(--info-neon);">${row.port_number || '-'}</code></td>
                 <td><button class="btn btn-disconnect" onclick="hapusToken('${row.id}')">[X]</button></td>
             </tr>
         `;
@@ -87,73 +79,35 @@ async function loadTokens() {
 async function tambahToken() {
     const token = document.getElementById('new-token').value.trim();
     const ip = document.getElementById('new-ip').value.trim();
+    const port = document.getElementById('new-port').value.trim();
 
-    if (!token || !ip) {
-        alert("Token dan IP tidak boleh kosong!");
+    if (!token || !ip || !port) {
+        alert("Semua kolom (Token, IP, dan Port) wajib diisi!");
         return;
     }
 
     const { error } = await supabaseClient
         .from(NAMA_TABEL_TOKEN_ANDA)
-        .insert([{ token_key: token, technician_ip: ip }]);
+        .insert([{ token_key: token, technician_ip: ip, port_number: parseInt(port) }]);
 
     if (error) {
-        alert("Gagal menambahkan token: " + error.message);
+        alert("Gagal menambahkan data: " + error.message);
     } else {
-        alert("Token baru berhasil di-inject!");
+        alert("Node baru berhasil di-inject ke database!");
         document.getElementById('new-token').value = "";
         document.getElementById('new-ip').value = "";
+        document.getElementById('new-port').value = "";
         loadTokens();
     }
 }
 
 async function hapusToken(id) {
-    if (!confirm("Hapus token ini dari database?")) return;
+    if (!confirm("Hapus seluruh konfigurasi node ini?")) return;
     
     const { error } = await supabaseClient.from(NAMA_TABEL_TOKEN_ANDA).delete().eq('id', id);
     if (error) {
         alert("Gagal menghapus: " + error.message);
     } else {
         loadTokens();
-    }
-}
-
-// ================= LOGIKA TABEL PORT =================
-async function loadPort() {
-    const { data, error } = await supabaseClient
-        .from('ports')
-        .select('port_number')
-        .eq('port_name', 'usb_remote')
-        .single();
-
-    if (error) {
-        console.error("Gagal load port:", error.message);
-        document.getElementById('current-port-value').placeholder = "Gagal memuat port";
-        return;
-    }
-
-    if (data) {
-        document.getElementById('current-port-value').value = data.port_number;
-    }
-}
-
-async function updatePort() {
-    const portBaru = document.getElementById('current-port-value').value.trim();
-
-    if (!portBaru) {
-        alert("Nomor port tidak boleh kosong!");
-        return;
-    }
-
-    const { error } = await supabaseClient
-        .from('ports')
-        .update({ port_number: parseInt(portBaru) })
-        .eq('port_name', 'usb_remote');
-
-    if (error) {
-        alert("Gagal mengupdate port: " + error.message);
-    } else {
-        alert("Port eksternal 'usb_remote' berhasil diperbarui!");
-        loadPort();
     }
 }
