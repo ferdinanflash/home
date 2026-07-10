@@ -133,13 +133,18 @@ async function hapusToken(id) {
         loadTokens();
     }
 }
-// ================= UTILITY: GENERATE RANDOM TOKEN =================
+// ================= UTILITY: GENERATE RANDOM TOKEN WITH DASH =================
 function generateRandomToken() {
     const karakter = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let hasilToken = 'BTM-';
     
-    // Generate 8 karakter acak setelah prefix BTM-
-    for (let i = 0; i < 15; i++) {
+    // Generate 15 karakter acak dengan pemisah strip setiap 5 karakter
+    for (let i = 0; i < 10; i++) {
+        // Jika sudah mencapai 5 karakter pertama atau kedua (indeks ke-5 dan ke-10), tambahkan strip
+        if (i > 0 && i % 5 === 0) {
+            hasilToken += '-';
+        }
+        
         const indexAcak = Math.floor(Math.random() * karakter.length);
         hasilToken += karakter.charAt(indexAcak);
     }
