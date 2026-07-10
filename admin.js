@@ -111,3 +111,17 @@ async function hapusToken(id) {
         loadTokens();
     }
 }
+// ================= UTILITY: GENERATE RANDOM TOKEN =================
+function generateRandomToken() {
+    const karakter = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let hasilToken = 'BTM-';
+    
+    // Generate 8 karakter acak setelah prefix BTM-
+    for (let i = 0; i < 8; i++) {
+        const indexAcak = Math.floor(Math.random() * karakter.length);
+        hasilToken += karakter.charAt(indexAcak);
+    }
+    
+    // Masukkan hasil ke dalam input field token
+    document.getElementById('new-token').value = hasilToken;
+}
