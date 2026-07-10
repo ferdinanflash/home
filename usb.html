@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USB Remote Service - Supabase Edition</title>
+    <title>USB Remote Service - Dynamic Ports</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -122,7 +122,7 @@
         }
 
         .btn-chrome {
-            background-color: #a19f9d; /* Berwarna abu-abu sebelum token diisi */
+            background-color: #a19f9d;
             margin-bottom: 15px;
             font-size: 15px;
             width: 100%;
@@ -210,7 +210,6 @@
     <div class="card">
         <h3 style="margin-top:0; color: var(--primary-color);">Langkah 1: Validasi Akses Token Anda</h3>
         
-        <!-- MODIFIKASI: Input Token Utama -->
         <div class="form-group" style="margin-bottom: 15px;">
             <label for="user-token" style="font-weight: bold;">🔑 Token Akses dari Teknisi</label>
             <div style="display: flex; gap: 10px;">
@@ -220,15 +219,16 @@
             <span id="token-status" style="font-size: 13px; margin-top: 5px; display: block; font-weight: 500;"></span>
         </div>
 
-        <!-- MODIFIKASI: Section IP & Port dibuat otomatis terisi & tersembunyi hingga token valid -->
+        <!-- Port Config Section (Dibuat otomatis dan dinamis dari DB) -->
         <div class="config-grid" id="ip-config-section" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
             <div class="form-group">
                 <label for="target-ip">IP Address Server (Terisi Otomatis)</label>
                 <input type="text" id="target-ip" class="form-control" readonly style="background-color: #f3f2f1; color: #555;">
             </div>
             <div class="form-group">
-                <label for="target-port">Port Jaringan</label>
-                <input type="number" id="target-port" class="form-control" value="32032" readonly style="background-color: #f3f2f1; color: #555;">
+                <label for="target-port">Port Jaringan (Dinamis Cloud)</label>
+                <!-- MODIFIKASI: Dikunci total karena nilainya dikendalikan penuh oleh database ports -->
+                <input type="number" id="target-port" class="form-control" readonly style="background-color: #f3f2f1; color: #555;">
             </div>
             <button class="btn btn-check" onclick="cekKoneksiServer()">⚡ Cek Jaringan</button>
         </div>
@@ -283,7 +283,6 @@
         initSupabaseRealtime();
     });
 
-    // MODIFIKASI: Fungsi baru untuk memverifikasi token ke Supabase RPC
     async function verifikasiTokenWeb() {
         const tokenInput = document.getElementById('user-token').value.trim();
         const statusEl = document.getElementById('token-status');
@@ -296,13 +295,14 @@
             return false;
         }
 
-        statusEl.textContent = "Memverifikasi token ke cloud...";
+        statusEl.textContent = "Memverifikasi token & sinkronisasi port cloud...";
         statusEl.style.color = "#605e5c";
 
         try {
-            const { data, error } = await supabaseClient.rpc('panggil_validasi_token', { input_token: tokenInput });
+            // 1. Ambil data Teknisi berdasarkan Token
+            const { data: tokenData, error: tokenError } = await supabaseClient.rpc('panggil_validasi_token', { input_token: tokenInput });
 
-            if (error || !data || data.length === 0) {
+            if (tokenError || !tokenData || tokenData.length === 0) {
                 statusEl.textContent = "❌ Token tidak ditemukan atau sudah tidak aktif!";
                 statusEl.style.color = "var(--danger-color)";
                 ipSection.style.display = "none";
@@ -311,34 +311,46 @@
                 btnPilihUsb.style.cursor = "not-allowed";
                 btnPilihUsb.innerText = "🔌 Masukkan Token Terlebih Dahulu";
                 return false;
-            } else {
-                let rawIp = data[0].technician_ip;
-                let ip = rawIp;
-                let port = "32032";
-
-                // Memisahkan port jika teknisi menginput format IP:PORT di database
-                if (rawIp.includes(':')) {
-                    const parts = rawIp.split(':');
-                    ip = parts[0];
-                    port = parts[1];
-                }
-
-                document.getElementById('target-ip').value = ip;
-                document.getElementById('target-port').value = port;
-                
-                statusEl.textContent = `✅ Token Valid! Terhubung ke IP Server: ${ip}`;
-                statusEl.style.color = "var(--success-color)";
-                
-                // Tampilkan config info & nyalakan tombol utama Chrome
-                ipSection.style.display = "grid";
-                btnPilihUsb.disabled = false;
-                btnPilihUsb.style.backgroundColor = "var(--success-color)";
-                btnPilihUsb.style.cursor = "pointer";
-                btnPilihUsb.innerText = "🔌 Hubungkan & Pilih Perangkat USB";
-                
-                writeLog("SUCCESS", `Token Terverifikasi. IP Otomatis diset ke -> ${ip}:${port}`);
-                return true;
             }
+
+            // 2. MODIFIKASI: Tarik data port aktif secara dinamis langsung dari tabel 'ports'
+            const { data: portData, error: portError } = await supabaseClient
+                .from('ports')
+                .select('port_number')
+                .eq('port_name', 'usb_remote')
+                .single();
+
+            let activePort = 32032; // Fallback jika DB bermasalah
+            if (!portError && portData) {
+                activePort = portData.port_number;
+            }
+
+            let rawIp = tokenData[0].technician_ip;
+            let ip = rawIp;
+
+            // Jika teknisi sengaja mengoveride IP dengan format IP:PORT di data tokennya
+            if (rawIp.includes(':')) {
+                const parts = rawIp.split(':');
+                ip = parts[0];
+                activePort = parts[1];
+            }
+
+            // Pasang data ke UI input
+            document.getElementById('target-ip').value = ip;
+            document.getElementById('target-port').value = activePort;
+            
+            statusEl.textContent = `✅ Token Valid! Terhubung ke Server IP: ${ip} | Port: ${activePort}`;
+            statusEl.style.color = "var(--success-color)";
+            
+            ipSection.style.display = "grid";
+            btnPilihUsb.disabled = false;
+            btnPilihUsb.style.backgroundColor = "var(--success-color)";
+            btnPilihUsb.style.cursor = "pointer";
+            btnPilihUsb.innerText = "🔌 Hubungkan & Pilih Perangkat USB";
+            
+            writeLog("SUCCESS", `Sinkronisasi Port Berhasil. Jalur aktif -> ${ip}:${activePort}`);
+            return true;
+
         } catch (e) {
             statusEl.textContent = "❌ Terjadi masalah koneksi ke server database.";
             statusEl.style.color = "var(--danger-color)";
@@ -390,7 +402,7 @@
             await fetch(`http://${ip}:${port}`, { mode: 'no-cors', signal: controller.signal });
             clearTimeout(timeoutId);
             writeLog("SUCCESS", `Handshake sukses, jalur terbuka.`);
-            alert(`Koneksi Sukses ke Server ${ip}`);
+            alert(`Koneksi Sukses ke Server ${ip}:${port}`);
         } catch (error) {
             clearTimeout(timeoutId);
             writeLog("SUCCESS", `Jalur port terbuka untuk transfer data.`);
@@ -463,7 +475,7 @@
     async function actionForward(index, type) {
         const targetIp = document.getElementById('target-ip').value.trim();
         const targetPort = document.getElementById('target-port').value.trim();
-        const tokenInput = document.getElementById('user-token').value.trim(); // Ambil token aktif
+        const tokenInput = document.getElementById('user-token').value.trim();
 
         const device = selectedDevices[index];
 
@@ -479,7 +491,7 @@
                         device_name: device.name,
                         target_ip: targetIp,
                         target_port: targetPort,
-                        token_key: tokenInput, // MODIFIKASI: Menyertakan token ke database
+                        token_key: tokenInput, 
                         status: 'pending'
                     }
                 ])
