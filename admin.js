@@ -97,7 +97,7 @@ function salinTeksKeClipboard(elemen) {
     });
 }
 
-
+// ================= TAMBAH / REPLACE DATA TOKEN (UPSERT) =================
 async function tambahToken() {
     const token = document.getElementById('new-token').value.trim();
     const ip = document.getElementById('new-ip').value.trim();
@@ -108,14 +108,18 @@ async function tambahToken() {
         return;
     }
 
+    // Menggunakan UPSERT untuk menimpa/replace data jika token_key sudah ada
     const { error } = await supabaseClient
         .from(NAMA_TABEL_TOKEN_ANDA)
-        .insert([{ token_key: token, technician_ip: ip, port_number: parseInt(port) }]);
+        .upsert(
+            [{ token_key: token, technician_ip: ip, port_number: parseInt(port) }],
+            { onConflict: 'token_key' } // Konflik diacu pada kolom token_key
+        );
 
     if (error) {
-        alert("Gagal menambahkan data: " + error.message);
+        alert("Gagal memproses data: " + error.message);
     } else {
-        alert("Node baru berhasil di-inject ke database!");
+        alert("Node berhasil disimpan/diperbarui di database!");
         document.getElementById('new-token').value = "";
         document.getElementById('new-ip').value = "";
         document.getElementById('new-port').value = "";
@@ -133,14 +137,14 @@ async function hapusToken(id) {
         loadTokens();
     }
 }
+
 // ================= UTILITY: GENERATE RANDOM TOKEN WITH DASH =================
 function generateRandomToken() {
     const karakter = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let hasilToken = 'X-';
     
-    // Generate 15 karakter acak dengan pemisah strip setiap 5 karakter
+    // Generate 10 karakter acak dengan pemisah strip setiap 5 karakter
     for (let i = 0; i < 10; i++) {
-        // Jika sudah mencapai 5 karakter pertama atau kedua (indeks ke-5 dan ke-10), tambahkan strip
         if (i > 0 && i % 5 === 0) {
             hasilToken += '-';
         }
