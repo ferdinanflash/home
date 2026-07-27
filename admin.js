@@ -136,7 +136,7 @@ async function hapusToken(id) {
 // ================= UTILITY: GENERATE RANDOM TOKEN WITH DASH =================
 function generateRandomToken() {
     const karakter = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let hasilToken = 'BTM-';
+    let hasilToken = 'X-';
     
     // Generate 15 karakter acak dengan pemisah strip setiap 5 karakter
     for (let i = 0; i < 10; i++) {
