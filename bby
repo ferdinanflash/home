@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Happy Anniversary, My Love</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #ffdde1 0%, #ee9ca7 100%);
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Floating Hearts Background */
+    .bg-heart {
+      position: fixed;
+      color: rgba(255, 105, 180, 0.3);
+      font-size: 20px;
+      animation: floatUp 8s linear infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+      50% { opacity: 0.8; }
+      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
+    /* Main Container Card */
+    .card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 30px 24px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 15px 35px rgba(238, 156, 167, 0.3), 0 5px 15px rgba(0,0,0,0.05);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      text-align: center;
+      position: relative;
+      z-index: 10;
+      transition: all 0.4s ease;
+    }
+
+    /* Gift Icon Floating */
+    .gift-icon {
+      font-size: 50px;
+      animation: bounce 2s infinite;
+      margin-bottom: 10px;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    h1.title {
+      font-family: 'Dancing Script', cursive;
+      color: #d63384;
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+    p.subtitle {
+      color: #6c757d;
+      font-size: 0.88rem;
+      margin-bottom: 25px;
+    }
+
+    /* Question & Action Buttons Section */
+    .question-box {
+      background: #fff0f5;
+      border: 1px dashed #ff69b4;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      color: #d63384;
+      font-weight: 600;
+      margin-bottom: 25px;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      min-height: 80px;
+      position: relative;
+    }
+
+    .btn {
+      border: none;
+      padding: 12px 28px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-yes {
+      background: linear-gradient(45deg, #ff4081, #ff69b4);
+      color: white;
+      box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
+      z-index: 2;
+    }
+    .btn-yes:hover {
+      transform: scale(1.08);
+    }
+
+    .btn-no {
+      background: #e0e0e0;
+      color: #666;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .footer-note {
+      font-size: 0.75rem;
+      color: #888;
+      margin-top: 20px;
+      font-style: italic;
+    }
+
+    /* Modal / Toast Tooltip Popup */
+    .popup-message {
+      position: absolute;
+      top: -45px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ffffff;
+      color: #d63384;
+      border: 1px solid #ffb6c1;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, 5px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    /* Pages Styling (Hidden initially) */
+    .page {
+      display: none;
+      text-align: left;
+      animation: fadeInPage 0.5s ease forward;
+    }
+    @keyframes fadeInPage {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .letter-title {
+      font-family: 'Dancing Script', cursive;
+      color: #d63384;
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .letter-content {
+      font-size: 0.88rem;
+      color: #4a4a4a;
+      line-height: 1.6;
+      background: rgba(255, 240, 245, 0.5);
+      padding: 16px;
+      border-radius: 16px;
+      margin-bottom: 15px;
+    }
+
+    .reasons-list {
+      list-style: none;
+      margin: 10px 0;
+    }
+    .reasons-list li {
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+    }
+
+    /* Page Navigation Buttons */
+    .nav-btns {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    .btn-nav {
+      background: #ff69b4;
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .btn-nav:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Hearts Container -->
+  <div id="hearts-bg"></div>
+
+  <!-- MAIN CARD CONTAINER -->
+  <div class="card" id="mainCard">
+    
+    <!-- LANDING / QUESTION PAGE -->
+    <div id="questionPage">
+      <div class="gift-icon">🎁</div>
+      <h1 class="title">Happy Anniversary, My Love</h1>
+      <p class="subtitle">A little page to celebrate us any time of the year...</p>
+
+      <div class="question-box" id="questionText">
+        Do you still love me? What do you say? 💕
+      </div>
+
+      <div class="btn-group">
+        <div class="popup-message" id="popupMsg">Please don't say that... 🥺</div>
+        <button class="btn btn-yes" id="yesBtn" onclick="acceptLove()">Yes! 💖</button>
+        <button class="btn btn-no" id="noBtn" onclick="refuseLove()">No 🥹</button>
+      </div>
+
+      <p class="footer-note">P.S. The no button is still nervous 😅</p>
+    </div>
+
+    <!-- PAGE 1: YAY / LETTER -->
+    <div class="page" id="page1">
+      <h2 class="letter-title">Yay! 🎉</h2>
+      <p style="text-align: center; color: #888; font-size: 0.85rem; margin-bottom: 12px;">I knew you'd say yes, my love!</p>
+      
+      <div class="letter-content">
+        <h3 style="color: #d63384; margin-bottom: 8px; text-align: center;">💌 My Dearest Love</h3>
+        <p>You've just made me the happiest person in the entire universe! ❤️</p><br>
+        <p>From the moment I met you, I knew you were special. Your smile lights up my darkest days, and your laugh is my favorite melody. 🎵</p><br>
+        <p>Every moment with you feels like magic ✨ - whether we're doing something exciting or just sitting in comfortable silence together.</p>
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn-nav" disabled>← Previous</button>
+        <button class="btn-nav" onclick="changePage(2)">Next Page ➔</button>
+      </div>
+    </div>
+
+    <!-- PAGE 2: LOVE NOTE -->
+    <div class="page" id="page2">
+      <h2 class="letter-title">A Love Note For You 💕</h2>
+      
+      <div class="letter-content">
+        <p style="text-align:center; font-style:italic; margin-bottom:10px;">To the one I adore ✨</p>
+        <p>You make my life softer, brighter, and better in every way. ❤️</p><br>
+        <p>Since you came into my world, ordinary days started feeling special. Your smile calms me, your laugh stays in my heart, and your love makes everything feel possible.</p><br>
+        <p style="text-align: center; font-weight: 600; color: #d63384; margin-top:10px;">Reasons I Love You:</p>
+        <ul class="reasons-list">
+          <li>😊 Your beautiful smile</li>
+          <li>😂 The way you laugh</li>
+          <li>🤗 How caring you are</li>
+          <li>💖 Your kind heart</li>
+          <li>✨ Everything about you!</li>
+        </ul>
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn-nav" onclick="changePage(1)">← Previous</button>
+        <button class="btn-nav" onclick="changePage(3)">Next Page ➔</button>
+      </div>
+    </div>
+
+    <!-- PAGE 3: FOREVER -->
+    <div class="page" id="page3">
+      <h2 class="letter-title">Forever Yours ❤️</h2>
+      
+      <div class="letter-content">
+        <p style="text-align:center; color:#d63384; font-weight:600; margin-bottom:8px;">🌹 From my heart to yours 🌹</p>
+        <p>I still cannot believe how lucky I am to love someone like you. 💕</p><br>
+        <p>You turn small moments into memories I keep replaying in my mind. You make me want to be kinder, stronger, and more patient every day.</p><br>
+        <p>Thank you for being my peace, my joy, and my home. I will keep loving you with all I have.</p>
+        <p style="text-align:right; margin-top:15px; font-weight:600; color:#d63384;">- Yours Forever 💖</p>
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn-nav" onclick="changePage(2)">← Previous</button>
+        <button class="btn-nav" disabled>End ❤️</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // 1. Generate Floating Background Hearts
+    const heartsBg = document.getElementById('hearts-bg');
+    const heartSymbols = ['💖', '💕', '💗', '🌸', '✨'];
+    
+    for (let i = 0; i < 20; i++) {
+      const heart = document.createElement('div');
+      heart.className = 'bg-heart';
+      heart.innerText = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+      heart.style.animationDelay = Math.random() * 5 + 's';
+      heartsBg.appendChild(heart);
+    }
+
+    // 2. Logic for No Button Bribes & Escaping
+    let clickCount = 0;
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const popupMsg = document.getElementById('popupMsg');
+
+    const messages = [
+      "Please don't say that... 🥺",
+      "Think of our memories together! ❤️",
+      "You are still my favorite person 💕",
+      "Come on, just one little yes? 🥺✨",
+      "I will be extra cute if you say yes 📱",
+      "You can't escape! 😈"
+    ];
+
+    function refuseLove() {
+      clickCount++;
+      
+      // Update Tooltip Message
+      const msgIndex = Math.min(clickCount - 1, messages.length - 1);
+      popupMsg.innerText = messages[msgIndex];
+      popupMsg.style.display = 'block';
+
+      // Make Yes Button Larger
+      const currentYesSize = 1 + (clickCount * 0.15);
+      yesBtn.style.transform = `scale(${currentYesSize})`;
+
+      // Move No Button or Teleport
+      const randomX = (Math.random() - 0.5) * 120;
+      const randomY = (Math.random() - 0.5) * 80;
+      noBtn.style.transform = `translate(${randomX}px, ${randomY}px) scale(${Math.max(0.6, 1 - clickCount * 0.08)})`;
+    }
+
+    // Move button away on hover (for desktop)
+    noBtn.addEventListener('mouseover', () => {
+      if(clickCount > 2) {
+        refuseLove();
+      }
+    });
+
+    // 3. Switch to Success Page
+    function acceptLove() {
+      document.getElementById('questionPage').style.display = 'none';
+      document.getElementById('page1').classList.add('active');
+    }
+
+    // 4. Page Switcher Logic
+    function changePage(pageNumber) {
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      document.getElementById('page' + pageNumber).classList.add('active');
+    }
+  </script>
+</body>
+</html>
